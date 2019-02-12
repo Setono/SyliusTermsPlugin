@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\Form\Type;
 
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\InvalidConfigurationException;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
@@ -18,15 +18,24 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 final class TermsAcceptCollectionType extends AbstractType
 {
     /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
 
     /**
+     * @param RouterInterface $router
      * @param TranslatorInterface $translator
      */
-    public function __construct(TranslatorInterface $translator)
-    {
+    public function __construct(
+        RouterInterface $router,
+        TranslatorInterface $translator
+    ) {
+        $this->router = $router;
         $this->translator = $translator;
     }
 
@@ -64,8 +73,13 @@ final class TermsAcceptCollectionType extends AbstractType
                 );
             }
 
-            $builder->add((string) $terms->getCode(), CheckboxType::class, [
+            $builder->add((string) $terms->getCode(), TermsAcceptType::class, [
                 'label' => $terms->getName() ?: $terms->getCode(),
+                'terms_url' => $this->router->generate(
+                    'setono_sylius_terms_show', [
+                        'slug' => $terms->getSlug()
+                    ]
+                ),
                 'required' => false,
                 'value' => true,
                 'mapped' => false,

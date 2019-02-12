@@ -1,0 +1,12 @@
+setono_sylius_terms_show:
+    path: /terms/{slug}
+    methods: [GET]
+    defaults:
+        _controller: setono_sylius_terms.controller.terms:showAction
+        _sylius:
+            template: "@SetonoSyliusTermsPlugin/Shop/Terms/show.html.twig"
+            repository:
+                method: findOneByChannelAndSlug
+                arguments:
+                    - "expr:service('sylius.context.channel').getChannel()"
+                    - $slug

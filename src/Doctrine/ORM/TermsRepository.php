@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\Doctrine\ORM;
 
 use Doctrine\ORM\QueryBuilder;
+use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Channel\Model\ChannelInterface;
 
@@ -23,23 +24,29 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
     /**
      * {@inheritdoc}
      */
-    public function findByChannel(ChannelInterface $channel, ?string $locale = null): array
+    public function findByChannel(ChannelInterface $channel): array
     {
-        $queryBuilder = $this->createListQueryBuilder()
+        return $this->createListQueryBuilder()
             ->andWhere('o.channel = :channel')
             ->setParameter('channel', $channel)
-        ;
-
-        if (null !== $locale) {
-            $queryBuilder
-                ->andWhere('translation.locale = :locale')
-                ->setParameter('locale', $locale)
-            ;
-        }
-
-        return $queryBuilder
             ->getQuery()
             ->getResult()
         ;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findOneByChannelAndSlug(ChannelInterface $channel, string $slug): ?TermsInterface
+    {
+        return $this->createListQueryBuilder()
+            ->andWhere('translation.slug = :slug')
+            ->andWhere('o.channel = :channel')
+            ->setParameter('channel', $channel)
+            ->setParameter('slug', $slug)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
 }

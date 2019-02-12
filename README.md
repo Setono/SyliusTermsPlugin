@@ -81,6 +81,7 @@ If you already have that template overriden - add `{{ form_row(form.terms) }}` s
 
 # TODO
 
+[ ] Probably, we should allow MULTIPLE Channels to be assigned to every Terms 
 [ ] Extend ResourceTranslationsType and render only translations for locales from selected Channel
 
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square

@@ -1,0 +1,42 @@
+{% extends '@SyliusUi/Form/theme.html.twig' %}
+
+{# A bit cleaner way, but require some styles fixes #}
+{#{% block setono_sylius_terms_accept_label -%}#}
+    {#{% with { element: 'a', label_attr: {'href': terms_url, target: '_blank'} } %}#}
+        {#{{- block('form_label') -}}#}
+    {#{% endwith %}#}
+{#{% endblock setono_sylius_terms_accept_label -%}#}
+
+{% block setono_sylius_terms_accept_label -%}
+    {% if label is not same as(false) -%}
+        {% if not compound -%}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {%- endif -%}
+        {% if required -%}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+        {%- endif -%}
+        {% if label is empty -%}
+            {%- if label_format is not empty -%}
+                {% set label = label_format|replace({
+                    '%name%': name,
+                    '%id%': id,
+                }) %}
+            {%- else -%}
+                {% set label = name|humanize %}
+            {%- endif -%}
+        {%- endif -%}
+        <{{ element|default('label') }}{% if label_attr %}{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %}{% endif %}>
+        {%- if translation_domain is same as(false) -%}
+            {# Overriden #}
+            <a href="{{ terms_url }}" target="_blank">
+                {{- label -}}
+            </a>
+        {%- else -%}
+            <a href="{{ terms_url }}" target="_blank">
+                {{- label|trans({}, translation_domain) -}}
+            </a>
+            {# !Overriden #}
+        {%- endif -%}
+        </{{ element|default('label') }}>
+    {%- endif -%}
+{% endblock setono_sylius_terms_accept_label -%}
