@@ -24,7 +24,6 @@
 
         <service id="Setono\SyliusTermsPlugin\Form\Extension\CompleteTypeExtension">
             <argument type="service" id="setono.sylius_terms.provider.terms"/>
-            <argument>%sylius.form.type.checkout_complete.validation_groups%</argument>
             <tag name="form.type_extension" extended_type="Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType" />
         </service>
     </services>

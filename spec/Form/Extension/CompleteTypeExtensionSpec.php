@@ -11,11 +11,15 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class CompleteTypeExtensionSpec extends ObjectBehavior
 {
+    private const OPTIONS = [
+        'validation_groups' => ['sylius_checkout_complete']
+    ];
+
     public function let(TermsProviderInterface $termsProvider, TermsInterface $terms): void
     {
         $termsProvider->getTerms()->willReturn([$terms]);
 
-        $this->beConstructedWith($termsProvider, ['sylius']);
+        $this->beConstructedWith($termsProvider);
     }
 
     public function it_is_initializable(): void
@@ -27,12 +31,12 @@ class CompleteTypeExtensionSpec extends ObjectBehavior
     {
         $termsProvider->getTerms()->willReturn([]);
         $builder->add(Argument::cetera())->shouldNotBeCalled();
-        $this->buildForm($builder, []);
+        $this->buildForm($builder, self::OPTIONS);
     }
 
     public function it_adds(FormBuilderInterface $builder): void
     {
         $builder->add(Argument::cetera())->shouldBeCalled();
-        $this->buildForm($builder, []);
+        $this->buildForm($builder, self::OPTIONS);
     }
 }

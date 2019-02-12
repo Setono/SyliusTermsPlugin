@@ -19,15 +19,9 @@ final class CompleteTypeExtension extends AbstractTypeExtension
      */
     private $termsProvider;
 
-    /**
-     * @var array
-     */
-    private $checkoutCompleteValidationGroups;
-
-    public function __construct(TermsProviderInterface $termsProvider, array $checkoutCompleteValidationGroups)
+    public function __construct(TermsProviderInterface $termsProvider)
     {
         $this->termsProvider = $termsProvider;
-        $this->checkoutCompleteValidationGroups = $checkoutCompleteValidationGroups;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -44,10 +38,10 @@ final class CompleteTypeExtension extends AbstractTypeExtension
                 'required' => true,
                 'constraints' => [
                     new NotNull([
-                        'groups' => $this->checkoutCompleteValidationGroups,
+                        'groups' => $options['validation_groups'],
                     ]),
                     new IsTrue([
-                        'groups' => $this->checkoutCompleteValidationGroups,
+                        'groups' => $options['validation_groups'],
                     ]),
                 ],
             ]);
