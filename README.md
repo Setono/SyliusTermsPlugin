@@ -28,7 +28,7 @@ in the `config/bundles.php` file of your project:
 
 ```php
 <?php
-
+# config/bundles.php
 return [
     // ...
     
@@ -44,8 +44,6 @@ return [
 **NOTE** that you must instantiate the plugin before the grid bundle, else you will see an exception like `You have requested a non-existent parameter "setono_sylius_terms.model.terms.class".`
 
 ### Step 3: Import config
-Import the config file somewhere in your application. Could be the `config/packages/_sylius.yaml` file.
-
 ```yaml
 # config/packages/_sylius.yaml
 imports:
@@ -56,10 +54,17 @@ imports:
     # ...
 ```
 
-### Step 4: Add routing
+### Step 4: Import routing
 
 ```yaml
-# config/routes.yaml
+# config/routes/setono_sylius_terms.yaml
+
+setono_sylius_terms_shop:
+    resource: "@SetonoSyliusTermsPlugin/Resources/config/shop_routing.yaml"
+    prefix: /{_locale}
+    requirements:
+        _locale: ^[a-z]{2}(?:_[A-Z]{2})?$
+
 setono_sylius_terms_admin:
     resource: "@SetonoSyliusTermsPlugin/Resources/config/admin_routing.yaml"
     prefix: /admin
@@ -80,9 +85,9 @@ If you already have that template overriden - add `{{ form_row(form.terms) }}` s
 
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/Setono/SyliusTermsPlugin/master.svg?style=flat-square
+[ico-travis]: https://travis-ci.com/Setono/SyliusTermsPlugin.svg?branch=master
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/Setono/SyliusTermsPlugin.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/setono/sylius-terms-plugin
-[link-travis]: https://travis-ci.org/Setono/SyliusTermsPlugin
+[link-travis]: https://travis-ci.com/Setono/SyliusTermsPlugin
 [link-code-quality]: https://scrutinizer-ci.com/g/Setono/SyliusTermsPlugin

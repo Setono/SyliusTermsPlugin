@@ -18,21 +18,11 @@ final class CompleteTypeExtension extends AbstractTypeExtension
     private $termsProvider;
 
     /**
-     * Not sure about this
-     * @todo Remove?
-     *
-     * @var array
-     */
-    private $checkoutCompleteValidationGroups;
-
-    /**
      * @param TermsProviderInterface $termsProvider
-     * @param array $checkoutCompleteValidationGroups
      */
-    public function __construct(TermsProviderInterface $termsProvider, array $checkoutCompleteValidationGroups)
+    public function __construct(TermsProviderInterface $termsProvider)
     {
         $this->termsProvider = $termsProvider;
-        $this->checkoutCompleteValidationGroups = $checkoutCompleteValidationGroups;
     }
 
     /**
