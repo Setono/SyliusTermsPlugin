@@ -10,7 +10,6 @@ use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\IsTrue;
-use Symfony\Component\Validator\Constraints\NotNull;
 
 final class CompleteTypeExtension extends AbstractTypeExtension
 {
@@ -37,9 +36,6 @@ final class CompleteTypeExtension extends AbstractTypeExtension
                 'mapped' => false,
                 'required' => true,
                 'constraints' => [
-                    new NotNull([
-                        'groups' => $options['validation_groups'],
-                    ]),
                     new IsTrue([
                         'groups' => $options['validation_groups'],
                     ]),
