@@ -38,12 +38,12 @@ interface TermsInterface extends ResourceInterface, TimestampableInterface
     /**
      * @return string|null
      */
-    public function getSlug(): ?string;
+    public function getCode(): ?string;
 
     /**
-     * @param string $slug
+     * @param string $code
      */
-    public function setSlug(string $slug): void;
+    public function setCode(string $code): void;
 
     /**
      * @return string|null

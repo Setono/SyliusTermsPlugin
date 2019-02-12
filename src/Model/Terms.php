@@ -30,7 +30,7 @@ class Terms implements TermsInterface
     /**
      * @var string
      */
-    protected $slug;
+    protected $code;
 
     /**
      * @var string
@@ -67,14 +67,14 @@ class Terms implements TermsInterface
         $this->locale = $locale;
     }
 
-    public function getSlug(): ?string
+    public function getCode(): ?string
     {
-        return $this->slug;
+        return $this->code;
     }
 
-    public function setSlug(string $slug): void
+    public function setCode(string $code): void
     {
-        $this->slug = $slug;
+        $this->code = $code;
     }
 
     public function getName(): ?string

@@ -12,7 +12,7 @@
         </id>
 
         <unique-constraints>
-            <unique-constraint columns="slug,channel_id,locale_id"/>
+            <unique-constraint columns="code,channel_id,locale_id"/>
         </unique-constraints>
 
         <field name="createdAt" column="created_at" type="datetime">
@@ -31,7 +31,7 @@
             <join-column on-delete="CASCADE" nullable="false" name="locale_id" />
         </many-to-one>
 
-        <field name="slug" type="string" column="slug" />
+        <field name="code" type="string" column="code" />
         <field name="name" type="string" />
         <field name="content" type="text" />
 
