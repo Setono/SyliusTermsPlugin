@@ -55,6 +55,23 @@ imports:
     # ...
 ```
 
+### Step 4: Import routing
+Import the config file somewhere in your application. Could be the `config/packages/_sylius.yaml` file.
+
+```yaml
+# config/routes/setono_sylius_terms.yaml
+
+setono_sylius_terms_shop:
+    resource: "@SetonoSyliusTermsPlugin/Resources/config/shop_routing.yaml"
+    prefix: /{_locale}
+    requirements:
+        _locale: ^[a-z]{2}(?:_[A-Z]{2})?$
+
+setono_sylius_terms_admin:
+    resource: "@SetonoSyliusTermsPlugin/Resources/config/admin_routing.yaml"
+    prefix: /admin
+```
+
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [ico-travis]: https://travis-ci.com/Setono/SyliusTermsPlugin.svg?branch=master
