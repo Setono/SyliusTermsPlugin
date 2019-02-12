@@ -4,25 +4,42 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Doctrine\ORM;
 
-use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
+use Doctrine\ORM\QueryBuilder;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Channel\Model\ChannelInterface;
 
 class TermsRepository extends EntityRepository implements TermsRepositoryInterface
 {
-    public function findByChannelAndLocale(ChannelInterface $channel, string $locale): array
+    /**
+     * {@inheritdoc}
+     */
+    public function createListQueryBuilder(): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('o');
-        $qb
-            ->join('o.locale', 'l')
-            ->andWhere('l.code = :locale')
+        return $this->createQueryBuilder('o')
+            ->leftJoin('o.translations', 'translation')
+            ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByChannel(ChannelInterface $channel, ?string $locale = null): array
+    {
+        $queryBuilder = $this->createListQueryBuilder()
             ->andWhere('o.channel = :channel')
-            ->setParameters([
-                'locale' => $locale,
-                'channel' => $channel,
-            ])
+            ->setParameter('channel', $channel)
         ;
 
-        return $qb->getQuery()->getResult();
+        if (null !== $locale) {
+            $queryBuilder
+                ->andWhere('translation.locale = :locale')
+                ->setParameter('locale', $locale)
+            ;
+        }
+
+        return $queryBuilder
+            ->getQuery()
+            ->getResult()
+        ;
     }
 }

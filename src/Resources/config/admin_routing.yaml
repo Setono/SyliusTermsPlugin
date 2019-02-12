@@ -4,10 +4,12 @@ setono_sylius_terms_admin_terms:
         section: admin
         templates: SyliusAdminBundle:Crud
         redirect: update
-        grid: setono_sylius_terms_admin_terms
+        grid: setono_sylius_terms_terms
         vars:
             all:
                 subheader: setono_sylius_terms.ui.manage_terms
+                templates:
+                    form: "@SetonoSyliusTermsPlugin/Terms/_form.html.twig"
             index:
                 icon: 'check circle outline'
     type: sylius.resource

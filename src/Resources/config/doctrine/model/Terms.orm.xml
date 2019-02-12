@@ -6,13 +6,13 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                       http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Setono\SyliusTermsPlugin\Model\Terms" table="setono_sylius_terms__terms">
+    <mapped-superclass name="Setono\SyliusTermsPlugin\Model\Terms" table="setono_sylius_terms__terms">
         <id name="id" column="id" type="integer">
             <generator strategy="AUTO" />
         </id>
 
         <unique-constraints>
-            <unique-constraint columns="code,channel_id,locale_id"/>
+            <unique-constraint columns="code,channel_id"/>
         </unique-constraints>
 
         <field name="createdAt" column="created_at" type="datetime">
@@ -27,14 +27,7 @@
             <join-column on-delete="CASCADE" nullable="false" name="channel_id" />
         </many-to-one>
 
-        <many-to-one field="locale" target-entity="Sylius\Component\Locale\Model\LocaleInterface">
-            <join-column on-delete="CASCADE" nullable="false" name="locale_id" />
-        </many-to-one>
-
         <field name="code" type="string" column="code" />
-        <field name="name" type="string" />
-        <field name="content" type="text" />
-
-    </entity>
+    </mapped-superclass>>
 
 </doctrine-mapping>

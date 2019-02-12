@@ -47,16 +47,36 @@ return [
 Import the config file somewhere in your application. Could be the `config/packages/_sylius.yaml` file.
 
 ```yaml
+# config/packages/_sylius.yaml
 imports:
     # ...
     
-    - { resource: "@SetonoSyliusTermsPlugin/Resources/config/config.yaml" }
+    - { resource: "@SetonoSyliusTermsPlugin/Resources/config/app/config.yaml" }
     
     # ...
 ```
 
-## Important
-If you use the `StaticExchangeRateCurrencyConverter` (which is default) you **must** have an existing exchange rate between all your accepted currencies and your base currency.
+### Step 4: Add routing
+
+```yaml
+# config/routes.yaml
+setono_sylius_terms_admin:
+    resource: "@SetonoSyliusTermsPlugin/Resources/config/admin_routing.yaml"
+    prefix: /admin
+```
+
+### Step 5: Copy template
+
+```bash
+cp vendor/setono/sylius-terms-plugin/tests/Application/templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig \
+    templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
+```
+
+If you already have that template overriden - add `{{ form_row(form.terms) }}` somewhere.
+
+# TODO
+
+[ ] Extend ResourceTranslationsType and render only translations for locales from selected Channel
 
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square

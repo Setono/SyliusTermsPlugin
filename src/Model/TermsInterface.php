@@ -4,46 +4,24 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Model;
 
-use Sylius\Component\Core\Model\ChannelInterface;
-use Sylius\Component\Locale\Model\LocaleInterface;
+use Sylius\Component\Channel\Model\ChannelAwareInterface;
+use Sylius\Component\Resource\Model\CodeAwareInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Resource\Model\TimestampableInterface;
+use Sylius\Component\Resource\Model\TranslatableInterface;
+use Sylius\Component\Resource\Model\TranslationInterface;
 
-interface TermsInterface extends ResourceInterface, TimestampableInterface
+interface TermsInterface extends ResourceInterface, CodeAwareInterface, ChannelAwareInterface, TranslatableInterface, TimestampableInterface
 {
-    /**
-     * Returns the channel where these terms are active
-     *
-     * @return ChannelInterface|null
-     */
-    public function getChannel(): ?ChannelInterface;
-
-    /**
-     * @param ChannelInterface $channel
-     */
-    public function setChannel(ChannelInterface $channel): void;
-
-    /**
-     * Returns the locale where these terms are active
-     *
-     * @return LocaleInterface|null
-     */
-    public function getLocale(): ?LocaleInterface;
-
-    /**
-     * @param LocaleInterface $locale
-     */
-    public function setLocale(LocaleInterface $locale): void;
-
     /**
      * @return string|null
      */
     public function getCode(): ?string;
 
     /**
-     * @param string $code
+     * @param string|null $code
      */
-    public function setCode(string $code): void;
+    public function setCode(?string $code): void;
 
     /**
      * @return string|null
@@ -58,10 +36,25 @@ interface TermsInterface extends ResourceInterface, TimestampableInterface
     /**
      * @return string|null
      */
+    public function getSlug(): ?string;
+
+    /**
+     * @param string|null $slug
+     */
+    public function setSlug(?string $slug): void;
+
+    /**
+     * @param string|null $code
+     */
     public function getContent(): ?string;
 
     /**
      * @param string $content
      */
     public function setContent(string $content): void;
+
+    /**
+     * @return TermsTranslationInterface
+     */
+    public function getTranslation(?string $locale = null): TranslationInterface;
 }

@@ -1,0 +1,93 @@
+sylius_fixtures:
+    suites:
+        default:
+            fixtures:
+                
+                # Adding some extra locales/currencies/channels
+                # to show how terms working
+                
+                # Shipping/payment methods also required to be defined
+                # for each additional channel
+                
+                locale:
+                    options:
+                        locales:
+                            # - en_US # already there
+                            - de_DE
+                            - fr_FR
+                        
+                currency:
+                    options:
+                        currencies: 
+                            # - USD # already there
+                            - EUR
+
+                channel:
+                    options:
+                        custom:
+                            eu_web_store:
+                                name: "EU Web Store"
+                                code: EU_WEB
+                                locales:
+                                    - en_US
+                                    - de_DE
+                                    - fr_FR
+                                currencies:
+                                    - EUR
+                                enabled: true
+                                hostname: "localhost"
+                                
+                payment_method:
+                    options:
+                        custom:
+                            eu_bank_transfer:
+                                code: eu_bank_transfer
+                                name: "EU Bank transfer"
+                                channels:
+                                    - EU_WEB
+                                enabled: true
+
+                shipping_method:
+                    options:
+                        custom:
+                            eu_courier:
+                                code: eu_courier
+                                name: "EU courier"
+                                enabled: true
+                                channels:
+                                    - EU_WEB
+
+                setono_terms:
+                    options:
+                        custom:
+                            terms_eula_us:
+                                code: eula_us
+                                name: EULA for United States
+                                slug: eula-us
+                                created_at: "-3 day"
+                                updated_at: now
+                                channel: US_WEB
+                            terms_eula_eu:
+                                code: eula_eu
+                                name: EULA for EU
+                                slug: eula-eu
+                                translations:
+                                    fr_FR:
+                                        name: CLUF
+                                        slug: cluf
+                                created_at: "-3 day"
+                                updated_at: now
+                                channel: EU_WEB
+                            terms_terms_and_conditions_eu:
+                                code: terms_and_conditions_eu
+                                name: Terms and Conditions for EU
+                                slug: terms-conditions-eu
+                                translations:
+                                    fr_FR:
+                                        name: Termes et conditions
+                                        slug: termes-conditions
+                                    de_DE:
+                                        name: Geschäftsbedingungen
+                                created_at: "-3 day"
+                                updated_at: now
+                                channel: EU_WEB

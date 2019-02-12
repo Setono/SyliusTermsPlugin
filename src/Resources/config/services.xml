@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <imports>
+        <import resource="services/fixtures.xml" />
+        <import resource="services/forms.xml" />
+        <import resource="services/forms_extensions.xml" />
+        <import resource="services/generators.xml" />
+        <import resource="services/menus.xml" />
+    </imports>
+
     <services>
-        <service id="setono_sylius_terms.repository.terms" class="Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepository">
-            <argument type="service" id="setono_sylius_terms.manager.terms"/>
-            <argument type="service">
-                <service class="Doctrine\ORM\Mapping\ClassMetadata" public="false">
-                    <argument>%setono_sylius_terms.model.terms.class%</argument>
-                    <factory service="doctrine.orm.default_entity_manager" method="getClassMetadata"/>
-                </service>
-            </argument>
-        </service>
-
-        <service id="Setono\SyliusTermsPlugin\Menu\AdminMenuListener">
-            <tag name="kernel.event_listener" event="sylius.menu.admin.main" method="addItems" />
-        </service>
 
         <service id="setono_sylius_terms.provider.terms" class="Setono\SyliusTermsPlugin\Provider\TermsProvider">
             <argument type="service" id="setono_sylius_terms.repository.terms"/>
@@ -22,10 +19,5 @@
             <argument type="service" id="sylius.context.locale.composite"/>
         </service>
 
-        <service id="Setono\SyliusTermsPlugin\Form\Extension\CompleteTypeExtension">
-            <argument type="service" id="setono_sylius_terms.provider.terms"/>
-            <argument>%sylius.form.type.checkout_complete.validation_groups%</argument>
-            <tag name="form.type_extension" extended_type="Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType" />
-        </service>
     </services>
 </container>

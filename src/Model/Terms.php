@@ -4,13 +4,23 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Model;
 
-use Sylius\Component\Core\Model\ChannelInterface;
-use Sylius\Component\Locale\Model\LocaleInterface;
+use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Resource\Model\TimestampableTrait;
+use Sylius\Component\Resource\Model\TranslatableTrait;
+use Sylius\Component\Resource\Model\TranslationInterface;
 
 class Terms implements TermsInterface
 {
     use TimestampableTrait;
+    use TranslatableTrait {
+        __construct as private initializeTranslationsCollection;
+        getTranslation as private doGetTranslation;
+    }
+
+    public function __construct()
+    {
+        $this->initializeTranslationsCollection();
+    }
 
     /**
      * @var int
@@ -23,24 +33,9 @@ class Terms implements TermsInterface
     protected $channel;
 
     /**
-     * @var LocaleInterface
-     */
-    protected $locale;
-
-    /**
      * @var string
      */
     protected $code;
-
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $content;
 
     public function getId(): ?int
     {
@@ -52,19 +47,9 @@ class Terms implements TermsInterface
         return $this->channel;
     }
 
-    public function setChannel(ChannelInterface $channel): void
+    public function setChannel(?ChannelInterface $channel): void
     {
         $this->channel = $channel;
-    }
-
-    public function getLocale(): ?LocaleInterface
-    {
-        return $this->locale;
-    }
-
-    public function setLocale(LocaleInterface $locale): void
-    {
-        $this->locale = $locale;
     }
 
     public function getCode(): ?string
@@ -72,28 +57,75 @@ class Terms implements TermsInterface
         return $this->code;
     }
 
-    public function setCode(string $code): void
+    public function setCode(?string $code): void
     {
         $this->code = $code;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->getTranslation()->getName();
     }
 
-    public function setName(string $name): void
+    /**
+     * {@inheritdoc}
+     */
+    public function setName(?string $name): void
     {
-        $this->name = $name;
+        $this->getTranslation()->setName($name);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getSlug(): ?string
+    {
+        return $this->getTranslation()->getSlug();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setSlug(?string $slug): void
+    {
+        $this->getTranslation()->setSlug($slug);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getContent(): ?string
     {
-        return $this->content;
+        return $this->getTranslation()->getContent();
     }
 
-    public function setContent(string $content): void
+    /**
+     * {@inheritdoc}
+     */
+    public function setContent(?string $description): void
     {
-        $this->content = $content;
+        $this->getTranslation()->setContent($description);
+    }
+
+    /**
+     * @return TermsTranslationInterface
+     */
+    public function getTranslation(?string $locale = null): TranslationInterface
+    {
+        /** @var TermsTranslationInterface $translation */
+        $translation = $this->doGetTranslation($locale);
+
+        return $translation;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function createTranslation(): TermsTranslationInterface
+    {
+        return new TermsTranslation();
     }
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+
+        <service id="setono_sylius_terms.fixture.example_factory.terms"
+                 class="Setono\SyliusTermsPlugin\Fixture\Factory\TermsExampleFactory">
+
+            <argument type="service" id="setono_sylius_terms.factory.terms" />
+            <argument type="service" id="setono_sylius_terms.repository.terms" />
+            <argument type="service" id="sylius.repository.locale" />
+            <argument type="service" id="sylius.repository.channel" />
+            <argument type="service" id="setono_sylius_terms.generator.term_slug" />
+        </service>
+
+        <service id="setono_sylius_terms.fixture.terms"
+                 class="Setono\SyliusTermsPlugin\Fixture\TermsFixture">
+            <argument type="service" id="setono_sylius_terms.manager.terms" />
+            <argument type="service" id="setono_sylius_terms.fixture.example_factory.terms" />
+
+            <tag name="sylius_fixtures.fixture" />
+        </service>
+
+    </services>
+</container>

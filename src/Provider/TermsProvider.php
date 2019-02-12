@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Provider;
 
-use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
+use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepositoryInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Locale\Context\LocaleContextInterface;
 
@@ -25,6 +25,11 @@ final class TermsProvider implements TermsProviderInterface
      */
     private $localeContext;
 
+    /**
+     * @param TermsRepositoryInterface $termsRepository
+     * @param ChannelContextInterface $channelContext
+     * @param LocaleContextInterface $localeContext
+     */
     public function __construct(TermsRepositoryInterface $termsRepository, ChannelContextInterface $channelContext, LocaleContextInterface $localeContext)
     {
         $this->termsRepository = $termsRepository;
@@ -34,6 +39,9 @@ final class TermsProvider implements TermsProviderInterface
 
     public function getTerms(): array
     {
-        return $this->termsRepository->findByChannelAndLocale($this->channelContext->getChannel(), $this->localeContext->getLocaleCode());
+        return $this->termsRepository->findByChannel(
+            $this->channelContext->getChannel(),
+            $this->localeContext->getLocaleCode()
+        );
     }
 }

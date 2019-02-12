@@ -1,20 +1,20 @@
 sylius_grid:
     grids:
-        setono_sylius_terms_admin_terms:
+        setono_sylius_terms_terms:
             driver:
                 name: doctrine/orm
                 options:
                     class: "%setono_sylius_terms.model.terms.class%"
             fields:
-                channel:
+                code:
                     type: string
-                    label: setono_sylius_terms.ui.channel
-                locale:
-                    type: string
-                    label: setono_sylius_terms.ui.locale
+                    label: setono_sylius_terms.ui.code
                 name:
                     type: string
                     label: setono_sylius_terms.ui.name
+                channel:
+                    type: string
+                    label: setono_sylius_terms.ui.channel
             actions:
                 main:
                     create:

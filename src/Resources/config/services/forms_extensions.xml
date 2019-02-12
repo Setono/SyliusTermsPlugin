@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+
+        <service id="Setono\SyliusTermsPlugin\Form\Extension\CompleteTypeExtension">
+            <argument type="service" id="setono_sylius_terms.provider.terms"/>
+            <argument>%sylius.form.type.checkout_complete.validation_groups%</argument>
+            <tag name="form.type_extension" extended_type="Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType" />
+        </service>
+
+    </services>
+</container>

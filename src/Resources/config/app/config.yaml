@@ -1,0 +1,2 @@
+imports:
+    - { resource: "../grids/setono_sylius_terms_terms.yaml" }

@@ -1,0 +1,12 @@
+{% from '@SyliusAdmin/Macro/translationForm.html.twig' import translationFormWithSlug %}
+
+<div class="ui segment">
+    {{ form_errors(form) }}
+    <div class="two fields">
+        {{ form_row(form.code) }}
+        {{ form_row(form.channel) }}
+    </div>
+</div>
+
+{# @todo Own slug generator? #}
+{{ translationFormWithSlug(form.translations, '@SyliusAdmin/Product/_slugField.html.twig', terms) }}

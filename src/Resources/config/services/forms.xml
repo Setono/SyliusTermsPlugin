@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="setono_sylius_terms.form.type.terms.validation_groups" type="collection">
+            <parameter>sylius</parameter>
+        </parameter>
+        <parameter key="setono_sylius_terms.form.type.terms_translation.validation_groups" type="collection">
+            <parameter>sylius</parameter>
+        </parameter>
+    </parameters>
+
+    <services>
+        <defaults public="true" />
+
+        <service id="setono_sylius_terms.form.type.terms"
+                 class="Setono\SyliusTermsPlugin\Form\Type\TermsType">
+            <argument>%setono_sylius_terms.model.terms.class%</argument>
+            <argument>%setono_sylius_terms.form.type.terms.validation_groups%</argument>
+            <tag name="form.type" />
+        </service>
+
+        <service id="setono_sylius_terms.form.type.terms_translation"
+                 class="Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType">
+            <argument>%setono_sylius_terms.model.terms_translation.class%</argument>
+            <argument>%setono_sylius_terms.form.type.terms_translation.validation_groups%</argument>
+            <tag name="form.type" />
+        </service>
+
+        <service id="setono_sylius_terms.form.type.terms_accept_collection"
+                 class="Setono\SyliusTermsPlugin\Form\Type\TermsAcceptCollectionType">
+            <argument type="service" id="translator" />
+            <tag name="form.type" />
+        </service>
+
+    </services>
+</container>

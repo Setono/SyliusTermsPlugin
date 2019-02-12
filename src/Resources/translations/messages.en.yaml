@@ -5,8 +5,24 @@ setono_sylius_terms:
         new_terms: New terms
         edit_terms: Edit terms
 
+        code: Code
+        name: Name
+        channel: Channel
+        
     menu:
         admin:
             main:
                 configuration:
                     terms: Terms
+
+    form:
+        terms_accept:
+            label: Accept all terms below to complete an order
+            terms_should_be_accepted: "{{ name }} should be accepted"
+        terms:
+            translations: Translations
+            name: Name
+            code: Code
+            slug: Slug
+            content: Content
+            channel: Channel
