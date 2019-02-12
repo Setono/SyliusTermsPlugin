@@ -1,0 +1,4 @@
+suites:
+    main:
+        namespace: Setono\SyliusTermsPlugin
+        psr4_prefix: Setono\SyliusTermsPlugin

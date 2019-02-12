@@ -1,0 +1,26 @@
+sylius_grid:
+    grids:
+        setono_sylius_terms_admin_terms:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: "%setono_sylius_terms.model.terms.class%"
+            fields:
+                channel:
+                    type: string
+                    label: setono_sylius_terms.ui.channel
+                locale:
+                    type: string
+                    label: setono_sylius_terms.ui.locale
+                name:
+                    type: string
+                    label: setono_sylius_terms.ui.name
+            actions:
+                main:
+                    create:
+                        type: create
+                item:
+                    update:
+                        type: update
+                    delete:
+                        type: delete

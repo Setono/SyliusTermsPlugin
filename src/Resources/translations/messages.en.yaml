@@ -1,0 +1,12 @@
+setono_sylius_terms:
+    ui:
+        terms: Terms
+        manage_terms: Manage terms
+        new_terms: New terms
+        edit_terms: Edit terms
+
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Terms

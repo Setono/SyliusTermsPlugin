@@ -1,0 +1,13 @@
+setono_sylius_terms_admin_terms:
+    resource: |
+        alias: setono_sylius_terms.terms
+        section: admin
+        templates: SyliusAdminBundle:Crud
+        redirect: update
+        grid: setono_sylius_terms_admin_terms
+        vars:
+            all:
+                subheader: setono_sylius_terms.ui.manage_terms
+            index:
+                icon: 'check circle outline'
+    type: sylius.resource
