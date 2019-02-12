@@ -33,27 +33,26 @@ final class CompleteTypeExtension extends AbstractTypeExtension
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $terms = $this->termsProvider->getTerms();
-        if(0 === count($terms)) {
+        if (0 === count($terms)) {
             return;
         }
 
         foreach ($terms as $term) {
-            $builder->add('terms'.$term->getId(), CheckboxType::class, [
+            $builder->add('terms' . $term->getId(), CheckboxType::class, [
                 'label' => false,
                 'mapped' => false,
                 'required' => true,
                 'constraints' => [
                     new NotNull([
-                        'groups' => $this->checkoutCompleteValidationGroups
+                        'groups' => $this->checkoutCompleteValidationGroups,
                     ]),
                     new IsTrue([
-                        'groups' => $this->checkoutCompleteValidationGroups
-                    ])
-                ]
+                        'groups' => $this->checkoutCompleteValidationGroups,
+                    ]),
+                ],
             ]);
         }
     }
-
 
     public static function getExtendedTypes(): iterable
     {

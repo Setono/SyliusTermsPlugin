@@ -12,6 +12,7 @@ interface TermsRepositoryInterface extends RepositoryInterface
     /**
      * @param ChannelInterface $channel
      * @param string $locale
+     *
      * @return array
      */
     public function findByChannelAndLocale(ChannelInterface $channel, string $locale): array;
