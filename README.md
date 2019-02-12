@@ -44,9 +44,9 @@ return [
 **NOTE** that you must instantiate the plugin before the grid bundle, else you will see an exception like `You have requested a non-existent parameter "setono_sylius_terms.model.terms.class".`
 
 ### Step 3: Import config
-Import the config file somewhere in your application. Could be the `config/packages/_sylius.yaml` file.
-
 ```yaml
+# config/packages/_sylius.yaml
+
 imports:
     # ...
     
@@ -56,7 +56,6 @@ imports:
 ```
 
 ### Step 4: Import routing
-Import the config file somewhere in your application. Could be the `config/packages/_sylius.yaml` file.
 
 ```yaml
 # config/routes/setono_sylius_terms.yaml
