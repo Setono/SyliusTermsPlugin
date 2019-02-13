@@ -9,11 +9,13 @@
         <id name="id" column="id" type="integer">
             <generator strategy="AUTO" />
         </id>
-        <field name="name" column="name" type="string" />
-        <field name="slug" column="slug" type="string" unique="false" />
-        <field name="content" column="content" type="text" nullable="false" />
+
+        <field name="name" type="string"/>
+        <field name="slug" column="slug" type="string"/>
+        <field name="content" type="text"/>
+
         <unique-constraints>
-            <unique-constraint columns="locale,slug" name="slug_uidx" />
+            <unique-constraint columns="locale,slug" name="uniq_slug" />
         </unique-constraints>
     </mapped-superclass>
 
