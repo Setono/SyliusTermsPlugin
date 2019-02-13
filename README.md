@@ -106,6 +106,16 @@ cp vendor/setono/sylius-terms-plugin/tests/Application/templates/bundles/SyliusS
     templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
 ```
 
+# Development
+
+* To play with different configurations (click strategies, etc),
+  create `config/packages/setono_sylius_terms.yaml` at application folder.
+
+  ```bash
+  cp tests/Application/config/packages/setono_sylius_terms.yaml.dist \
+  tests/Application/config/packages/setono_sylius_terms.yaml
+  ```
+
 # TODO
 
     [+] Probably, we should allow MULTIPLE Channels to be assigned to every Terms

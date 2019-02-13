@@ -6,6 +6,8 @@
 /public/media/image/*
 !/public/media/image/.gitignore
 
+/config/packages/setono_sylius_terms.yaml
+
 /node_modules
 
 ###> symfony/framework-bundle ###
