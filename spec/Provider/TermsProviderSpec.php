@@ -2,30 +2,24 @@
 
 namespace spec\Setono\SyliusTermsPlugin\Provider;
 
+use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Provider\TermsProvider;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
-use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Model\ChannelInterface;
-use Sylius\Component\Locale\Context\LocaleContextInterface;
 
 class TermsProviderSpec extends ObjectBehavior
 {
     public function let(
         TermsRepositoryInterface $termsRepository,
         ChannelContextInterface $channelContext,
-        ChannelInterface $channel,
-        LocaleContextInterface $localeContext
+        ChannelInterface $channel
     ): void {
-        $locale = 'en_US';
-
         $channelContext->getChannel()->willReturn($channel);
-        $localeContext->getLocaleCode()->willReturn($locale);
 
-        $termsRepository->findByChannelAndLocale($channel, $locale)->willReturn([]);
+        $termsRepository->findByChannel($channel)->willReturn([]);
 
-        $this->beConstructedWith($termsRepository, $channelContext, $localeContext);
+        $this->beConstructedWith($termsRepository, $channelContext);
     }
 
     public function it_is_initializable(): void
