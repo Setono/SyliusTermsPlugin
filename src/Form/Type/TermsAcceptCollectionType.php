@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\Form\Type;
 
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
-use Symfony\Component\Routing\RouterInterface;
+use Setono\SyliusTermsPlugin\TermLinkGenerator\TermLinkGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\InvalidConfigurationException;
@@ -18,9 +18,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 final class TermsAcceptCollectionType extends AbstractType
 {
     /**
-     * @var RouterInterface
+     * @var TermLinkGeneratorInterface
      */
-    private $router;
+    private $termLinkGenerator;
 
     /**
      * @var TranslatorInterface
@@ -28,14 +28,14 @@ final class TermsAcceptCollectionType extends AbstractType
     private $translator;
 
     /**
-     * @param RouterInterface $router
+     * @param TermLinkGeneratorInterface $termLinkGenerator
      * @param TranslatorInterface $translator
      */
     public function __construct(
-        RouterInterface $router,
+        TermLinkGeneratorInterface $termLinkGenerator,
         TranslatorInterface $translator
     ) {
-        $this->router = $router;
+        $this->termLinkGenerator = $termLinkGenerator;
         $this->translator = $translator;
     }
 
@@ -75,11 +75,7 @@ final class TermsAcceptCollectionType extends AbstractType
 
             $builder->add((string) $terms->getCode(), TermsAcceptType::class, [
                 'label' => $terms->getName() ?: $terms->getCode(),
-                'terms_url' => $this->router->generate(
-                    'setono_sylius_terms_show', [
-                        'slug' => $terms->getSlug()
-                    ]
-                ),
+                'terms_link' => $this->termLinkGenerator->generate($terms),
                 'required' => false,
                 'value' => true,
                 'mapped' => false,

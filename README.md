@@ -101,7 +101,7 @@ cp vendor/setono/sylius-terms-plugin/tests/Application/templates/bundles/SyliusS
 # TODO
 
     [+] Probably, we should allow MULTIPLE Channels to be assigned to every Terms
-    [ ] Generate links from explanation
+    [+] Generate links from explanation
     [ ] Remove /terms/ from routing
     [ ] Add strategies handlers (new_window, modal_div)
     [ ] Clear cache on slug update

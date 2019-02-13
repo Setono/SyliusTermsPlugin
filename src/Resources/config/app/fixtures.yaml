@@ -64,7 +64,7 @@ sylius_fixtures:
                                 code: eula_us
                                 name: EULA for United States
                                 slug: eula-us
-                                explanation: Accept [link:US EULA terms]
+                                explanation: Accept US EULA terms
                                 created_at: "-3 day"
                                 updated_at: now
                                 channels:

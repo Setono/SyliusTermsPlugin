@@ -22,6 +22,10 @@ final class TermSlugGenerator implements TermSlugGeneratorInterface
         return $this->transliterate($name);
     }
 
+    /**
+     * @param string $string
+     * @return string
+     */
     private function transliterate(string $string): string
     {
         // Manually replacing apostrophes since Transliterator started removing them at v1.2.

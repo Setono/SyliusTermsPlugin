@@ -17,7 +17,7 @@ final class TermsAcceptType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['terms_url'] = $options['terms_url'];
+        $view->vars['terms_link'] = $options['terms_link'];
     }
 
     /**
@@ -29,9 +29,9 @@ final class TermsAcceptType extends AbstractType
 
         $resolver
             ->setRequired([
-                'terms_url',
+                'terms_link',
             ])
-            ->setAllowedTypes('terms_url', ['string'])
+            ->setAllowedTypes('terms_link', ['string'])
         ;
     }
 

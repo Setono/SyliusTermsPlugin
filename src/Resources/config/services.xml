@@ -9,6 +9,7 @@
         <import resource="services/forms_extensions.xml" />
         <import resource="services/generators.xml" />
         <import resource="services/menus.xml" />
+        <import resource="services/term_link_generators.xml" />
     </imports>
 
     <services>
