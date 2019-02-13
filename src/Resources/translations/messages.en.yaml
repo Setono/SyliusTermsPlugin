@@ -7,7 +7,7 @@ setono_sylius_terms:
 
         code: Code
         name: Name
-        channel: Channel
+        channels: Channels
         
     menu:
         admin:
@@ -27,4 +27,4 @@ setono_sylius_terms:
             explanation: Explanation
             explanation_placeholder: Use [link:Link text] to tell where the link should be placed in the text
             content: Content
-            channel: Channel
+            channels: Channels

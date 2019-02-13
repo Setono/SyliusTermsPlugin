@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Resource\Model\TimestampableTrait;
 use Sylius\Component\Resource\Model\TranslatableTrait;
@@ -19,6 +21,7 @@ class Terms implements TermsInterface
 
     public function __construct()
     {
+        $this->channels = new ArrayCollection();
         $this->initializeTranslationsCollection();
     }
 
@@ -28,9 +31,9 @@ class Terms implements TermsInterface
     protected $id;
 
     /**
-     * @var ChannelInterface|null
+     * @var Collection|ChannelInterface[]
      */
-    protected $channel;
+    protected $channels;
 
     /**
      * @var string|null
@@ -48,17 +51,37 @@ class Terms implements TermsInterface
     /**
      * @inheritdoc
      */
-    public function getChannel(): ?ChannelInterface
+    public function getChannels(): Collection
     {
-        return $this->channel;
+        return $this->channels;
     }
 
     /**
      * @inheritdoc
      */
-    public function setChannel(?ChannelInterface $channel): void
+    public function hasChannel(ChannelInterface $channel): bool
     {
-        $this->channel = $channel;
+        return $this->channels->contains($channel);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addChannel(ChannelInterface $channel): void
+    {
+        if (!$this->hasChannel($channel)) {
+            $this->channels->add($channel);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function removeChannel(ChannelInterface $channel): void
+    {
+        if ($this->hasChannel($channel)) {
+            $this->channels->removeElement($channel);
+        }
     }
 
     /**

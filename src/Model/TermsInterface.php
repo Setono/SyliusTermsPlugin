@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Model;
 
-use Sylius\Component\Channel\Model\ChannelAwareInterface;
+use Sylius\Component\Channel\Model\ChannelsAwareInterface;
 use Sylius\Component\Resource\Model\CodeAwareInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Resource\Model\TimestampableInterface;
 use Sylius\Component\Resource\Model\TranslatableInterface;
 use Sylius\Component\Resource\Model\TranslationInterface;
 
-interface TermsInterface extends ResourceInterface, CodeAwareInterface, ChannelAwareInterface, TranslatableInterface, TimestampableInterface
+interface TermsInterface extends ResourceInterface, CodeAwareInterface, ChannelsAwareInterface, TranslatableInterface, TimestampableInterface
 {
     /**
      * @return string|null

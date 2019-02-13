@@ -90,7 +90,9 @@ class TermsExampleFactory extends AbstractExampleFactory
         }
 
         $terms->setCode($options['code']);
-        $terms->setChannel($options['channel']);
+        foreach ($options['channels'] as $channel) {
+            $terms->addChannel($channel);
+        }
 
         // add translation for each defined locales
         foreach ($this->getLocales() as $localeCode) {
@@ -135,10 +137,9 @@ class TermsExampleFactory extends AbstractExampleFactory
                 return StringInflector::nameToCode($options['name']);
             })
 
-            ->setRequired('channel')
-            ->setDefault('channel', LazyOption::randomOne($this->channelRepository))
-            ->setAllowedTypes('channel', ['string', ChannelInterface::class])
-            ->setNormalizer('channel', LazyOption::findOneBy($this->channelRepository, 'code'))
+            ->setDefault('channels', LazyOption::randomOnes($this->channelRepository, 3))
+            ->setAllowedTypes('channels', ['array'])
+            ->setNormalizer('channels', LazyOption::findBy($this->channelRepository, 'code'))
 
             ->setDefault('slug', null)
 

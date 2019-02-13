@@ -64,10 +64,11 @@ sylius_fixtures:
                                 code: eula_us
                                 name: EULA for United States
                                 slug: eula-us
-                                explanation: Accept [link:EULA terms]
+                                explanation: Accept [link:US EULA terms]
                                 created_at: "-3 day"
                                 updated_at: now
-                                channel: US_WEB
+                                channels:
+                                  - US_WEB
                             terms_eula_eu:
                                 code: eula_eu
                                 name: EULA for EU
@@ -79,12 +80,13 @@ sylius_fixtures:
                                         slug: cluf
                                 created_at: "-3 day"
                                 updated_at: now
-                                channel: EU_WEB
-                            terms_terms_and_conditions_eu:
-                                code: terms_and_conditions_eu
-                                name: Terms and Conditions for EU
-                                slug: terms-conditions-eu
-                                explanation: Accept [link:EU terms]
+                                channels:
+                                  - EU_WEB
+                            terms_terms_and_conditions:
+                                code: terms_and_conditions
+                                name: Terms and Conditions
+                                slug: terms-conditions
+                                explanation: Accept [link:Terms and conditions]
                                 translations:
                                     fr_FR:
                                         name: Termes et conditions
@@ -93,4 +95,6 @@ sylius_fixtures:
                                         name: Geschäftsbedingungen
                                 created_at: "-3 day"
                                 updated_at: now
-                                channel: EU_WEB
+                                channels:
+                                  - US_WEB
+                                  - EU_WEB

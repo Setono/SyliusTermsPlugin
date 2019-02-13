@@ -12,9 +12,11 @@ sylius_grid:
                 name:
                     type: string
                     label: setono_sylius_terms.ui.name
-                channel:
-                    type: string
-                    label: setono_sylius_terms.ui.channel
+                channels:
+                    type: twig
+                    label: setono_sylius_terms.ui.channels
+                    options:
+                        template: "@SetonoSyliusTermsPlugin/Admin/Grid/Field/channels.html.twig"
             actions:
                 main:
                     create:

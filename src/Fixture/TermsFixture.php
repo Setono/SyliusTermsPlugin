@@ -25,14 +25,13 @@ final class TermsFixture extends AbstractResourceFixture
         $resourceNode
             ->children()
                 ->scalarNode('code')->cannotBeEmpty()->end()
-                ->scalarNode('channel')->cannotBeEmpty()->end()
-
                 ->scalarNode('name')->cannotBeEmpty()->end()
                 ->scalarNode('slug')->cannotBeEmpty()->end()
                 ->scalarNode('explanation')->cannotBeEmpty()->end()
                 ->scalarNode('content')->cannotBeEmpty()->end()
 
                 ->variableNode('translations')->cannotBeEmpty()->defaultValue([])->end()
+                ->variableNode('channels')->cannotBeEmpty()->defaultValue([])->end()
 
                 ->scalarNode('created_at')->cannotBeEmpty()->end()
                 ->scalarNode('updated_at')->cannotBeEmpty()->end()

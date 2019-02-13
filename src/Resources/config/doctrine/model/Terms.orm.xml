@@ -11,10 +11,6 @@
             <generator strategy="AUTO" />
         </id>
 
-        <unique-constraints>
-            <unique-constraint columns="code,channel_id"/>
-        </unique-constraints>
-
         <field name="createdAt" column="created_at" type="datetime">
             <gedmo:timestampable on="create"/>
         </field>
@@ -23,11 +19,18 @@
             <gedmo:timestampable on="update"/>
         </field>
 
-        <many-to-one field="channel" target-entity="Sylius\Component\Channel\Model\ChannelInterface">
-            <join-column on-delete="CASCADE" nullable="false" name="channel_id" />
-        </many-to-one>
+        <many-to-many field="channels" target-entity="Sylius\Component\Channel\Model\ChannelInterface">
+            <join-table name="setono_sylius_terms__terms_channels">
+                <join-columns>
+                    <join-column name="terms_id" referenced-column-name="id" nullable="false" on-delete="CASCADE" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="channel_id" referenced-column-name="id" nullable="false" on-delete="CASCADE" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
 
-        <field name="code" type="string" column="code" />
+        <field name="code" type="string" column="code" unique="true" />
     </mapped-superclass>>
 
 </doctrine-mapping>

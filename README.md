@@ -81,7 +81,7 @@ If you already have that template overriden - add `{{ form_row(form.terms) }}` s
 
 # TODO
 
-    [>] Probably, we should allow MULTIPLE Channels to be assigned to every Terms
+    [+] Probably, we should allow MULTIPLE Channels to be assigned to every Terms
     [ ] Generate links from explanation
     [ ] Remove /terms/ from routing
     [ ] Add strategies handlers (new_window, modal_div)

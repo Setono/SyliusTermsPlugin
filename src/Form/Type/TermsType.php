@@ -18,8 +18,10 @@ final class TermsType extends AbstractResourceType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('channel', ChannelChoiceType::class, [
-                'label' => 'setono_sylius_terms.form.terms.channel',
+            ->add('channels', ChannelChoiceType::class, [
+                'multiple' => true,
+                'expanded' => true,
+                'label' => 'setono_sylius_terms.form.terms.channels',
             ])
             ->add('translations', ResourceTranslationsType::class, [
                 'entry_type' => TermsTranslationType::class,
