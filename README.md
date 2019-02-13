@@ -21,6 +21,10 @@ Will add the requirement to check off terms and conditions when the customer che
 
 ## Screenshots
 
+**Shop**
+
+![Screenshot showing shop checkout complete page](docs/images/shop-checkout-complete.png)
+
 **Admin**
 
 ![Screenshot showing admin terms index page](docs/images/admin-terms-index.png)
