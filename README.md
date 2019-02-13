@@ -98,8 +98,6 @@ cp vendor/setono/sylius-terms-plugin/tests/Application/templates/bundles/SyliusS
     templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
 ```
 
-If you already have that template overriden - add `{{ form_row(form.terms) }}` somewhere.
-
 # TODO
 
     [+] Probably, we should allow MULTIPLE Channels to be assigned to every Terms
