@@ -81,8 +81,12 @@ If you already have that template overriden - add `{{ form_row(form.terms) }}` s
 
 # TODO
 
-[ ] Probably, we should allow MULTIPLE Channels to be assigned to every Terms 
-[ ] Extend ResourceTranslationsType and render only translations for locales from selected Channel
+    [>] Probably, we should allow MULTIPLE Channels to be assigned to every Terms
+    [ ] Generate links from explanation
+    [ ] Remove /terms/ from routing
+    [ ] Add strategies handlers (new_window, modal_div)
+    [ ] Clear cache on slug update
+    [ ] Extend ResourceTranslationsType and render only translations for locales from selected Channel
 
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
