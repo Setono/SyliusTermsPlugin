@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\TermLinkGenerator;
 
+use Setono\SyliusTermsPlugin\ClickStrategyApplicator\ClickStrategyApplicatorInterface;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 
 final class CompositeTermLinkGenerator implements TermLinkGeneratorInterface
@@ -12,6 +13,19 @@ final class CompositeTermLinkGenerator implements TermLinkGeneratorInterface
      * @var TermLinkGeneratorInterface[]
      */
     private $termLinkGenerators = [];
+
+    /**
+     * @var ClickStrategyApplicatorInterface
+     */
+    private $clickStrategyApplicator;
+
+    /**
+     * @param ClickStrategyApplicatorInterface $clickStrategyApplicator
+     */
+    public function __construct(ClickStrategyApplicatorInterface $clickStrategyApplicator)
+    {
+        $this->clickStrategyApplicator = $clickStrategyApplicator;
+    }
 
     /**
      * @param TermLinkGeneratorInterface $termLinkGenerator
@@ -40,7 +54,9 @@ final class CompositeTermLinkGenerator implements TermLinkGeneratorInterface
     {
         foreach ($this->termLinkGenerators as $termLinkGenerator) {
             if ($termLinkGenerator->isApplicable($terms)) {
-                return $termLinkGenerator->generate($terms);
+                return $this->clickStrategyApplicator->applyClickStrategy(
+                    $termLinkGenerator->generate($terms)
+                );
             }
         }
 

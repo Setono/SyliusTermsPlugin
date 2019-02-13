@@ -121,7 +121,8 @@ cp vendor/setono/sylius-terms-plugin/tests/Application/templates/bundles/SyliusS
     [+] Probably, we should allow MULTIPLE Channels to be assigned to every Terms
     [+] Generate links from explanation
     [+] Remove /terms/ from routing
-    [ ] Add strategies handlers (new_window, modal_div)
+    [+] Add strategies handlers (new_window, modal)
+    [ ] Rework click strategies so we can add custom ones; remove ClickStrategy as it have fixed list of strategies
     [ ] Extend ResourceTranslationsType and render only translations for locales from selected Channel
 
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square

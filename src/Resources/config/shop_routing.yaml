@@ -10,3 +10,16 @@ setono_sylius_terms_show:
                 arguments:
                     - "expr:service('sylius.context.channel').getChannel()"
                     - $slug
+
+setono_sylius_terms_partial_show:
+    path: /{slug}/partial
+    methods: [GET]
+    defaults:
+        _controller: setono_sylius_terms.controller.terms:showAction
+        _sylius:
+            template: "@SetonoSyliusTermsPlugin/Shop/Terms/partialShow.html.twig"
+            repository:
+                method: findOneByChannelAndSlug
+                arguments:
+                    - "expr:service('sylius.context.channel').getChannel()"
+                    - $slug

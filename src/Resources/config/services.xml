@@ -4,6 +4,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <imports>
+        <import resource="services/block_event_listeners.xml" />
+        <import resource="services/click_strategy_applicators.xml" />
         <import resource="services/fixtures.xml" />
         <import resource="services/forms.xml" />
         <import resource="services/forms_extensions.xml" />

@@ -7,6 +7,7 @@
 
         <service id="setono_sylius_terms.term_link_generator.composite"
                  class="Setono\SyliusTermsPlugin\TermLinkGenerator\CompositeTermLinkGenerator">
+            <argument type="service" id="setono_sylius_terms.click_strategy_applicator.composite" />
         </service>
 
         <service id="setono_sylius_terms.term_link_generator.markdown"
