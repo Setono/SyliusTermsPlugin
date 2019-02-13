@@ -12,6 +12,7 @@ parameters:
     excludes_analyse:
         # Makes PHPStan crash
         - 'src/DependencyInjection/Configuration.php'
+        - 'src/Fixture/TermsFixture.php'
 
         # Test dependencies
         - 'tests/Application/app/**.php'

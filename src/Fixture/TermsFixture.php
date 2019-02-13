@@ -36,6 +36,7 @@ final class TermsFixture extends AbstractResourceFixture
 
                 ->scalarNode('created_at')->cannotBeEmpty()->end()
                 ->scalarNode('updated_at')->cannotBeEmpty()->end()
+            ->end()
         ;
     }
 }
