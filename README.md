@@ -91,6 +91,10 @@ setono_sylius_terms_admin:
     prefix: /admin
 ```
 
+**Important**. As far as terms pages URLs looks like this
+`http://localhost:8000/en_US/terms-conditions`, make sure you don't add
+any terms with slugs like `products`, `taxons`, `login`, etc.
+
 ### Step 5: Copy template
 
 ```bash
@@ -102,9 +106,8 @@ cp vendor/setono/sylius-terms-plugin/tests/Application/templates/bundles/SyliusS
 
     [+] Probably, we should allow MULTIPLE Channels to be assigned to every Terms
     [+] Generate links from explanation
-    [ ] Remove /terms/ from routing
+    [+] Remove /terms/ from routing
     [ ] Add strategies handlers (new_window, modal_div)
-    [ ] Clear cache on slug update
     [ ] Extend ResourceTranslationsType and render only translations for locales from selected Channel
 
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square

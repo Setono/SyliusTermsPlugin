@@ -1,5 +1,5 @@
 setono_sylius_terms_show:
-    path: /terms/{slug}
+    path: /{slug}
     methods: [GET]
     defaults:
         _controller: setono_sylius_terms.controller.terms:showAction
