@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\DependencyInjection;
 
+use Setono\SyliusTermsPlugin\ClickStrategy;
 use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepository;
 use Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsType;
@@ -32,6 +33,14 @@ final class Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('driver')->defaultValue(SyliusResourceBundle::DRIVER_DOCTRINE_ORM)->end()
+                ->scalarNode('click_strategy')
+                    ->info('What should happen when a user clicks the terms link on the Place order page? Either open a new window or show the terms directly on the page')
+                    ->defaultValue(ClickStrategy::CLICK_STRATEGY_ON_PAGE)
+                    ->validate()
+                        ->ifNotInArray(ClickStrategy::getClickStrategies())
+                        ->thenInvalid('Invalid click strategy %s. Must be one of ['.implode(', ', ClickStrategy::getClickStrategies()).']')
+                    ->end()
+                ->end()
             ->end()
         ;
 
