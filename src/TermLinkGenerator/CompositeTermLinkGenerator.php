@@ -19,7 +19,6 @@ final class CompositeTermLinkGenerator implements TermLinkGeneratorInterface
     public function addTermLinkGenerator(TermLinkGeneratorInterface $termLinkGenerator): void
     {
         $this->termLinkGenerators[] = $termLinkGenerator;
-        dump(get_class($termLinkGenerator));
     }
 
     /**
