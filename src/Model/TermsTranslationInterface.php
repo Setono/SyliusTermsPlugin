@@ -23,6 +23,16 @@ interface TermsTranslationInterface extends SlugAwareInterface, ResourceInterfac
     /**
      * @return string|null
      */
+    public function getExplanation(): ?string;
+
+    /**
+     * @param string|null $explanation
+     */
+    public function setExplanation(?string $explanation): void;
+
+    /**
+     * @return string|null
+     */
     public function getContent(): ?string;
 
     /**

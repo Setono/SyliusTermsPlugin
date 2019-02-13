@@ -23,6 +23,12 @@ final class TermsTranslationType extends AbstractResourceType
             ->add('slug', TextType::class, [
                 'label' => 'setono_sylius_terms.form.terms.slug',
             ])
+            ->add('explanation', TextType::class, [
+                'label' => 'setono_sylius_terms.form.terms.explanation',
+                'attr' => [
+                    'placeholder' => 'setono_sylius_terms.form.terms.explanation_placeholder'
+                ]
+            ])
             ->add('content', TextareaType::class, [
                 'required' => false,
                 'label' => 'setono_sylius_terms.form.terms.content',

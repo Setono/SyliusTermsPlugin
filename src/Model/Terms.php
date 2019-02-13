@@ -37,26 +37,41 @@ class Terms implements TermsInterface
      */
     protected $code;
 
+    /**
+     * @inheritdoc
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getChannel(): ?ChannelInterface
     {
         return $this->channel;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setChannel(?ChannelInterface $channel): void
     {
         $this->channel = $channel;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getCode(): ?string
     {
         return $this->code;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function setCode(?string $code): void
     {
         $this->code = $code;
@@ -97,6 +112,22 @@ class Terms implements TermsInterface
     /**
      * {@inheritdoc}
      */
+    public function getExplanation(): ?string
+    {
+        return $this->getTranslation()->getExplanation();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setExplanation(?string $explanation): void
+    {
+        $this->getTranslation()->setExplanation($explanation);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getContent(): ?string
     {
         return $this->getTranslation()->getContent();
@@ -105,12 +136,13 @@ class Terms implements TermsInterface
     /**
      * {@inheritdoc}
      */
-    public function setContent(?string $description): void
+    public function setContent(?string $content): void
     {
-        $this->getTranslation()->setContent($description);
+        $this->getTranslation()->setContent($content);
     }
 
     /**
+     * @param string|null $locale
      * @return TermsTranslationInterface
      */
     public function getTranslation(?string $locale = null): TranslationInterface

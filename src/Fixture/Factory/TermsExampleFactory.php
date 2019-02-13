@@ -116,6 +116,7 @@ class TermsExampleFactory extends AbstractExampleFactory
         $terms->setFallbackLocale($localeCode);
 
         $terms->setName($options['name']);
+        $terms->setExplanation($options['explanation']);
         $terms->setContent($options['content']);
         $terms->setSlug($options['slug'] ?: $this->termsSlugGenerator->generate($terms, $localeCode));
     }
@@ -140,6 +141,10 @@ class TermsExampleFactory extends AbstractExampleFactory
             ->setNormalizer('channel', LazyOption::findOneBy($this->channelRepository, 'code'))
 
             ->setDefault('slug', null)
+
+            ->setDefault('explanation', function (Options $options): string {
+                return $this->faker->text(60); // @todo add link to this text
+            })
 
             ->setDefault('content', function (Options $options): string {
                 return $this->faker->paragraph;

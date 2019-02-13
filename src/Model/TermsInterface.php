@@ -44,7 +44,17 @@ interface TermsInterface extends ResourceInterface, CodeAwareInterface, ChannelA
     public function setSlug(?string $slug): void;
 
     /**
-     * @param string|null $code
+     * @return string|null
+     */
+    public function getExplanation(): ?string;
+
+    /**
+     * @param string $explanation
+     */
+    public function setExplanation(string $explanation): void;
+
+    /**
+     * @return string|null
      */
     public function getContent(): ?string;
 
@@ -54,6 +64,7 @@ interface TermsInterface extends ResourceInterface, CodeAwareInterface, ChannelA
     public function setContent(string $content): void;
 
     /**
+     * @param string|null $locale
      * @return TermsTranslationInterface
      */
     public function getTranslation(?string $locale = null): TranslationInterface;

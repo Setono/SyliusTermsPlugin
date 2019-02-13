@@ -12,6 +12,7 @@
 
         <field name="name" type="string"/>
         <field name="slug" column="slug" type="string"/>
+        <field name="explanation" type="string"/>
         <field name="content" type="text"/>
 
         <unique-constraints>
