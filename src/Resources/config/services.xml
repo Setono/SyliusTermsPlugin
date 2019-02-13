@@ -9,16 +9,8 @@
         <import resource="services/forms_extensions.xml" />
         <import resource="services/generators.xml" />
         <import resource="services/menus.xml" />
+        <import resource="services/providers.xml" />
         <import resource="services/term_link_generators.xml" />
     </imports>
 
-    <services>
-
-        <service id="setono_sylius_terms.provider.terms" class="Setono\SyliusTermsPlugin\Provider\TermsProvider">
-            <argument type="service" id="setono_sylius_terms.repository.terms"/>
-            <argument type="service" id="sylius.context.channel.composite"/>
-            <argument type="service" id="sylius.context.locale.composite"/>
-        </service>
-
-    </services>
 </container>
