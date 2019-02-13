@@ -81,7 +81,7 @@ class TermsExampleFactory extends AbstractExampleFactory
     {
         $options = $this->optionsResolver->resolve($options);
 
-        /** @var TermsInterface $terms */
+        /** @var TermsInterface|null $terms */
         $terms = $this->termsRepository->findOneBy(['code' => $options['code']]);
 
         if (null === $terms) {
@@ -128,7 +128,7 @@ class TermsExampleFactory extends AbstractExampleFactory
     {
         $resolver
             ->setDefault('name', function (Options $options): string {
-                return $this->faker->words(3, true);
+                return implode(' ', (array) $this->faker->words(3));
             })
 
             ->setDefault('code', function (Options $options): string {

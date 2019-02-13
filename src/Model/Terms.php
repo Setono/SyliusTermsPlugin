@@ -28,12 +28,12 @@ class Terms implements TermsInterface
     protected $id;
 
     /**
-     * @var ChannelInterface
+     * @var ChannelInterface|null
      */
     protected $channel;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $code;
 

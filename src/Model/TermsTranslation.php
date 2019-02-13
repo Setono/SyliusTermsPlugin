@@ -81,7 +81,7 @@ class TermsTranslation extends AbstractTranslation implements TermsTranslationIn
     /**
      * @inheritdoc
      */
-    public function getExplanation(): string
+    public function getExplanation(): ?string
     {
         return $this->explanation;
     }

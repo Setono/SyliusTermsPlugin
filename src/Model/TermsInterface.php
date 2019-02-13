@@ -16,16 +16,6 @@ interface TermsInterface extends ResourceInterface, CodeAwareInterface, ChannelA
     /**
      * @return string|null
      */
-    public function getCode(): ?string;
-
-    /**
-     * @param string|null $code
-     */
-    public function setCode(?string $code): void;
-
-    /**
-     * @return string|null
-     */
     public function getName(): ?string;
 
     /**
