@@ -92,7 +92,7 @@ setono_sylius_terms_admin:
     prefix: /admin
 ```
 
-**Important**. As far as terms pages URLs looks like this
+**IMPORTANT**: As far as terms pages URLs looks like this
 `http://localhost:8000/en_US/terms-conditions`, make sure you don't add
 any terms with slugs like `products`, `taxons`, `login`, etc.
 
@@ -108,19 +108,10 @@ cp vendor/setono/sylius-terms-plugin/tests/Application/templates/bundles/SyliusS
 * To play with different configurations (click strategies, etc),
   create `config/packages/setono_sylius_terms.yaml` at application folder.
 
-  ```bash
-  cp tests/Application/config/packages/setono_sylius_terms.yaml.dist \
-  tests/Application/config/packages/setono_sylius_terms.yaml
+```bash
+$ cp tests/Application/config/packages/setono_sylius_terms.yaml.dist \
+tests/Application/config/packages/setono_sylius_terms.yaml
   ```
-
-# TODO
-
-    [+] Probably, we should allow MULTIPLE Channels to be assigned to every Terms
-    [+] Generate links from explanation
-    [+] Remove /terms/ from routing
-    [+] Add strategies handlers (new_window, modal)
-    [ ] Rework click strategies so we can add custom ones; remove ClickStrategy as it have fixed list of strategies
-    [ ] Extend ResourceTranslationsType and render only translations for locales from selected Channel
 
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
