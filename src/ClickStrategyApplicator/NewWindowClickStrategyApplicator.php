@@ -11,6 +11,6 @@ final class NewWindowClickStrategyApplicator implements ClickStrategyApplicatorI
      */
     public function applyClickStrategy(string $termsLink): string
     {
-        return preg_replace('/\<a/', '<a target="_blank"', $termsLink);
+        return (string) preg_replace('/\<a/', '<a target="_blank"', $termsLink);
     }
 }
