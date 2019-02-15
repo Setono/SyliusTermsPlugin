@@ -1,35 +1,32 @@
-<p align="center">
-    <a href="https://sylius.com" target="_blank">
-        <img src="https://demo.sylius.com/assets/shop/img/logo.png" />
-    </a>
-</p>
-
-<h1 align="center">SetonoSyliusTermsPlugin</h1>
-
-<p align="center">
+# Sylius terms and conditions plugin
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE)
 [![Build Status][ico-travis]][link-travis]
 [![Quality Score][ico-code-quality]][link-code-quality]
 
-Sylius terms and conditions plugin
-
 Will add the requirement to check off terms and conditions when the customer checks out
 
-</p>
+* [Screenshots](#screenshots)
+* [Installation](#installation)
 
 ## Screenshots
 
-**Shop**
+### Shop
+
+Before the customer can place order, he/she has to check the required terms
 
 ![Screenshot showing shop checkout complete page](docs/images/shop-checkout-complete.png)
 
-**Admin**
+### Admin
+
+Here is a list of terms. Notice the `terms_and_conditions` which is associated with multiple channels.
 
 ![Screenshot showing admin terms index page](docs/images/admin-terms-index.png)
 
 ![Screenshot showing admin terms update page](docs/images/admin-terms-update.png)
+
+The `Explanation` field is the text shown on the complete order page. Notice you can use a placeholder (`[link:Link text]`) to tell where the link should be.
 
 ![Screenshot showing admin terms translation update page](docs/images/admin-terms-update-translation.png)
 
