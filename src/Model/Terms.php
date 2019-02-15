@@ -41,7 +41,7 @@ class Terms implements TermsInterface
     protected $code;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getId(): ?int
     {
@@ -49,7 +49,7 @@ class Terms implements TermsInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getChannels(): Collection
     {
@@ -57,7 +57,7 @@ class Terms implements TermsInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function hasChannel(ChannelInterface $channel): bool
     {
@@ -65,7 +65,7 @@ class Terms implements TermsInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function addChannel(ChannelInterface $channel): void
     {
@@ -75,7 +75,7 @@ class Terms implements TermsInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function removeChannel(ChannelInterface $channel): void
     {
@@ -85,7 +85,7 @@ class Terms implements TermsInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getCode(): ?string
     {
@@ -93,7 +93,7 @@ class Terms implements TermsInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setCode(?string $code): void
     {
@@ -166,6 +166,7 @@ class Terms implements TermsInterface
 
     /**
      * @param string|null $locale
+     *
      * @return TermsTranslationInterface
      */
     public function getTranslation(?string $locale = null): TranslationInterface

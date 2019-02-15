@@ -22,7 +22,6 @@ final class CompositeClickStrategyApplicatorPass implements CompilerPassInterfac
         $definition = $container->getDefinition('setono_sylius_terms.click_strategy_applicator.composite');
         $tagName = 'setono_sylius_terms.click_strategy_applicator';
         foreach ($container->findTaggedServiceIds($tagName) as $clickStrategyApplicatorId => $attributes) {
-
             if (empty($attributes[0]['alias'])) {
                 throw new \RuntimeException(sprintf(
                     'Service %s tagged with %s should have alias',

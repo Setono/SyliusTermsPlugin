@@ -36,11 +36,11 @@ final class Configuration implements ConfigurationInterface
                 ->scalarNode('click_strategy')
                     ->info('What should happen when a user clicks the terms link on the Place order page? Either open a new window or show the terms directly on the page')
 
-                    # @todo Remove checks? To have ability to specify custom strategies with service tag aliases
+                    // @todo Remove checks? To have ability to specify custom strategies with service tag aliases
                     ->defaultValue(ClickStrategy::CLICK_STRATEGY_MODAL)
                     ->validate()
                         ->ifNotInArray(ClickStrategy::getClickStrategies())
-                        ->thenInvalid('Invalid click strategy %s. Must be one of ['.implode(', ', ClickStrategy::getClickStrategies()).']')
+                        ->thenInvalid('Invalid click strategy %s. Must be one of [' . implode(', ', ClickStrategy::getClickStrategies()) . ']')
                     ->end()
                 ->end()
             ->end()

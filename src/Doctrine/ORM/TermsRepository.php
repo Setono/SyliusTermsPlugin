@@ -48,5 +48,4 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
             ->getOneOrNullResult()
         ;
     }
-
 }

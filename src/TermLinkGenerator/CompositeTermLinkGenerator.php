@@ -61,7 +61,7 @@ final class CompositeTermLinkGenerator implements TermLinkGeneratorInterface
         }
 
         throw new \RuntimeException(sprintf(
-            "Unable to generate link at %s:%s",
+            'Unable to generate link at %s:%s',
             self::class,
             __FUNCTION__
         ));

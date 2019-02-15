@@ -24,6 +24,7 @@ final class TermSlugGenerator implements TermSlugGeneratorInterface
 
     /**
      * @param string $string
+     *
      * @return string
      */
     private function transliterate(string $string): string

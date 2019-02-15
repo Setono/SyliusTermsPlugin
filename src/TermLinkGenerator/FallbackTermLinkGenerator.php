@@ -41,6 +41,7 @@ final class FallbackTermLinkGenerator implements TermLinkGeneratorInterface
 
         $explanation = $terms->getTranslation($locale)->getExplanation();
         $link = $this->router->generate('setono_sylius_terms_show', ['slug' => $slug]);
+
         return sprintf(
             '<a href="%s" data-generator="fallback">%s</a>',
             $link,

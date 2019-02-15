@@ -55,6 +55,7 @@ interface TermsInterface extends ResourceInterface, CodeAwareInterface, Channels
 
     /**
      * @param string|null $locale
+     *
      * @return TermsTranslationInterface
      */
     public function getTranslation(?string $locale = null): TranslationInterface;

@@ -79,7 +79,7 @@ class TermsTranslation extends AbstractTranslation implements TermsTranslationIn
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getExplanation(): ?string
     {
@@ -87,7 +87,7 @@ class TermsTranslation extends AbstractTranslation implements TermsTranslationIn
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function setExplanation(?string $explanation): void
     {

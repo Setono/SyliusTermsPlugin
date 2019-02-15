@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Fixture\Factory;
 
+use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Generator\TermSlugGeneratorInterface;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
-use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepositoryInterface;
-use Sylius\Component\Core\Model\ChannelInterface;
-use Sylius\Component\Locale\Model\LocaleInterface;
-use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Bundle\CoreBundle\Fixture\Factory\AbstractExampleFactory;
 use Sylius\Bundle\CoreBundle\Fixture\OptionsResolver\LazyOption;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Formatter\StringInflector;
+use Sylius\Component\Locale\Model\LocaleInterface;
+use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;

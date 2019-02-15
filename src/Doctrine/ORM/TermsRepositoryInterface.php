@@ -18,6 +18,7 @@ interface TermsRepositoryInterface extends RepositoryInterface
 
     /**
      * @param ChannelInterface $channel
+     *
      * @return array|TermsInterface[]
      */
     public function findByChannel(ChannelInterface $channel): array;
@@ -25,6 +26,7 @@ interface TermsRepositoryInterface extends RepositoryInterface
     /**
      * @param ChannelInterface $channel
      * @param string $slug
+     *
      * @return TermsInterface|null
      */
     public function findOneByChannelAndSlug(ChannelInterface $channel, string $slug): ?TermsInterface;
