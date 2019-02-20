@@ -149,7 +149,7 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
     This means `jQuery` was loaded after plugin's javascript code.
     Plugin's javascript code injecting into main template via `sylius.shop.layout.javascripts`
     Sonata block. So check your custom `templates/bundles/SyliusShopBundle/layout.html.twig`
-    it should be like this:
+    it's `javascript` block should be like this:
     
     ```twig
     {# layout.html.twig #}
