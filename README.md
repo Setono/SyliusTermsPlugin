@@ -97,36 +97,46 @@ setono_sylius_terms_admin:
 any terms with slugs like `products`, `taxons`, `login`, etc.
 
 ### Step 5: Update your database schema
+
 ```bash
 $ php bin/console doctrine:migrations:diff
 $ php bin/console doctrine:migrations:migrate
 ```
 
 ### Step 6: Override checkout complete form
+
 Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig):
-```bash
-$ cp vendor/sylius/sylius/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig \
-templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
-```
 
-Add this form theme at the top:
-```twig
-{% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
-```
+* If you haven't your own `templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig` yet:
 
-and add this line where you want the terms:
-```twig
-{{ form_row(form.terms) }}
-```
+    ```bash
+    $ cp vendor/sylius/sylius/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig \
+    templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
+    ```
 
-The final view file should look something like this:
-```twig
-{# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
-{% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
+* If you already have it:
 
-{{ form_row(form.notes, {'attr': {'rows': 3}}) }}
-{{ form_row(form.terms) }}
-  ```
+    Add this form theme at the top:
+
+    ```twig
+    {% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
+    ```
+
+    and add this line where you want the terms:
+
+    ```twig
+    {{ form_row(form.terms) }}
+    ```
+
+    The final view file should look something like this:
+
+    ```twig
+    {# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
+    {% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
+
+    {{ form_row(form.notes, {'attr': {'rows': 3}}) }}
+    {{ form_row(form.terms) }}
+    ```
 
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
