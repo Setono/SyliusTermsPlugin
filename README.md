@@ -97,13 +97,30 @@ setono_sylius_terms_admin:
 any terms with slugs like `products`, `taxons`, `login`, etc.
 
 
-### Step 5: Add terms to checkout complete form
-Change the view file `templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig`
+### Step 5: Override checkout complete form
+Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig):
+```shell
+$ cp vendor/sylius/sylius/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig \
+templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
+```
+
+Add this form theme at the top:
 ```twig
-{% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %} {# This need to be added #}
+{% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
+```
+
+and add this line where you want the terms:
+```twig
+{{ form_row(form.terms) }}
+```
+
+The final view file should look something like this:
+```twig
+{# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
+{% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
 
 {{ form_row(form.notes, {'attr': {'rows': 3}}) }}
-{{ form_row(form.terms) }}  {# This need to be added #}
+{{ form_row(form.terms) }}
   ```
 
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square
