@@ -96,8 +96,12 @@ setono_sylius_terms_admin:
 `http://localhost:8000/en_US/terms-conditions`, make sure you don't add
 any terms with slugs like `products`, `taxons`, `login`, etc.
 
+### Step 5: Update your database schema
+```shell
+$ php bin/console doctrine:schema:update --force
+```
 
-### Step 5: Override checkout complete form
+### Step 6: Override checkout complete form
 Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig):
 ```shell
 $ cp vendor/sylius/sylius/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig \
