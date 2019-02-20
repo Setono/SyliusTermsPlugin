@@ -96,21 +96,31 @@ setono_sylius_terms_admin:
 `http://localhost:8000/en_US/terms-conditions`, make sure you don't add
 any terms with slugs like `products`, `taxons`, `login`, etc.
 
-### Step 5: Copy template
 
-```bash
-cp vendor/setono/sylius-terms-plugin/tests/Application/templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig \
-    templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
+### Step 5: Override checkout complete form
+Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig):
+```shell
+$ cp vendor/sylius/sylius/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig \
+templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
 ```
 
-# Development
+Add this form theme at the top:
+```twig
+{% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
+```
 
-* To play with different configurations (click strategies, etc),
-  create `config/packages/setono_sylius_terms.yaml` at application folder.
+and add this line where you want the terms:
+```twig
+{{ form_row(form.terms) }}
+```
 
-```bash
-$ cp tests/Application/config/packages/setono_sylius_terms.yaml.dist \
-tests/Application/config/packages/setono_sylius_terms.yaml
+The final view file should look something like this:
+```twig
+{# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
+{% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
+
+{{ form_row(form.notes, {'attr': {'rows': 3}}) }}
+{{ form_row(form.terms) }}
   ```
 
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square
