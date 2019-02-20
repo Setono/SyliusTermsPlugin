@@ -96,21 +96,14 @@ setono_sylius_terms_admin:
 `http://localhost:8000/en_US/terms-conditions`, make sure you don't add
 any terms with slugs like `products`, `taxons`, `login`, etc.
 
-### Step 5: Copy template
 
-```bash
-cp vendor/setono/sylius-terms-plugin/tests/Application/templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig \
-    templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
-```
+### Step 5: Add terms to checkout complete form
+Change the view file `templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig`
+```twig
+{% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %} {# This need to be added #}
 
-# Development
-
-* To play with different configurations (click strategies, etc),
-  create `config/packages/setono_sylius_terms.yaml` at application folder.
-
-```bash
-$ cp tests/Application/config/packages/setono_sylius_terms.yaml.dist \
-tests/Application/config/packages/setono_sylius_terms.yaml
+{{ form_row(form.notes, {'attr': {'rows': 3}}) }}
+{{ form_row(form.terms) }}  {# This need to be added #}
   ```
 
 [ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square
