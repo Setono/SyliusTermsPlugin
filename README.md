@@ -97,13 +97,14 @@ setono_sylius_terms_admin:
 any terms with slugs like `products`, `taxons`, `login`, etc.
 
 ### Step 5: Update your database schema
-```shell
-$ php bin/console doctrine:schema:update --force
+```bash
+$ php bin/console doctrine:migrations:diff
+$ php bin/console doctrine:migrations:migrate
 ```
 
 ### Step 6: Override checkout complete form
 Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig):
-```shell
+```bash
 $ cp vendor/sylius/sylius/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig \
 templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
 ```
