@@ -1,5 +1,5 @@
 setono_sylius_terms_show:
-    path: /{slug}
+    path: /terms/{slug}
     methods: [GET]
     defaults:
         _controller: setono_sylius_terms.controller.terms:showAction
@@ -12,7 +12,7 @@ setono_sylius_terms_show:
                     - $slug
 
 setono_sylius_terms_partial_show:
-    path: /{slug}/partial
+    path: /terms/{slug}/partial
     methods: [GET]
     defaults:
         _controller: setono_sylius_terms.controller.terms:showAction
