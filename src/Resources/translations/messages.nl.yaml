@@ -15,16 +15,16 @@ setono_sylius_terms:
                 configuration:
                     terms: Voorwaarden
 
-  form:
-      terms_accept:
-          label: Accepteer alle voorwaarden om de bestelling af te ronden
-          terms_should_be_accepted: "{{ name }} dient te worden geaccepteerd"
-      terms:
-          translations: Vertalingen
-          name: Naam
-          code: Code
-          slug: Slug
-          explanation: Uitleg
-          explanation_placeholder: Gebruik [link:Link text] om aan te geven waar in de tekst de link geplaatst dient te worden
-          content: Content
-          channels: Kanalen
+    form:
+        terms_accept:
+            label: Accepteer alle voorwaarden om de bestelling af te ronden
+            terms_should_be_accepted: "{{ name }} dient te worden geaccepteerd"
+        terms:
+            translations: Vertalingen
+            name: Naam
+            code: Code
+            slug: Slug
+            explanation: Uitleg
+            explanation_placeholder: Gebruik [link:Link text] om aan te geven waar in de tekst de link geplaatst dient te worden
+            content: Content
+            channels: Kanalen
