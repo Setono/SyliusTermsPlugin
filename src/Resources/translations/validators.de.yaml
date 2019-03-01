@@ -1,0 +1,17 @@
+setono_sylius_terms:
+  terms:
+    code:
+      not_blank: Geben Sie bitte einen Code ein für die Konditionen.
+      regex: Der Code für die Konditionen darf lediglich aus Buchstaben, Zahlen, - und _ bestehen.
+      unique: Der Code wird bereits verwendet.
+    name:
+      not_blank: Geben Sie bitte einen Namen ein.
+      max_length: Der Name darf nicht mehr als 255 Zeichen enthalten.
+    slug:
+      not_blank: Geben Sie bitte einen Slug ein.
+      unique: Der Slug wird bereits verwendet.
+    explanation:
+      not_blank: Geben Sie bitte eine Erklärung ein.
+      max_length: Die Erklärung darf nicht mehr als 255 Zeichen enthalten.
+    content:
+      not_blank: Geben Sie bitte einen Inhalt ein.
