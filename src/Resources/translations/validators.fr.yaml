@@ -9,7 +9,7 @@ setono_sylius_terms:
       max_length: Le nom ne doit pas comporter plus de 255 caractères.
     slug:
       not_blank: Veuillez svp saisir un identifiant (slug).
-      unique: Le slug est déjà utilisé.
+      unique: "L'identifiant est déjà utilisé."
     explanation:
       not_blank: Veuillez svp saisir une explication.
       max_length: L’explication ne doit pas comporter plus de 255 caractères.
