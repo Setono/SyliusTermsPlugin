@@ -14,4 +14,4 @@ setono_sylius_terms:
       not_blank: Veuillez svp saisir une explication.
       max_length: L’explication ne doit pas comporter plus de 255 caractères.
     content:
-      not_blank: Veuillez svp saisir un contenu.
+      not_blank: Veuillez saisir un contenu.
