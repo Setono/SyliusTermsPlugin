@@ -17,8 +17,8 @@ setono_sylius_terms:
 
   form:
     terms_accept:
-      label: Accepter toutes les conditions pour finaliser la commande
-      terms_should_be_accepted: "{{ name }} doit être accepté "
+      label: Veuillez accepter les conditions pour finaliser la commande
+      terms_should_be_accepted: "{{ name }} doit être accepté pour finaliser la commande"
     terms:
       translations: Traductions
       name: Nom
