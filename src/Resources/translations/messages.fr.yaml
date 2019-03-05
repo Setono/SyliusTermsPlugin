@@ -1,0 +1,30 @@
+setono_sylius_terms:
+  ui:
+    terms: Conditions
+    manage_terms: Gérer les conditions
+    new_terms: Nouvelles conditions
+    edit_terms: Modifier les conditions
+
+    code: Code
+    name: Nom
+    channels: Canaux
+
+  menu:
+    admin:
+      main:
+        configuration:
+          terms: Conditions
+
+  form:
+    terms_accept:
+      label: Veuillez accepter les conditions pour finaliser la commande
+      terms_should_be_accepted: "{{ name }} doit être accepté pour finaliser la commande"
+    terms:
+      translations: Traductions
+      name: Nom
+      code: Code
+      slug: Slug
+      explanation: Explication
+      explanation_placeholder: "Utiliser [link:Link text] pour indiquer l'endroit où le lien doit être placé dans le texte."
+      content: Contenu
+      channels: Canaux
