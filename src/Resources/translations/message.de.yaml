@@ -1,0 +1,30 @@
+setono_sylius_terms:
+  ui:
+    terms: Konditionen
+    manage_terms: Verwalte Konditionen
+    new_terms: Neue Konditionen
+    edit_terms: Bearbeite Konditionen
+
+    code: Code
+    name: Name
+    channels: Kanäle
+
+  menu:
+    admin:
+      main:
+        configuration:
+          terms: Konditionen
+
+  form:
+    terms_accept:
+      label: Akzeptieren Sie alle Konditionen um die Bestellung abzuschließen
+      terms_should_be_accepted: "{{ name }} muss akzeptiert warden"
+    terms:
+      translations: Übersetzungen
+      name: Name
+      code: Code
+      slug: Slug
+      explanation: Erklärung
+      explanation_placeholder: Verwenden Sie [link:Link text], um anzugeben wo im Text der Link eingefügt werden muss
+      content: Inhalt
+      channels: Kanäle
