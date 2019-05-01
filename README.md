@@ -92,10 +92,6 @@ setono_sylius_terms_admin:
     prefix: /admin
 ```
 
-**IMPORTANT**: As far as terms pages URLs looks like this
-`http://localhost:8000/en_US/terms-conditions`, make sure you don't add
-any terms with slugs like `products`, `taxons`, `login`, etc.
-
 ### Step 5: Update your database schema
 
 ```bash
