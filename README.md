@@ -116,30 +116,35 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
 
 * If you already have it:
 
-    Add this form theme at the top:
-
-    ```twig
-    {% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
-    ```
-
-    and add this line where you want the terms:
-
-    ```twig
-    {{ form_row(form.terms) }}
-    ```
-
-    The final view file should look something like this:
+    Add terms field (exactly this conditional way):
 
     ```twig
     {# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
-    {% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
+    {% if form.terms is defined %}
+        {% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
+        {{ form_row(form.terms) }}
+    {% endif %}
+    ```
+    
+    So the final template will look like this:
 
+    ```twig
+    {# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
     {{ form_row(form.notes, {'attr': {'rows': 3}}) }}
-    {{ form_row(form.terms) }}
+    {% if form.terms is defined %}
+        {% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
+        {{ form_row(form.terms) }}
+    {% endif %}
     ```
 
 # Troubleshooting
 
+* If you see `Neither the property "terms" nor one of the methods "terms()", "getterms()"/"isterms()"/"hasterms()" or "__call()" exist and have public access in class "Symfony\Component\Form\FormView".`
+
+    Then see https://github.com/Setono/SyliusTermsPlugin/issues/13
+    and double-check you added terms field at template like described
+    at `Override checkout complete form` section.
+    
 * If you see `Grid "setono_sylius_terms_terms" does not exists`
 
     Then you forgot to import config from `Step 3: Import config` section.
