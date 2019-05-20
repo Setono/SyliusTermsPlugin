@@ -2,25 +2,27 @@ sylius_fixtures:
     suites:
         default:
             fixtures:
-                
+
                 # Adding some extra locales/currencies/channels
                 # to show how terms working
-                
+
                 # Shipping/payment methods also required to be defined
                 # for each additional channel
-                
+
                 locale:
                     options:
                         locales:
                             # - en_US # already there
                             - de_DE
                             - fr_FR
-                        
+                            - uk_UA
+
                 currency:
                     options:
-                        currencies: 
+                        currencies:
                             # - USD # already there
                             - EUR
+                            - UAH
 
                 channel:
                     options:
@@ -36,7 +38,19 @@ sylius_fixtures:
                                     - EUR
                                 enabled: true
                                 hostname: "localhost"
-                                
+                            ua_web_store:
+                                name: "UA Web Store"
+                                code: UA_WEB
+                                locales:
+                                    - en_US
+                                    - uk_UA
+                                base_currency: USD
+                                currencies:
+                                    - USD
+                                    - UAH
+                                enabled: true
+                                hostname: "localhost"
+
                 payment_method:
                     options:
                         custom:
@@ -45,6 +59,7 @@ sylius_fixtures:
                                 name: "EU Bank transfer"
                                 channels:
                                     - EU_WEB
+                                    - UA_WEB
                                 enabled: true
 
                 shipping_method:
@@ -56,6 +71,7 @@ sylius_fixtures:
                                 enabled: true
                                 channels:
                                     - EU_WEB
+                                    - UA_WEB
 
                 setono_terms:
                     options:
