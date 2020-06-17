@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\ClickStrategyApplicator;
 
+use function Safe\preg_replace;
+
 final class ModalClickStrategyApplicator implements ClickStrategyApplicatorInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function applyClickStrategy(string $termsLink): string
     {
         // Dirty implementation, but...

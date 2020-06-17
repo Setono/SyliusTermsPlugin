@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\DependencyInjection\Compiler;
 
+use function Safe\sprintf;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 final class CompositeClickStrategyApplicatorPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (false === $container->hasDefinition('setono_sylius_terms.click_strategy_applicator.composite')) {

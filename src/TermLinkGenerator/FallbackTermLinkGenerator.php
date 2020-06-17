@@ -4,36 +4,26 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\TermLinkGenerator;
 
+use function Safe\sprintf;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
 
 final class FallbackTermLinkGenerator implements TermLinkGeneratorInterface
 {
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     private $router;
 
-    /**
-     * @param RouterInterface $router
-     */
     public function __construct(RouterInterface $router)
     {
         $this->router = $router;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isApplicable(TermsInterface $terms): bool
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function generate(TermsInterface $terms, ?string $locale = null): string
     {
         $slug = $terms->getTranslation($locale)->getSlug();

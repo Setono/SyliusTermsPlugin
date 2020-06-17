@@ -25,48 +25,30 @@ class Terms implements TermsInterface
         $this->initializeTranslationsCollection();
     }
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $id;
 
-    /**
-     * @var Collection|ChannelInterface[]
-     */
+    /** @var Collection|ChannelInterface[] */
     protected $channels;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $code;
 
-    /**
-     * {@inheritdoc}
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getChannels(): Collection
     {
         return $this->channels;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function hasChannel(ChannelInterface $channel): bool
     {
         return $this->channels->contains($channel);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function addChannel(ChannelInterface $channel): void
     {
         if (!$this->hasChannel($channel)) {
@@ -74,9 +56,6 @@ class Terms implements TermsInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function removeChannel(ChannelInterface $channel): void
     {
         if ($this->hasChannel($channel)) {
@@ -84,89 +63,57 @@ class Terms implements TermsInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getCode(): ?string
     {
         return $this->code;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setCode(?string $code): void
     {
         $this->code = $code;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getName(): ?string
     {
         return $this->getTranslation()->getName();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setName(?string $name): void
     {
         $this->getTranslation()->setName($name);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getSlug(): ?string
     {
         return $this->getTranslation()->getSlug();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setSlug(?string $slug): void
     {
         $this->getTranslation()->setSlug($slug);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExplanation(): ?string
     {
         return $this->getTranslation()->getExplanation();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setExplanation(?string $explanation): void
     {
         $this->getTranslation()->setExplanation($explanation);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getContent(): ?string
     {
         return $this->getTranslation()->getContent();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setContent(?string $content): void
     {
         $this->getTranslation()->setContent($content);
     }
 
     /**
-     * @param string|null $locale
-     *
      * @return TermsTranslationInterface
      */
     public function getTranslation(?string $locale = null): TranslationInterface
@@ -177,9 +124,6 @@ class Terms implements TermsInterface
         return $translation;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function createTranslation(): TermsTranslationInterface
     {
         return new TermsTranslation();

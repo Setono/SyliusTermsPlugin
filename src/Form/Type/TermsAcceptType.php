@@ -12,17 +12,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class TermsAcceptType extends AbstractType
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['terms_link'] = $options['terms_link'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
@@ -35,18 +29,12 @@ final class TermsAcceptType extends AbstractType
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return 'setono_sylius_terms_accept';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getParent()
+    public function getParent(): string
     {
         return CheckboxType::class;
     }

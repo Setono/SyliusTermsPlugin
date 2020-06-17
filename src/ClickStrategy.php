@@ -14,11 +14,9 @@ final class ClickStrategy
     }
 
     public const CLICK_STRATEGY_NEW_WINDOW = 'new_window';
+
     public const CLICK_STRATEGY_MODAL = 'modal';
 
-    /**
-     * @return array
-     */
     public static function getClickStrategies(): array
     {
         return [

@@ -11,19 +11,13 @@ use Sylius\Component\Channel\Model\ChannelInterface;
 
 class TermsRepository extends EntityRepository implements TermsRepositoryInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function createListQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder('o')
             ->leftJoin('o.translations', 'translation')
-            ;
+        ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function findByChannel(ChannelInterface $channel): array
     {
         return $this->createListQueryBuilder()
@@ -34,9 +28,6 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function findOneByChannelAndSlug(ChannelInterface $channel, string $slug): ?TermsInterface
     {
         return $this->createListQueryBuilder()
