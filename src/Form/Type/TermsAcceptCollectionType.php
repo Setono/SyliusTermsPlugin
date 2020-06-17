@@ -61,7 +61,7 @@ final class TermsAcceptCollectionType extends AbstractType
             }
 
             $builder->add((string) $terms->getCode(), TermsAcceptType::class, [
-                'label' => $terms->getName() ?: $terms->getCode(),
+                'label' => $terms->getName() ?? $terms->getCode(),
                 'terms_link' => $this->termLinkGenerator->generate($terms),
                 'required' => false,
                 'value' => true,

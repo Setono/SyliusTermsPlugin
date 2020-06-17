@@ -104,7 +104,7 @@ class TermsExampleFactory extends AbstractExampleFactory
         $terms->setName($options['name']);
         $terms->setExplanation($options['explanation']);
         $terms->setContent($options['content']);
-        $terms->setSlug($options['slug'] ?: $this->termsSlugGenerator->generate($terms, $localeCode));
+        $terms->setSlug($options['slug'] ?? $this->termsSlugGenerator->generate($terms, $localeCode));
     }
 
     protected function configureOptions(OptionsResolver $resolver): void
