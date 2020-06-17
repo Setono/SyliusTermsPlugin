@@ -1,0 +1,52 @@
+name: build
+on:
+    push: ~
+    pull_request: ~
+    schedule:
+        -   cron: 5 8 * * 3
+jobs:
+    checks:
+        name: PHP ${{ matrix.php-versions }}
+        runs-on: ${{ matrix.operating-system }}
+        strategy:
+            fail-fast: false
+            matrix:
+                operating-system: [ubuntu-latest]
+                php-versions: ['7.3', '7.4']
+        steps:
+            -   name: Start MySQL
+                run: sudo /etc/init.d/mysql start
+            -   name: Set environment variables
+                run: |
+                    echo "::set-env name=APP_ENV::test"
+                    echo "::set-env name=DATABASE_URL::mysql://root:root@127.0.0.1/sylius?serverVersion=5.7"
+            -   name: Checkout
+                uses: actions/checkout@v1
+            -   name: Setup PHP, with composer and extensions
+                uses: shivammathur/setup-php@master
+                with:
+                    php-version: ${{ matrix.php-versions }}
+                    extensions: intl
+            -   name: Install Composer dependencies
+                run: composer update --no-progress --no-suggest --prefer-dist --no-interaction
+            -   name: Validate composer
+                run: composer validate --strict
+            -   name: Check composer normalized
+                run: composer normalize --dry-run
+            -   name: Lint container
+                run: (cd tests/Application && bin/console lint:container)
+            -   name: Lint yaml files
+                run: (cd tests/Application && bin/console lint:yaml ../../src/Resources)
+            -   name: Lint twig files
+                run: (cd tests/Application && bin/console lint:twig ../../src/Resources)
+            -   name: Check style
+                run: composer check-style
+            -   name: Static analysis
+                run: composer analyse
+            -   name: Run phpspec
+                run: composer phpspec
+            -   name: Setup database and validate
+                run: |
+                    (cd tests/Application && bin/console doctrine:database:create -vvv)
+                    (cd tests/Application && bin/console doctrine:schema:create -vvv)
+                    (cd tests/Application && bin/console doctrine:schema:validate -vvv)
