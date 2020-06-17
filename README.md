@@ -1,8 +1,9 @@
 # Sylius terms and conditions plugin
 
-[![Latest Version on Packagist][ico-version]][link-packagist]
+[![Latest Version][ico-version]][link-packagist]
+[![Latest Unstable Version][ico-unstable-version]][link-packagist]
 [![Software License][ico-license]](LICENSE)
-[![Build Status][ico-travis]][link-travis]
+[![Build Status][ico-github-actions]][link-github-actions]
 [![Quality Score][ico-code-quality]][link-code-quality]
 
 Will add the requirement to check off terms and conditions when the customer checks out
@@ -166,11 +167,12 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
     {% endblock %}
     ```
 
-[ico-version]: https://img.shields.io/packagist/v/setono/sylius-terms-plugin.svg?style=flat-square
-[ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
-[ico-travis]: https://travis-ci.com/Setono/SyliusTermsPlugin.svg?branch=master
+[ico-version]: https://poser.pugx.org/setono/sylius-terms-plugin/v/stable
+[ico-unstable-version]: https://poser.pugx.org/setono/sylius-terms-plugin/v/unstable
+[ico-license]: https://poser.pugx.org/setono/sylius-terms-plugin/license
+[ico-github-actions]: https://github.com/Setono/SyliusTermsPlugin/workflows/build/badge.svg
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/Setono/SyliusTermsPlugin.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/setono/sylius-terms-plugin
-[link-travis]: https://travis-ci.com/Setono/SyliusTermsPlugin
+[link-github-actions]: https://github.com/Setono/SyliusTermsPlugin/actions
 [link-code-quality]: https://scrutinizer-ci.com/g/Setono/SyliusTermsPlugin
