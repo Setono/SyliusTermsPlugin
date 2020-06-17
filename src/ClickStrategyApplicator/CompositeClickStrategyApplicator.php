@@ -8,9 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 final class CompositeClickStrategyApplicator extends ArrayCollection implements ClickStrategyApplicatorInterface
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $clickStrategy;
 
     public function __construct(string $clickStrategy)
@@ -20,18 +18,11 @@ final class CompositeClickStrategyApplicator extends ArrayCollection implements 
         parent::__construct();
     }
 
-    /**
-     * @param ClickStrategyApplicatorInterface $clickStrategyApplicator
-     * @param string $alias
-     */
     public function addClickStrategyApplicator(ClickStrategyApplicatorInterface $clickStrategyApplicator, string $alias): void
     {
         $this->set($alias, $clickStrategyApplicator);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function applyClickStrategy(string $termsLink): string
     {
         if (!$this->containsKey($this->clickStrategy)) {

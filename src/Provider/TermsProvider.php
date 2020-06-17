@@ -9,20 +9,12 @@ use Sylius\Component\Channel\Context\ChannelContextInterface;
 
 final class TermsProvider implements TermsProviderInterface
 {
-    /**
-     * @var TermsRepositoryInterface
-     */
+    /** @var TermsRepositoryInterface */
     private $termsRepository;
 
-    /**
-     * @var ChannelContextInterface
-     */
+    /** @var ChannelContextInterface */
     private $channelContext;
 
-    /**
-     * @param TermsRepositoryInterface $termsRepository
-     * @param ChannelContextInterface $channelContext
-     */
     public function __construct(TermsRepositoryInterface $termsRepository, ChannelContextInterface $channelContext)
     {
         $this->termsRepository = $termsRepository;

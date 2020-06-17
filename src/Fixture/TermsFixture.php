@@ -9,17 +9,11 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
 final class TermsFixture extends AbstractResourceFixture
 {
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return 'setono_terms';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configureResourceNode(ArrayNodeDefinition $resourceNode): void
     {
         $resourceNode

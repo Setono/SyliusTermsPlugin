@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Fixture\Factory;
 
+use DateTimeInterface;
+use Safe\DateTime;
 use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Generator\TermSlugGeneratorInterface;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
@@ -19,39 +21,25 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TermsExampleFactory extends AbstractExampleFactory
 {
-    /**
-     * @var FactoryInterface
-     */
+    /** @var FactoryInterface */
     protected $termsFactory;
 
-    /**
-     * @var TermsRepositoryInterface
-     */
+    /** @var TermsRepositoryInterface */
     private $termsRepository;
 
-    /**
-     * @var RepositoryInterface
-     */
+    /** @var RepositoryInterface */
     private $localeRepository;
 
-    /**
-     * @var ChannelRepositoryInterface
-     */
+    /** @var ChannelRepositoryInterface */
     private $channelRepository;
 
-    /**
-     * @var TermSlugGeneratorInterface
-     */
+    /** @var TermSlugGeneratorInterface */
     private $termsSlugGenerator;
 
-    /**
-     * @var \Faker\Generator
-     */
+    /** @var \Faker\Generator */
     private $faker;
 
-    /**
-     * @var OptionsResolver
-     */
+    /** @var OptionsResolver */
     private $optionsResolver;
 
     public function __construct(
@@ -73,9 +61,6 @@ class TermsExampleFactory extends AbstractExampleFactory
         $this->configureOptions($this->optionsResolver);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function create(array $options = []): TermsInterface
     {
         $options = $this->optionsResolver->resolve($options);
@@ -119,12 +104,9 @@ class TermsExampleFactory extends AbstractExampleFactory
         $terms->setName($options['name']);
         $terms->setExplanation($options['explanation']);
         $terms->setContent($options['content']);
-        $terms->setSlug($options['slug'] ?: $this->termsSlugGenerator->generate($terms, $localeCode));
+        $terms->setSlug($options['slug'] ?? $this->termsSlugGenerator->generate($terms, $localeCode));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
@@ -154,11 +136,11 @@ class TermsExampleFactory extends AbstractExampleFactory
             ->setAllowedTypes('translations', ['array'])
 
             ->setDefault('created_at', null)
-            ->setAllowedTypes('created_at', ['null', 'string', \DateTimeInterface::class])
+            ->setAllowedTypes('created_at', ['null', 'string', DateTimeInterface::class])
             ->setNormalizer('created_at', self::getDateTimeNormalizer())
 
             ->setDefault('updated_at', null)
-            ->setAllowedTypes('updated_at', ['null', 'string', \DateTimeInterface::class])
+            ->setAllowedTypes('updated_at', ['null', 'string', DateTimeInterface::class])
             ->setNormalizer('updated_at', self::getDateTimeNormalizer())
         ;
     }
@@ -172,9 +154,6 @@ class TermsExampleFactory extends AbstractExampleFactory
         }
     }
 
-    /**
-     * @return \Closure
-     */
     private static function getDateTimeNormalizer(): \Closure
     {
         return function (Options $options, $previousValue) {
@@ -186,7 +165,7 @@ class TermsExampleFactory extends AbstractExampleFactory
                 return $previousValue;
             }
 
-            return new \DateTime($previousValue);
+            return new DateTime($previousValue);
         };
     }
 }

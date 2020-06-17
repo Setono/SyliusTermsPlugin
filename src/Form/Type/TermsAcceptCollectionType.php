@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Form\Type;
 
+use function Safe\sprintf;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\TermLinkGenerator\TermLinkGeneratorInterface;
 use Symfony\Component\Form\AbstractType;
@@ -17,20 +18,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class TermsAcceptCollectionType extends AbstractType
 {
-    /**
-     * @var TermLinkGeneratorInterface
-     */
+    /** @var TermLinkGeneratorInterface */
     private $termLinkGenerator;
 
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface */
     private $translator;
 
-    /**
-     * @param TermLinkGeneratorInterface $termLinkGenerator
-     * @param TranslatorInterface $translator
-     */
     public function __construct(
         TermLinkGeneratorInterface $termLinkGenerator,
         TranslatorInterface $translator
@@ -39,10 +32,7 @@ final class TermsAcceptCollectionType extends AbstractType
         $this->translator = $translator;
     }
 
-    /**
-     * @param FormEvent $event
-     */
-    public function checkAcceptedTerms(FormEvent $event)
+    public function checkAcceptedTerms(FormEvent $event): void
     {
         $form = $event->getForm();
         $options = $form->getConfig()->getOptions();
@@ -59,9 +49,6 @@ final class TermsAcceptCollectionType extends AbstractType
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addEventListener(FormEvents::POST_SUBMIT, [$this, 'checkAcceptedTerms']);
@@ -74,7 +61,7 @@ final class TermsAcceptCollectionType extends AbstractType
             }
 
             $builder->add((string) $terms->getCode(), TermsAcceptType::class, [
-                'label' => $terms->getName() ?: $terms->getCode(),
+                'label' => $terms->getName() ?? $terms->getCode(),
                 'terms_link' => $this->termLinkGenerator->generate($terms),
                 'required' => false,
                 'value' => true,
@@ -83,9 +70,6 @@ final class TermsAcceptCollectionType extends AbstractType
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
@@ -105,9 +89,6 @@ final class TermsAcceptCollectionType extends AbstractType
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return 'setono_sylius_terms_accept_collection';

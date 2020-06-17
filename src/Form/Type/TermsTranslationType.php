@@ -11,9 +11,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 final class TermsTranslationType extends AbstractResourceType
 {
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -36,9 +33,6 @@ final class TermsTranslationType extends AbstractResourceType
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix(): string
     {
         return 'setono_sylius_terms_terms_translation';

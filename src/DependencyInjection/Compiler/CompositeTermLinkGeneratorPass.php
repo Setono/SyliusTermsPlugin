@@ -12,9 +12,6 @@ final class CompositeTermLinkGeneratorPass implements CompilerPassInterface
 {
     use PriorityTaggedServiceTrait;
 
-    /**
-     * {@inheritdoc}
-     */
     public function process(ContainerBuilder $container): void
     {
         if (false === $container->hasDefinition('setono_sylius_terms.term_link_generator.composite')) {
