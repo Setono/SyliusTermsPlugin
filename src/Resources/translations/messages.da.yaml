@@ -1,0 +1,30 @@
+setono_sylius_terms:
+    ui:
+        terms: Betingelser
+        manage_terms: Administrer betingelser
+        new_terms: Opret betingelser
+        edit_terms: Rediger betingelser
+
+        code: Kode
+        name: Navn
+        channels: Kanaler
+        
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Betingelser
+
+    form:
+        terms_accept:
+            label: Accepter alle betingelser nedenfor for at gennemføre ordren
+            terms_should_be_accepted: "{{ name }} skal accepteres for at gennemføre ordren"
+        terms:
+            translations: Oversættelser
+            name: Navn
+            code: Kode
+            slug: Slug
+            explanation: Forklaring
+            explanation_placeholder: Brug [link:Linktekst] til at fortælle hvor linket skal være i teksten
+            content: Indhold
+            channels: Kanaler
