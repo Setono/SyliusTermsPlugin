@@ -14,7 +14,7 @@ final class TermSlugGenerator implements TermSlugGeneratorInterface
     {
         $name = $term->getTranslation($locale)->getName();
 
-        Assert::notEmpty($name, 'Cannot generate slug without a name.');
+        Assert::notNull($name, 'Cannot generate slug without a name.');
 
         return $this->transliterate($name);
     }

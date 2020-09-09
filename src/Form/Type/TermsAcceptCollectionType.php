@@ -39,7 +39,7 @@ final class TermsAcceptCollectionType extends AbstractType
 
         /** @var TermsInterface $terms */
         foreach ($options['terms'] as $terms) {
-            $termsField = $form->get($terms->getCode());
+            $termsField = $form->get((string) $terms->getCode());
             if (false === $termsField->getData()) {
                 $messageTemplate = $options['error_message'];
                 $messageOptions = ['{{ name }}' => $terms->getName()];
