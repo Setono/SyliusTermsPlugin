@@ -1,0 +1,20 @@
+{% extends '@SyliusShop/layout.html.twig' %}
+
+{%- block title -%}
+    {{ terms.name }}
+{%- endblock -%}
+
+{% block content %}
+    {% include '@SetonoSyliusTermsPlugin/Shop/Terms/Show/_breadcrumb.html.twig' %}
+
+    <div class="ui hidden divider"></div>
+
+    <div class="ui two column stackable grid">
+        <div class="column">
+            <h1>NOTICE: This is a special template only for the EULA US terms</h1>
+            <h1>{{ terms.name }}</h1>
+
+            {{ terms.content|raw }}
+        </div>
+    </div>
+{% endblock %}
