@@ -21,7 +21,7 @@ sylius_fixtures:
                     options:
                         currencies:
                             # - USD # already there
-                            - EUR
+                            # - EUR # already there
                             - UAH
 
                 channel:
@@ -84,7 +84,7 @@ sylius_fixtures:
                                 created_at: "-3 day"
                                 updated_at: now
                                 channels:
-                                  - US_WEB
+                                  - FASHION_WEB
                             terms_eula_eu:
                                 code: eula_eu
                                 name: EULA for EU
@@ -112,5 +112,5 @@ sylius_fixtures:
                                 created_at: "-3 day"
                                 updated_at: now
                                 channels:
-                                  - US_WEB
+                                  - FASHION_WEB
                                   - EU_WEB
