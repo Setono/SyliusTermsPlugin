@@ -79,7 +79,7 @@
         "phpunit": "vendor/bin/phpunit",
         "run": [
             "@ensure-env-copied",
-            "(cd tests/Application && bin/console server:run -d public -e ${SYMFONY_ENV:-'dev'})"
+            "(cd tests/Application && symfony serve -d)"
         ],
         "tests": [
             "@phpspec",
