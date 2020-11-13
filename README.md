@@ -4,7 +4,7 @@
 [![Latest Unstable Version][ico-unstable-version]][link-packagist]
 [![Software License][ico-license]](LICENSE)
 [![Build Status][ico-github-actions]][link-github-actions]
-[![Quality Score][ico-code-quality]][link-code-quality]
+[![Code Coverage][ico-code-coverage]][link-code-coverage]
 
 Will add the requirement to check off terms and conditions when the customer checks out
 
@@ -171,8 +171,8 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
 [ico-unstable-version]: https://poser.pugx.org/setono/sylius-terms-plugin/v/unstable
 [ico-license]: https://poser.pugx.org/setono/sylius-terms-plugin/license
 [ico-github-actions]: https://github.com/Setono/SyliusTermsPlugin/workflows/build/badge.svg
-[ico-code-quality]: https://img.shields.io/scrutinizer/g/Setono/SyliusTermsPlugin.svg?style=flat-square
+[ico-code-coverage]: https://codecov.io/gh/Setono/SyliusTermsPlugin/branch/master/graph/badge.svg
 
 [link-packagist]: https://packagist.org/packages/setono/sylius-terms-plugin
 [link-github-actions]: https://github.com/Setono/SyliusTermsPlugin/actions
-[link-code-quality]: https://scrutinizer-ci.com/g/Setono/SyliusTermsPlugin
+[link-code-coverage]: https://codecov.io/gh/Setono/SyliusTermsPlugin
