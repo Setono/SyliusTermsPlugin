@@ -15,6 +15,17 @@
     "string",
     "true",
     "void",
-    "Sylius\\Bundle\\CoreBundle\\Application\\SyliusPluginTrait"
+    "Sylius\\Bundle\\CoreBundle\\Application\\SyliusPluginTrait",
+    "Sylius\\Bundle\\ChannelBundle\\Form\\Type\\ChannelChoiceType",
+    "Sylius\\Bundle\\CoreBundle\\Fixture\\AbstractResourceFixture",
+    "Sylius\\Bundle\\CoreBundle\\Fixture\\Factory\\AbstractExampleFactory",
+    "Sylius\\Bundle\\CoreBundle\\Fixture\\OptionsResolver\\LazyOption",
+    "Sylius\\Bundle\\CoreBundle\\Form\\Type\\Checkout\\CompleteType",
+    "Sylius\\Bundle\\UiBundle\\Menu\\Event\\MenuBuilderEvent",
+    "Sylius\\Component\\Channel\\Context\\ChannelContextInterface",
+    "Sylius\\Component\\Channel\\Model\\ChannelInterface",
+    "Sylius\\Component\\Channel\\Model\\ChannelsAwareInterface",
+    "Sylius\\Component\\Channel\\Repository\\ChannelRepositoryInterface",
+    "Sylius\\Component\\Core\\Formatter\\StringInflector"
   ]
 }
