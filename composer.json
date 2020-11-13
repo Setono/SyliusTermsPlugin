@@ -24,11 +24,13 @@
         "symfony/config": "^4.4 || ^5.0",
         "symfony/dependency-injection": "^4.4 || ^5.0",
         "symfony/form": "^4.4 || ^5.0",
+        "symfony/http-foundation": "^4.4 || ^5.0.0",
         "symfony/http-kernel": "^4.4 || ^5.1.5",
         "symfony/options-resolver": "^4.4 || ^5.0",
         "symfony/routing": "^4.4 || ^5.0",
         "symfony/translation-contracts": "^1.1",
         "thecodingmachine/safe": "^1.1",
+        "twig/twig": "^2.14",
         "webmozart/assert": "^1.9"
     },
     "require-dev": {
