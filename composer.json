@@ -10,10 +10,16 @@
     "license": "MIT",
     "require": {
         "php": "^7.3",
+        "sylius/resource-bundle": "^1.6",
         "symfony/config": "^4.4 || ^5.0",
         "symfony/dependency-injection": "^4.4 || ^5.0",
+        "symfony/form": "^4.4 || ^5.0",
         "symfony/http-kernel": "^4.4 || ^5.1.5",
-        "thecodingmachine/safe": "^1.1"
+        "symfony/options-resolver": "^4.4 || ^5.0",
+        "symfony/routing": "^4.4 || ^5.0",
+        "symfony/translation-contracts": "^1.1",
+        "thecodingmachine/safe": "^1.1",
+        "webmozart/assert": "^1.9"
     },
     "require-dev": {
         "phpspec/phpspec": "^6.2",
