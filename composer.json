@@ -28,7 +28,7 @@
         "symfony/http-kernel": "^4.4 || ^5.1.5",
         "symfony/options-resolver": "^4.4 || ^5.0",
         "symfony/routing": "^4.4 || ^5.0",
-        "symfony/translation-contracts": "^1.1",
+        "symfony/translation-contracts": "^1.1 || ^2.0",
         "thecodingmachine/safe": "^1.1",
         "twig/twig": "^2.14",
         "webmozart/assert": "^1.9"
