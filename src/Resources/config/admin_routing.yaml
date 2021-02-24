@@ -2,7 +2,7 @@ setono_sylius_terms_admin_terms:
     resource: |
         alias: setono_sylius_terms.terms
         section: admin
-        templates: SyliusAdminBundle:Crud
+        templates: "@SyliusAdmin/Crud"
         redirect: update
         grid: setono_sylius_terms_terms
         vars:
