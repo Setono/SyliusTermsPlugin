@@ -134,6 +134,23 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
     {% endif %}
     ```
 
+# Step 7: Add Javascript
+
+    Add the javascript below in your file (require Jquery)
+
+    ```js
+    $('.setono-terms-modal-link').each(function () {
+        $(this).on('click', function (e) {
+          e.preventDefault();
+          var url = $(this).attr('href');
+          $.get(url, function (data) {
+            $('.info.modal .content').html(data);
+            $(".info.modal").modal({closable:true,observeChanges:true}).modal('show');
+          });
+        });
+    });
+    ```
+
 # Troubleshooting
 
 * If you see `Neither the property "terms" nor one of the methods "terms()", "getterms()"/"isterms()"/"hasterms()" or "__call()" exist and have public access in class "Symfony\Component\Form\FormView".`
