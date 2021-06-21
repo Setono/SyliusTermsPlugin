@@ -134,22 +134,22 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
     {% endif %}
     ```
 
-# Step 7: Add Javascript
+### Step 7: Add Javascript
 
-    Add the javascript below in your file (require Jquery)
+Add the javascript below in your file (require Jquery)
 
-    ```js
-    $('.setono-terms-modal-link').each(function () {
-        $(this).on('click', function (e) {
-          e.preventDefault();
-          var url = $(this).attr('href');
-          $.get(url, function (data) {
-            $('.info.modal .content').html(data);
-            $(".info.modal").modal({closable:true,observeChanges:true}).modal('show');
-          });
-        });
+```javascript
+$('.setono-terms-modal-link').each(function () {
+    $(this).on('click', function (e) {
+      e.preventDefault();
+      var url = $(this).attr('href');
+      $.get(url, function (data) {
+        $('.info.modal .content').html(data);
+        $(".info.modal").modal({closable:true,observeChanges:true}).modal('show');
+      });
     });
-    ```
+});
+```
 
 # Troubleshooting
 
