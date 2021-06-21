@@ -13,7 +13,7 @@
         "behat/transliterator": "^1.3",
         "doctrine/collections": "^1.6",
         "doctrine/orm": "^2.7",
-        "fzaninotto/faker": "^1.9",
+        "fakerphp/faker": "^1.10",
         "knplabs/knp-menu": "^3.1",
         "sylius/channel": "^1.0",
         "sylius/channel-bundle": "^1.0",
