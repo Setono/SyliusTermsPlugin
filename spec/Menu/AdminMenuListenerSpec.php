@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Setono\SyliusTermsPlugin\Menu;
 
 use Knp\Menu\ItemInterface;
-use Setono\SyliusTermsPlugin\Menu\AdminMenuListener;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Setono\SyliusTermsPlugin\Menu\AdminMenuListener;
 use Sylius\Bundle\UiBundle\Menu\Event\MenuBuilderEvent;
 
 class AdminMenuListenerSpec extends ObjectBehavior
