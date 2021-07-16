@@ -95,7 +95,7 @@
             "@ensure-schema-updated",
             "(cd tests/Application && bin/console sylius:fixtures:load --no-interaction -e ${SYMFONY_ENV:-'dev'})"
         ],
-        "phpspec": "vendor/bin/phpspec run -vvv",
+        "phpspec": "vendor/bin/phpspec run",
         "phpunit": "vendor/bin/phpunit",
         "run": [
             "@ensure-env-copied",
