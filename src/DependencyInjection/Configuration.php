@@ -24,12 +24,7 @@ final class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('setono_sylius_terms');
-        if (method_exists($treeBuilder, 'getRootNode')) {
-            $rootNode = $treeBuilder->getRootNode();
-        } else {
-            // BC layer for symfony/config 4.1 and older
-            $rootNode = $treeBuilder->root('setono_sylius_terms');
-        }
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->addDefaultsIfNotSet()
@@ -68,7 +63,6 @@ final class Configuration implements ConfigurationInterface
                                     ->addDefaultsIfNotSet()
                                     ->children()
                                         ->scalarNode('model')->defaultValue(Terms::class)->cannotBeEmpty()->end()
-                                        ->scalarNode('interface')->defaultValue(TermsInterface::class)->cannotBeEmpty()->end()
                                         ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
                                         ->scalarNode('repository')->defaultValue(TermsRepository::class)->cannotBeEmpty()->end()
                                         ->scalarNode('factory')->defaultValue(Factory::class)->end()
@@ -84,7 +78,6 @@ final class Configuration implements ConfigurationInterface
                                             ->addDefaultsIfNotSet()
                                             ->children()
                                                 ->scalarNode('model')->defaultValue(TermsTranslation::class)->cannotBeEmpty()->end()
-                                                ->scalarNode('interface')->defaultValue(TermsTranslationInterface::class)->cannotBeEmpty()->end()
                                                 ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
                                                 ->scalarNode('repository')->cannotBeEmpty()->end()
                                                 ->scalarNode('factory')->defaultValue(Factory::class)->end()
