@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Setono\SyliusTermsPlugin\Provider;
 
+use PhpSpec\ObjectBehavior;
 use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Provider\TermsProvider;
-use PhpSpec\ObjectBehavior;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Model\ChannelInterface;
 

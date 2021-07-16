@@ -3,9 +3,12 @@ on:
     push:
         branches:
             - "master"
-    pull_request: ~
-    schedule:
-        - cron: "5 8 * * 1"
+        paths-ignore:
+            - "*.md"
+    pull_request:
+        paths-ignore:
+            - "*.md"
+    workflow_dispatch: ~
 
 env:
     APP_ENV: "test"
@@ -21,7 +24,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "7.3"
                     - "7.4"
 
                 dependencies:
@@ -32,12 +34,11 @@ jobs:
                 uses: "actions/checkout@v2"
 
             -   name: "Setup PHP, with composer and extensions"
-                uses: "shivammathur/setup-php@v2"
+                uses: "shivammathur/setup-php@2.12.0"
                 with:
                     php-version: "${{ matrix.php-version }}"
                     extensions: "${{ env.PHP_EXTENSIONS }}"
                     coverage: "none"
-                    tools: "composer:v1"
 
             -   name: "Install composer dependencies"
                 uses: "ramsey/composer-install@v1"
@@ -74,15 +75,15 @@ jobs:
 
         steps:
             -   name: "Checkout"
-                uses: "actions/checkout@v2.3.2"
+                uses: "actions/checkout@v2"
 
             -   name: "Setup PHP, with composer and extensions"
-                uses: "shivammathur/setup-php@2.5.0"
+                uses: "shivammathur/setup-php@2.12.0"
                 with:
                     coverage: "none"
                     extensions: "${{ env.PHP_EXTENSIONS }}"
                     php-version: "${{ matrix.php-version }}"
-                    tools: "composer:v1, composer-require-checker, composer-unused"
+                    tools: "composer-require-checker, composer-unused"
 
             -   name: "Install composer dependencies"
                 uses: "ramsey/composer-install@v1"
@@ -103,7 +104,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "7.3"
                     - "7.4"
 
                 dependencies:
@@ -114,17 +114,19 @@ jobs:
                 uses: "actions/checkout@v2"
 
             -   name: "Setup PHP, with composer and extensions"
-                uses: "shivammathur/setup-php@v2"
+                uses: "shivammathur/setup-php@2.12.0"
                 with:
                     php-version: "${{ matrix.php-version }}"
                     extensions: "${{ env.PHP_EXTENSIONS }}"
                     coverage: "none"
-                    tools: "composer:v1"
 
             -   name: "Install composer dependencies"
                 uses: "ramsey/composer-install@v1"
                 with:
                     dependency-versions: "${{ matrix.dependencies }}"
+
+            -   name: "Cache warmup"
+                run: "(cd tests/Application && bin/console cache:warmup)"
 
             -   name: "Static analysis"
                 run: "composer analyse"
@@ -137,7 +139,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "7.3"
                     - "7.4"
 
                 dependencies:
@@ -149,20 +150,16 @@ jobs:
                 uses: "actions/checkout@v2"
 
             -   name: "Setup PHP, with composer and extensions"
-                uses: "shivammathur/setup-php@v2"
+                uses: "shivammathur/setup-php@2.12.0"
                 with:
                     php-version: "${{ matrix.php-version }}"
                     extensions: "${{ env.PHP_EXTENSIONS }}"
                     coverage: "none"
-                    tools: "composer:v1"
 
             -   name: "Install composer dependencies"
                 uses: "ramsey/composer-install@v1"
                 with:
                     dependency-versions: "${{ matrix.dependencies }}"
-
-            -   name: "Run phpspec"
-                run: "composer phpspec"
 
             -   name: "Run phpunit"
                 run: "composer phpunit"
@@ -175,10 +172,10 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "7.3"
                     - "7.4"
 
                 dependencies:
+                    - "lowest"
                     - "highest"
 
         steps:
@@ -189,12 +186,11 @@ jobs:
                 uses: "actions/checkout@v2"
 
             -   name: "Setup PHP, with composer and extensions"
-                uses: "shivammathur/setup-php@v2"
+                uses: "shivammathur/setup-php@2.12.0"
                 with:
                     php-version: "${{ matrix.php-version }}"
                     extensions: "${{ env.PHP_EXTENSIONS }}"
                     coverage: "none"
-                    tools: "composer:v1"
 
             -   name: "Install composer dependencies"
                 uses: "ramsey/composer-install@v1"
@@ -202,7 +198,7 @@ jobs:
                     dependency-versions: "${{ matrix.dependencies }}"
 
             -   name: "Lint container"
-                run: "(cd tests/Application && bin/console lint:container) || true" # todo Remove || true when https://github.com/doctrine/DoctrineMigrationsBundle/issues/352 is fixed
+                run: "(cd tests/Application && bin/console lint:container) || true"
 
             -   name: "Create database"
                 run: "(cd tests/Application && bin/console doctrine:database:create -vvv)"
@@ -212,6 +208,7 @@ jobs:
 
             -   name: "Validate Doctrine mapping"
                 run: "(cd tests/Application && bin/console doctrine:schema:validate -vvv)"
+
     code-coverage:
         name: "Code Coverage"
 
@@ -227,15 +224,14 @@ jobs:
 
         steps:
             -   name: "Checkout"
-                uses: "actions/checkout@v2.3.2"
+                uses: "actions/checkout@v2"
 
             -   name: "Setup PHP, with composer and extensions"
-                uses: "shivammathur/setup-php@2.5.0"
+                uses: "shivammathur/setup-php@2.12.0"
                 with:
                     coverage: "pcov"
                     extensions: "${{ env.PHP_EXTENSIONS }}"
                     php-version: "${{ matrix.php-version }}"
-                    tools: "composer:v1"
 
             -   name: "Set up problem matchers for phpunit/phpunit"
                 run: "echo \"::add-matcher::${{ runner.tool_cache }}/phpunit.json\""

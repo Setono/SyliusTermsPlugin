@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Setono\SyliusTermsPlugin\Form\Extension;
 
-use Setono\SyliusTermsPlugin\Form\Extension\CompleteTypeExtension;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Setono\SyliusTermsPlugin\Form\Extension\CompleteTypeExtension;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
 use Symfony\Component\Form\FormBuilderInterface;
