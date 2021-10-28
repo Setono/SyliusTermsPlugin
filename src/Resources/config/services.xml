@@ -14,6 +14,7 @@
         <import resource="services/menus.xml" />
         <import resource="services/providers.xml" />
         <import resource="services/term_link_generators.xml" />
+        <import resource="services/twig_extensions.xml" />
     </imports>
 
 </container>

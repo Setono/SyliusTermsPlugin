@@ -133,6 +133,91 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
         {{ form_row(form.terms) }}
     {% endif %}
     ```
+### Step 7: Override customer registration form
+
+Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/ShopBundle/Resources/views/Register/_form.html.twig):
+
+* If you haven't your own `templates/bundles/SyliusShopBundle/Register/_form.html.twig` yet:
+
+    ```bash
+    $ cp vendor/sylius/sylius/src/Sylius/Bundle/ShopBundle/Resources/views/Register/_form.html.twig \
+    templates/bundles/SyliusShopBundle/Register/_form.html.twig
+    ```
+* If you already have it:
+
+  Add terms field (exactly this conditional way):
+
+    ```twig
+    {# templates/bundles/SyliusShopBundle/Register/_form.html.twig#}
+    {% if form.terms is defined %}
+        {% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
+        {{ form_row(form.terms) }}
+    {% endif %}
+    ```
+  
+    So the final template will look like this:
+
+    ```twig
+    {# templates/bundles/SyliusShopBundle/Register/_form.html.twig#}
+    <h4 class="ui dividing header">{{ 'sylius.ui.personal_information'|trans }}</h4>
+    <div class="two fields">
+        {{ form_row(form.firstName, sylius_test_form_attribute('first-name')) }}
+        {{ form_row(form.lastName, sylius_test_form_attribute('last-name')) }}
+    </div>
+    {{ form_row(form.email, sylius_test_form_attribute('email')) }}
+    {{ form_row(form.phoneNumber, sylius_test_form_attribute('phone-number')) }}
+    {{ form_row(form.subscribedToNewsletter, sylius_test_form_attribute('subscribed-to-newsletter')) }}
+    <h4 class="ui dividing header">{{ 'sylius.ui.account_credentials'|trans }}</h4>
+    {{ form_row(form.user.plainPassword.first, sylius_test_form_attribute('password-first')) }}
+    {{ form_row(form.user.plainPassword.second, sylius_test_form_attribute('password-second')) }}
+    {% if form.terms is defined %}
+        {% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
+        {{ form_row(form.terms) }}
+    {% endif %}
+    ```
+
+### Step 8: Override footer block
+Override the [Sylius Template Block](https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/ShopBundle/Resources/views/Layout/Footer/Grid/_your_store.html.twig):
+
+* If you haven't your own `templates/bundles/SyliusShopBundle/Layout/Footer/Grid/_your_store.html.twig` yet:
+
+    ```bash
+    $ cp vendor/sylius/sylius/src/Sylius/Bundle/ShopBundle/Resources/views/Layout/Footer/Grid/_your_store.html.twig \
+    templates/bundles/SyliusShopBundle/Layout/Footer/Grid/_your_store.html.twig
+    ```
+
+* If you already have it:
+
+  Add terms field (exactly this conditional way):
+
+    ```twig
+    {# templates/bundles/SyliusShopBundle/Layout/Footer/Grid/_your_store.html.twig #}
+    {% set terms = footer_terms_view() %}
+    {% if terms is defined and terms is not null %}
+        {% for term in terms %}
+            {{ footer_term_link(term, sylius.localeCode) }}
+        {% endfor %} 
+    {% endif %}
+    ```
+
+  So the final template will look like this:
+
+    ```twig
+    {# templates/bundles/SyliusShopBundle/Layout/Footer/Grid/_your_store.html.twig #}
+    <div class="four wide column">
+        <h4 class="ui inverted header">{{ 'sylius.ui.your_store'|trans }}</h4>
+        <div class="ui inverted link list">
+            <a href="#" class="item">{{ 'sylius.ui.about'|trans }}</a>
+            {% set terms = footer_terms_view() %}
+            {% if terms is defined and terms is not null %}
+                {% for term in terms %}
+                    {{ footer_term_link(term, sylius.localeCode) }}
+                {% endfor %}
+            {% endif %}
+            <a href="{{ path('sylius_shop_contact_request') }}" class="item">{{ 'sylius.ui.contact_us'|trans }}</a>
+        </div>
+    </div>
+    ```
 
 # Troubleshooting
 

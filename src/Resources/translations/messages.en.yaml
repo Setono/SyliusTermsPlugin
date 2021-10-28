@@ -18,6 +18,7 @@ setono_sylius_terms:
     form:
         terms_accept:
             label: Accept all terms below to complete an order
+            label_registration_form: Accept all terms below to complete registration
             terms_should_be_accepted: "{{ name }} should be accepted"
         terms:
             translations: Translations
@@ -28,3 +29,9 @@ setono_sylius_terms:
             explanation_placeholder: Use [link:Link text] to tell where the link should be placed in the text
             content: Content
             channels: Channels
+            enabled: Enabled
+            position: Position
+            display_in_customer_signup: Customer registration form
+            display_in_checkout: Checkout summary form
+            display_in_footer: Footer
+            display_place: Display place

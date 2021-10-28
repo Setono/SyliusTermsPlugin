@@ -9,5 +9,10 @@
             <tag name="form.type_extension" extended_type="Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType" />
         </service>
 
+        <service id="Setono\SyliusTermsPlugin\Form\Extension\CustomerRegistrationTypeExtension">
+            <argument type="service" id="setono_sylius_terms.provider.terms"/>
+            <tag name="form.type_extension" extended_type="Sylius\Bundle\CoreBundle\Form\Type\Customer\CustomerRegistrationType" />
+        </service>
+
     </services>
 </container>

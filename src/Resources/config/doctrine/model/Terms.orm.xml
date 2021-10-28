@@ -11,6 +11,24 @@
             <generator strategy="AUTO" />
         </id>
 
+        <field name="enabled" column="enabled" type="boolean">
+            <options><option name="default">1</option></options>
+        </field>
+
+        <field name="position" column="position" type="integer">
+            <gedmo:sortable-position />
+        </field>
+
+        <field name="displayInFooter" column="display_in_footer" type="boolean">
+            <options><option name="default">0</option></options>
+        </field>
+        <field name="displayInCheckout" column="display_in_checkout" type="boolean">
+            <options><option name="default">1</option></options>
+        </field>
+        <field name="displayInCustomerSignup" column="display_in_customer_signup" type="boolean">
+            <options><option name="default">0</option></options>
+        </field>
+
         <field name="createdAt" column="created_at" type="datetime">
             <gedmo:timestampable on="create"/>
         </field>

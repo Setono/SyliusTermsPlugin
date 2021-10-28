@@ -27,4 +27,25 @@ final class TermsProvider implements TermsProviderInterface
             $this->channelContext->getChannel()
         );
     }
+
+    public function getEnabledTermsForCompleteForm(): array
+    {
+        return $this->termsRepository->findByChannelAndEnabledForCompleteForm(
+            $this->channelContext->getChannel()
+        );
+    }
+
+    public function getEnabledTermsForCustomerRegistrationForm(): array
+    {
+        return $this->termsRepository->findByChannelAndEnabledForCustomerRegistrationForm(
+            $this->channelContext->getChannel()
+        );
+    }
+
+    public function getEnabledTermsForFooterTemplate(): array
+    {
+        return $this->termsRepository->findByChannelAndEnabledForFooterTemplate(
+            $this->channelContext->getChannel()
+        );
+    }
 }

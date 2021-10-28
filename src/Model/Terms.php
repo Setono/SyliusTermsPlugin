@@ -8,11 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Resource\Model\TimestampableTrait;
+use Sylius\Component\Resource\Model\ToggleableTrait;
 use Sylius\Component\Resource\Model\TranslatableTrait;
 use Sylius\Component\Resource\Model\TranslationInterface;
 
 class Terms implements TermsInterface
 {
+    use ToggleableTrait;
     use TimestampableTrait;
     use TranslatableTrait {
         __construct as private initializeTranslationsCollection;
@@ -33,6 +35,18 @@ class Terms implements TermsInterface
 
     /** @var string|null */
     protected $code;
+
+    /** @var int|null */
+    private $position;
+
+    /** @var bool */
+    private $displayInFooter = false;
+
+    /** @var bool */
+    private $displayInCheckout = true;
+
+    /** @var bool */
+    private $displayInCustomerSignup = false;
 
     public function getId(): ?int
     {
@@ -71,6 +85,45 @@ class Terms implements TermsInterface
     public function setCode(?string $code): void
     {
         $this->code = $code;
+    }
+
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(?int $position): void
+    {
+        $this->position = $position;
+    }
+
+    public function isDisplayInFooter(): bool
+    {
+        return $this->displayInFooter;
+    }
+    public function setDisplayInFooter(bool $displayInFooter): void
+    {
+        $this->displayInFooter = $displayInFooter;
+    }
+
+    public function isDisplayInCheckout(): bool
+    {
+        return $this->displayInCheckout;
+    }
+
+    public function setDisplayInCheckout(bool $displayInCheckout): void
+    {
+        $this->displayInCheckout = $displayInCheckout;
+    }
+
+    public function isDisplayInCustomerSignup(): bool
+    {
+        return $this->displayInCustomerSignup;
+    }
+
+    public function setDisplayInCustomerSignup(bool $displayInCustomerSignup): void
+    {
+        $this->displayInCustomerSignup = $displayInCustomerSignup;
     }
 
     public function getName(): ?string

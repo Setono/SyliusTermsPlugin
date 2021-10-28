@@ -1,0 +1,13 @@
+<div class="four wide column">
+    <h4 class="ui inverted header">{{ 'sylius.ui.your_store'|trans }}</h4>
+    <div class="ui inverted link list">
+        <a href="#" class="item">{{ 'sylius.ui.about'|trans }}</a>
+        {% set terms = footer_terms_view() %}
+        {% if terms is defined and terms is not null %}
+            {% for term in terms %}
+                {{ footer_term_link(term, sylius.localeCode) }}
+            {% endfor %}
+        {% endif %}
+        <a href="{{ path('sylius_shop_contact_request') }}" class="item">{{ 'sylius.ui.contact_us'|trans }}</a>
+    </div>
+</div>

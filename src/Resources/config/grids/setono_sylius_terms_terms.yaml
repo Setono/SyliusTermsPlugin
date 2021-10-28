@@ -12,6 +12,11 @@ sylius_grid:
                 name:
                     type: string
                     label: setono_sylius_terms.ui.name
+                enabled:
+                    type: twig
+                    label: sylius.ui.enabled
+                    options:
+                        template: "@SyliusUi/Grid/Field/enabled.html.twig"
                 channels:
                     type: twig
                     label: setono_sylius_terms.ui.channels
