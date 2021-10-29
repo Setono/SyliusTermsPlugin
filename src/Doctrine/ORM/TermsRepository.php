@@ -28,7 +28,7 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
         ;
     }
 
-    public function findByChannelAndEnabled(ChannelInterface $channel): array
+    public function findEnabledByChannel(ChannelInterface $channel): array
     {
         return $this->createListQueryBuilder()
             ->andWhere(':channel MEMBER OF o.channels')
@@ -41,7 +41,7 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
             ;
     }
 
-    public function findByChannelAndEnabledForCompleteForm(ChannelInterface $channel): array
+    public function findEnabledByChannelForCompleteForm(ChannelInterface $channel): array
     {
         return $this->createListQueryBuilder()
             ->andWhere(':channel MEMBER OF o.channels')
@@ -56,7 +56,7 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
             ;
     }
 
-    public function findByChannelAndEnabledForCustomerRegistrationForm(ChannelInterface $channel): array
+    public function findEnabledByChannelForCustomerRegistrationForm(ChannelInterface $channel): array
     {
         return $this->createListQueryBuilder()
             ->andWhere(':channel MEMBER OF o.channels')
@@ -71,7 +71,7 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
             ;
     }
 
-    public function findByChannelAndEnabledForFooterTemplate(ChannelInterface $channel): array
+    public function findEnabledByChannelForFooterTemplate(ChannelInterface $channel): array
     {
         return $this->createListQueryBuilder()
             ->andWhere(':channel MEMBER OF o.channels')

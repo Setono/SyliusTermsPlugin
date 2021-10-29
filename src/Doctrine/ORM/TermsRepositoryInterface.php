@@ -18,13 +18,13 @@ interface TermsRepositoryInterface extends RepositoryInterface
      */
     public function findByChannel(ChannelInterface $channel): array;
 
-    public function findByChannelAndEnabled(ChannelInterface $channel): array;
+    public function findEnabledByChannel(ChannelInterface $channel): array;
 
-    public function findByChannelAndEnabledForCompleteForm(ChannelInterface $channel): array;
+    public function findEnabledByChannelForCompleteForm(ChannelInterface $channel): array;
 
-    public function findByChannelAndEnabledForCustomerRegistrationForm(ChannelInterface $channel): array;
+    public function findEnabledByChannelForCustomerRegistrationForm(ChannelInterface $channel): array;
 
-    public function findByChannelAndEnabledForFooterTemplate(ChannelInterface $channel): array;
+    public function findEnabledByChannelForFooterTemplate(ChannelInterface $channel): array;
 
     public function findOneByChannelAndSlug(ChannelInterface $channel, string $slug): ?TermsInterface;
 }
