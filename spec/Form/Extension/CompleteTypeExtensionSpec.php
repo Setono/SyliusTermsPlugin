@@ -14,7 +14,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 class CompleteTypeExtensionSpec extends ObjectBehavior
 {
     private const OPTIONS = [
-        'validation_groups' => ['sylius_checkout_complete']
+        'validation_groups' => ['sylius_checkout_complete'],
     ];
 
     public function let(TermsProviderInterface $termsProvider, TermsInterface $terms): void
