@@ -43,7 +43,10 @@
         "symfony/web-profiler-bundle": "^5.0"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "symfony/thanks": false
+        }
     },
     "extra": {
         "branch-alias": {
