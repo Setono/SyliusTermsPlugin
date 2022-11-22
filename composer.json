@@ -45,7 +45,8 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "symfony/thanks": false
+            "symfony/thanks": false,
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
     "extra": {
