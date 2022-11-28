@@ -113,6 +113,7 @@ class TermsExampleFactory extends AbstractExampleFactory
             ->setDefault('name', function (Options $options): string {
                 /** @var string[] $words */
                 $words = (array) $this->faker->words(3);
+
                 return implode(' ', $words);
             })
 
