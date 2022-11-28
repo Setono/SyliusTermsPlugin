@@ -11,11 +11,11 @@ final class CompositeClickStrategyApplicator extends ArrayCollection implements 
     /** @var string */
     private $clickStrategy;
 
-    public function __construct(string $clickStrategy)
+    public function __construct(array $elements = [], string $clickStrategy = '')
     {
         $this->clickStrategy = $clickStrategy;
 
-        parent::__construct();
+        parent::__construct($elements);
     }
 
     public function addClickStrategyApplicator(ClickStrategyApplicatorInterface $clickStrategyApplicator, string $alias): void
