@@ -16,7 +16,7 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension
         $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
 
-        $container->setParameter('setono_sylius_terms.click_strategy', $config['click_strategy']);
+        $container->setParameter('setono_sylius_terms.click_strategy', (string) $config['click_strategy']);
 
         $loader->load('services.xml');
 

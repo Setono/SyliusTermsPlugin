@@ -111,7 +111,10 @@ class TermsExampleFactory extends AbstractExampleFactory
     {
         $resolver
             ->setDefault('name', function (Options $options): string {
-                return implode(' ', (array) $this->faker->words(3));
+                /** @var string[] $words */
+                $words = (array) $this->faker->words(3);
+
+                return implode(' ', $words);
             })
 
             ->setDefault('code', function (Options $options): string {

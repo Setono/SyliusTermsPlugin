@@ -14,8 +14,10 @@ use Sylius\Component\Resource\Model\TranslationInterface;
 class Terms implements TermsInterface
 {
     use TimestampableTrait;
+
     use TranslatableTrait {
         __construct as private initializeTranslationsCollection;
+
         getTranslation as private doGetTranslation;
     }
 

@@ -11,6 +11,9 @@ final class CompositeClickStrategyApplicator extends ArrayCollection implements 
     /** @var string */
     private $clickStrategy;
 
+    /**
+     * @psalm-suppress ConstructorSignatureMismatch, ImplementedParamTypeMismatch, InvalidPropertyAssignmentValue
+     */
     public function __construct(string $clickStrategy)
     {
         $this->clickStrategy = $clickStrategy;

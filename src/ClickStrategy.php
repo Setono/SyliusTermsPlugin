@@ -17,6 +17,9 @@ final class ClickStrategy
 
     public const CLICK_STRATEGY_MODAL = 'modal';
 
+    /**
+     * @return string[]
+     */
     public static function getClickStrategies(): array
     {
         return [

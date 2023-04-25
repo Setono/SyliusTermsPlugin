@@ -1,13 +1,13 @@
 {
     "name": "setono/sylius-terms-plugin",
-    "type": "sylius-plugin",
     "description": "Sylius terms and conditions plugin",
+    "license": "MIT",
+    "type": "sylius-plugin",
     "keywords": [
         "sylius",
         "sylius-plugin",
         "terms"
     ],
-    "license": "MIT",
     "require": {
         "php": ">=7.4",
         "behat/transliterator": "^1.3",
@@ -15,16 +15,16 @@
         "doctrine/orm": "^2.7",
         "knplabs/knp-menu": "^3.1",
         "sylius/resource-bundle": "^1.6",
-        "symfony/config": "^4.4 || ^5.0",
-        "symfony/dependency-injection": "^4.4 || ^5.0",
-        "symfony/form": "^4.4 || ^5.0",
-        "symfony/http-foundation": "^4.4 || ^5.0.0",
-        "symfony/http-kernel": "^4.4 || ^5.1.5",
-        "symfony/options-resolver": "^4.4 || ^5.0",
-        "symfony/routing": "^4.4 || ^5.0",
+        "symfony/config": "^4.4 || ^5.4 || ^6.0",
+        "symfony/dependency-injection": "^4.4 || ^5.4 || ^6.0",
+        "symfony/form": "^4.4 || ^5.4 || ^6.0",
+        "symfony/http-foundation": "^4.4 || ^5.4 || ^6.0",
+        "symfony/http-kernel": "^4.4 || ^5.4 || ^6.0",
+        "symfony/options-resolver": "^4.4 || ^5.4 || ^6.0",
+        "symfony/routing": "^4.4 || ^5.4 || ^6.0",
         "symfony/translation-contracts": "^1.1 || ^2.4",
         "thecodingmachine/safe": "^1.1",
-        "twig/twig": "^2.14",
+        "twig/twig": "^2.14 || ^3.3",
         "webmozart/assert": "^1.9"
     },
     "require-dev": {
@@ -35,21 +35,14 @@
         "psalm/plugin-symfony": "^2.4",
         "roave/security-advisories": "dev-latest",
         "setono/code-quality-pack": "^2.1.1",
-        "sylius/sylius": "~1.7.0",
+        "sylius/sylius": "~1.10.14",
         "symfony/debug-bundle": "^5.1",
         "symfony/dotenv": "^5.1",
         "symfony/intl": "^4.4 || ^5.0",
         "symfony/proxy-manager-bridge": "^4.4.25",
         "symfony/web-profiler-bundle": "^5.0"
     },
-    "config": {
-        "sort-packages": true
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.1-dev"
-        }
-    },
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Setono\\SyliusTermsPlugin\\": "src/"
@@ -63,7 +56,19 @@
             "tests/Application/Kernel.php"
         ]
     },
-    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "symfony/thanks": false,
+            "dealerdirect/phpcodesniffer-composer-installer": false,
+            "ergebnis/composer-normalize": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.1-dev"
+        }
+    },
     "scripts": {
         "all": [
             "@checks",
@@ -89,7 +94,7 @@
         "ensure-env-dev-copied": "(cd tests/Application && ([[ -f .env.dev.local ]] || cp .env  .env.dev.local))",
         "ensure-env-test-copied": "(cd tests/Application && ([[ -f .env.test.local ]] || cp .env.test .env.test.local))",
         "ensure-schema-updated": "composer ensure-env-copied && (cd tests/Application && bin/console doctrine:schema:update --force -e ${SYMFONY_ENV:-'dev'})",
-        "ensure-test-container-exists": "[[ -f tests/Application/var/cache/test/ApplicationTests_Setono_SyliusTermsPlugin_Application_KernelTestDebugContainer.xml ]] || tests/Application/bin/console cache:warmup --env=test",
+        "ensure-test-container-exists": "[[ -f tests/Application/var/cache/test/Tests_Setono_SyliusTermsPlugin_Application_KernelTestDebugContainer.xml ]] || tests/Application/bin/console cache:warmup --env=test",
         "ensure-vendors-installed": "[[ -f vendor/autoload.php ]] || php -d memory_limit=-1 /usr/local/bin/composer install",
         "fix-style": "ecs check --fix",
         "fixtures": [
