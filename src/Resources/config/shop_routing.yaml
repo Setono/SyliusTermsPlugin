@@ -8,7 +8,7 @@ setono_sylius_terms_partial_show:
     path: /terms/{slug}/partial
     methods: [GET]
     defaults:
-        _controller: setono_sylius_terms.controller.terms:showAction
+        _controller: setono_sylius_terms.controller.terms::showAction
         _sylius:
             template: "@SetonoSyliusTermsPlugin/Shop/Terms/partialShow.html.twig"
             repository:
