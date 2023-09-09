@@ -158,7 +158,7 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
     
     {% block javascripts %}
         // We expect jquery to be loaded here
-        {% include '@SyliusUi/_javascripts.html.twig' with {'path': 'assets/shop/js/app.js'} %}
+        {% include '@SyliusUi/_javascripts.html.twig' with {'path': 'build/shop/shop-entry.js'} %}
     
         // But if you have it as separate script - just make sure
         // it placed before `sylius.shop.layout.javascripts` sonata block
