@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Generator;
 
-use Behat\Transliterator\Transliterator;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Webmozart\Assert\Assert;
 
 final class TermSlugGenerator implements TermSlugGeneratorInterface
@@ -16,12 +16,6 @@ final class TermSlugGenerator implements TermSlugGeneratorInterface
 
         Assert::notNull($name, 'Cannot generate slug without a name.');
 
-        return $this->transliterate($name);
-    }
-
-    private function transliterate(string $string): string
-    {
-        // Manually replacing apostrophes since Transliterator started removing them at v1.2.
-        return Transliterator::transliterate(str_replace('\'', '-', $string));
+        return (new AsciiSlugger())->slug($name)->toString();
     }
 }
