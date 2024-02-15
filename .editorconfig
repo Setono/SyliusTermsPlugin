@@ -20,3 +20,6 @@ indent_style = tab
 
 [*.{yaml,yml}]
 trim_trailing_whitespace = false
+
+[{webpack.config.js,.eslintrc.js}]
+indent_size = 2
