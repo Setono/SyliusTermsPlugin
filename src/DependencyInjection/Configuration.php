@@ -25,7 +25,7 @@ final class Configuration implements ConfigurationInterface
         /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $treeBuilder->getRootNode();
 
-        /** @psalm-suppress UndefinedInterfaceMethod */
+        /** @psalm-suppress UndefinedInterfaceMethod,PossiblyNullReference */
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
@@ -46,7 +46,7 @@ final class Configuration implements ConfigurationInterface
 
     private function addResourcesSection(ArrayNodeDefinition $node): void
     {
-        /** @psalm-suppress UndefinedInterfaceMethod */
+        /** @psalm-suppress UndefinedInterfaceMethod,PossiblyNullReference */
         $node
             ->children()
                 ->arrayNode('resources')

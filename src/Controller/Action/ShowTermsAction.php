@@ -13,20 +13,11 @@ use Twig\Error\LoaderError;
 
 final class ShowTermsAction
 {
-    /** @var TermsRepositoryInterface */
-    private $termsRepository;
-
-    /** @var ChannelContextInterface */
-    private $channelContext;
-
-    /** @var Environment */
-    private $twig;
-
-    public function __construct(TermsRepositoryInterface $termsRepository, ChannelContextInterface $channelContext, Environment $twig)
-    {
-        $this->termsRepository = $termsRepository;
-        $this->channelContext = $channelContext;
-        $this->twig = $twig;
+    public function __construct(
+        private readonly TermsRepositoryInterface $termsRepository,
+        private readonly ChannelContextInterface $channelContext,
+        private readonly Environment $twig,
+    ) {
     }
 
     public function __invoke(string $slug): Response
@@ -40,10 +31,10 @@ final class ShowTermsAction
 
         try {
             // here we test if the user has placed a special template for this particular set of terms
-            // if not it throws an exception and we will use the default template
+            // if not it throws an exception, and we will use the default template
             $template = $this->twig->load(sprintf(
                 '@SetonoSyliusTermsPlugin/Shop/Terms/Show/%s.html.twig',
-                $terms->getCode(),
+                (string) $terms->getCode(),
             ));
         } catch (LoaderError $e) {
             $template = $this->twig->load('@SetonoSyliusTermsPlugin/Shop/Terms/show.html.twig');
