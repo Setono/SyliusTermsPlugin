@@ -8,13 +8,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 final class CompositeClickStrategyApplicator extends ArrayCollection implements ClickStrategyApplicatorInterface
 {
-    /** @var string */
-    private $clickStrategy;
-
-    public function __construct(string $clickStrategy)
+    /** @psalm-suppress ConstructorSignatureMismatch,ImplementedParamTypeMismatch */
+    public function __construct(private readonly string $clickStrategy)
     {
-        $this->clickStrategy = $clickStrategy;
-
         parent::__construct();
     }
 

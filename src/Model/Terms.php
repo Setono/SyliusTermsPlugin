@@ -19,20 +19,19 @@ class Terms implements TermsInterface
         getTranslation as private doGetTranslation;
     }
 
+    protected ?int $id = null;
+
+    /** @var Collection<array-key, ChannelInterface> */
+    protected Collection $channels;
+
+    protected ?string $code = null;
+
     public function __construct()
     {
         $this->channels = new ArrayCollection();
+
         $this->initializeTranslationsCollection();
     }
-
-    /** @var int */
-    protected $id;
-
-    /** @var Collection|ChannelInterface[] */
-    protected $channels;
-
-    /** @var string|null */
-    protected $code;
 
     public function getId(): ?int
     {

@@ -4,7 +4,7 @@
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     phpVersion="8.1"
-    errorLevel="1"
+    errorLevel="4"
     findUnusedBaselineEntry="false"
     findUnusedPsalmSuppress="false"
     findUnusedCode="false"
@@ -28,4 +28,7 @@
         <function name="var_dump"/>
         <function name="print_r"/>
     </forbiddenFunctions>
+    <issueHandlers>
+        <MissingTemplateParam errorLevel="suppress"/> <!-- At some point we will add template params, but it's difficult when supporting multiple versions of Sylius/SF/Doctrine etc -->
+    </issueHandlers>
 </psalm>

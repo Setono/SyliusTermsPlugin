@@ -16,6 +16,7 @@ final class TermsFixture extends AbstractResourceFixture
 
     protected function configureResourceNode(ArrayNodeDefinition $resourceNode): void
     {
+        /** @psalm-suppress UndefinedInterfaceMethod */
         $resourceNode
             ->children()
                 ->scalarNode('code')->cannotBeEmpty()->end()
@@ -29,7 +30,6 @@ final class TermsFixture extends AbstractResourceFixture
 
                 ->scalarNode('created_at')->cannotBeEmpty()->end()
                 ->scalarNode('updated_at')->cannotBeEmpty()->end()
-            ->end()
         ;
     }
 }
