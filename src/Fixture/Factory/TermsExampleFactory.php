@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Fixture\Factory;
 
+use Closure;
 use DateTime;
 use DateTimeInterface;
+use Faker\Factory as FakerFactory;
+use Faker\Generator as FakerGenerator;
 use Setono\SyliusTermsPlugin\Generator\TermSlugGeneratorInterface;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
@@ -21,41 +24,18 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TermsExampleFactory extends AbstractExampleFactory
 {
-    /** @var FactoryInterface */
-    protected $termsFactory;
+    private FakerGenerator $faker;
 
-    /** @var TermsRepositoryInterface */
-    private $termsRepository;
-
-    /** @var RepositoryInterface */
-    private $localeRepository;
-
-    /** @var ChannelRepositoryInterface */
-    private $channelRepository;
-
-    /** @var TermSlugGeneratorInterface */
-    private $termsSlugGenerator;
-
-    /** @var \Faker\Generator */
-    private $faker;
-
-    /** @var OptionsResolver */
-    private $optionsResolver;
+    private OptionsResolver $optionsResolver;
 
     public function __construct(
-        FactoryInterface $termsFactory,
-        TermsRepositoryInterface $termsRepository,
-        RepositoryInterface $localeRepository,
-        ChannelRepositoryInterface $channelRepository,
-        TermSlugGeneratorInterface $termsSlugGenerator,
+        private readonly FactoryInterface $termsFactory,
+        private readonly TermsRepositoryInterface $termsRepository,
+        private readonly RepositoryInterface $localeRepository,
+        private readonly ChannelRepositoryInterface $channelRepository,
+        private readonly TermSlugGeneratorInterface $termsSlugGenerator,
     ) {
-        $this->termsFactory = $termsFactory;
-        $this->termsRepository = $termsRepository;
-        $this->localeRepository = $localeRepository;
-        $this->channelRepository = $channelRepository;
-        $this->termsSlugGenerator = $termsSlugGenerator;
-
-        $this->faker = \Faker\Factory::create();
+        $this->faker = FakerFactory::create();
         $this->optionsResolver = new OptionsResolver();
 
         $this->configureOptions($this->optionsResolver);
@@ -154,9 +134,9 @@ class TermsExampleFactory extends AbstractExampleFactory
         }
     }
 
-    private static function getDateTimeNormalizer(): \Closure
+    private static function getDateTimeNormalizer(): Closure
     {
-        return function (Options $options, $previousValue) {
+        return static function (Options $options, null|object|string $previousValue) {
             if (null === $previousValue) {
                 return $previousValue;
             }
