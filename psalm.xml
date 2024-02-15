@@ -4,7 +4,7 @@
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     phpVersion="8.1"
-    errorLevel="2"
+    errorLevel="1"
     findUnusedBaselineEntry="false"
     findUnusedPsalmSuppress="false"
     findUnusedCode="false"
@@ -30,5 +30,15 @@
     </forbiddenFunctions>
     <issueHandlers>
         <MissingTemplateParam errorLevel="suppress"/> <!-- At some point we will add template params, but it's difficult when supporting multiple versions of Sylius/SF/Doctrine etc -->
+        <MixedAssignment>
+            <errorLevel type="suppress">
+                <directory name="src/Fixture"/>
+            </errorLevel>
+        </MixedAssignment>
+        <MixedArgument>
+            <errorLevel type="suppress">
+                <directory name="src/Fixture"/>
+            </errorLevel>
+        </MixedArgument>
     </issueHandlers>
 </psalm>

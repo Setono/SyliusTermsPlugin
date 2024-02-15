@@ -14,13 +14,12 @@ final class TermsAcceptType extends AbstractType
 {
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
+        /** @psalm-suppress MixedArrayAssignment */
         $view->vars['terms_link'] = $options['terms_link'];
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        parent::configureOptions($resolver);
-
         $resolver
             ->setRequired([
                 'terms_link',

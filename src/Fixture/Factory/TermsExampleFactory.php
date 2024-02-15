@@ -91,6 +91,7 @@ class TermsExampleFactory extends AbstractExampleFactory
     {
         $resolver
             ->setDefault('name', function (Options $options): string {
+                /** @psalm-suppress MixedArgumentTypeCoercion */
                 return implode(' ', (array) $this->faker->words(3));
             })
 

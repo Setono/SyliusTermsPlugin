@@ -14,7 +14,7 @@ interface TermsRepositoryInterface extends RepositoryInterface
     public function createListQueryBuilder(): QueryBuilder;
 
     /**
-     * @return array|TermsInterface[]
+     * @return array<array-key, TermsInterface>
      */
     public function findByChannel(ChannelInterface $channel): array;
 

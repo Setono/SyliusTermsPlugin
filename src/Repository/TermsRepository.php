@@ -8,6 +8,7 @@ use Doctrine\ORM\QueryBuilder;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Channel\Model\ChannelInterface;
+use Webmozart\Assert\Assert;
 
 class TermsRepository extends EntityRepository implements TermsRepositoryInterface
 {
@@ -20,17 +21,22 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
 
     public function findByChannel(ChannelInterface $channel): array
     {
-        return $this->createListQueryBuilder()
+        $objs = $this->createListQueryBuilder()
             ->andWhere(':channel MEMBER OF o.channels')
             ->setParameter('channel', $channel)
             ->getQuery()
             ->getResult()
         ;
+
+        Assert::isArray($objs);
+        Assert::allIsInstanceOf($objs, TermsInterface::class);
+
+        return $objs;
     }
 
     public function findOneByChannelAndSlug(ChannelInterface $channel, string $slug): ?TermsInterface
     {
-        return $this->createListQueryBuilder()
+        $obj = $this->createListQueryBuilder()
             ->andWhere('translation.slug = :slug')
             ->andWhere(':channel MEMBER OF o.channels')
             ->setParameter('channel', $channel)
@@ -38,5 +44,9 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
             ->getQuery()
             ->getOneOrNullResult()
         ;
+
+        Assert::nullOrIsInstanceOf($obj, TermsInterface::class);
+
+        return $obj;
     }
 }

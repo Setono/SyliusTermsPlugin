@@ -17,18 +17,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class TermsAcceptCollectionType extends AbstractType
 {
-    /** @var TermLinkGeneratorInterface */
-    private $termLinkGenerator;
-
-    /** @var TranslatorInterface */
-    private $translator;
-
     public function __construct(
-        TermLinkGeneratorInterface $termLinkGenerator,
-        TranslatorInterface $translator,
+        private readonly TermLinkGeneratorInterface $termLinkGenerator,
+        private readonly TranslatorInterface $translator,
     ) {
-        $this->termLinkGenerator = $termLinkGenerator;
-        $this->translator = $translator;
     }
 
     public function checkAcceptedTerms(FormEvent $event): void
@@ -53,7 +45,8 @@ final class TermsAcceptCollectionType extends AbstractType
     {
         $builder->addEventListener(FormEvents::POST_SUBMIT, [$this, 'checkAcceptedTerms']);
 
-        foreach ($options['terms'] as $i => $terms) {
+        /** @var TermsInterface $terms */
+        foreach ($options['terms'] as $terms) {
             if (!$terms instanceof TermsInterface) {
                 throw new InvalidConfigurationException(
                     sprintf('Each object passed as terms list must implement "%s"', TermsInterface::class),

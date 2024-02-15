@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin;
 
-/**
- * @todo Remove
- */
 final class ClickStrategy
 {
     private function __construct()
@@ -17,6 +14,9 @@ final class ClickStrategy
 
     public const CLICK_STRATEGY_MODAL = 'modal';
 
+    /**
+     * @return list<string>
+     */
     public static function getClickStrategies(): array
     {
         return [
