@@ -8,6 +8,7 @@ use Sylius\Bundle\ChannelBundle\Form\Type\ChannelChoiceType;
 use Sylius\Bundle\ResourceBundle\Form\EventSubscriber\AddCodeFormSubscriber;
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Sylius\Bundle\ResourceBundle\Form\Type\ResourceTranslationsType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 final class TermsType extends AbstractResourceType
@@ -15,6 +16,9 @@ final class TermsType extends AbstractResourceType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('enabled', CheckboxType::class, [
+                'label' => 'sylius.ui.enabled',
+            ])
             ->add('channels', ChannelChoiceType::class, [
                 'multiple' => true,
                 'expanded' => true,

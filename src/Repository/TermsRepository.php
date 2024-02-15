@@ -22,6 +22,7 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
     public function findByChannel(ChannelInterface $channel): array
     {
         $objs = $this->createListQueryBuilder()
+            ->andWhere('o.enabled = true')
             ->andWhere(':channel MEMBER OF o.channels')
             ->setParameter('channel', $channel)
             ->getQuery()
@@ -37,6 +38,7 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
     public function findOneByChannelAndSlug(ChannelInterface $channel, string $slug): ?TermsInterface
     {
         $obj = $this->createListQueryBuilder()
+            ->andWhere('o.enabled = true')
             ->andWhere('translation.slug = :slug')
             ->andWhere(':channel MEMBER OF o.channels')
             ->setParameter('channel', $channel)

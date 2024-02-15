@@ -4,34 +4,27 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Model;
 
+use Stringable;
 use Sylius\Component\Resource\Model\AbstractTranslation;
 
-class TermsTranslation extends AbstractTranslation implements TermsTranslationInterface
+class TermsTranslation extends AbstractTranslation implements TermsTranslationInterface, Stringable
 {
-    /** @var mixed */
-    protected $id;
+    protected ?int $id = null;
 
-    /** @var string|null */
-    protected $name;
+    protected ?string $name = null;
 
-    /** @var string|null */
-    protected $slug;
+    protected ?string $slug = null;
 
-    /** @var string|null */
-    protected $explanation;
+    protected ?string $explanation = null;
 
-    /** @var string|null */
-    protected $content;
+    protected ?string $content = null;
 
     public function __toString(): string
     {
         return (string) $this->getName();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }

@@ -10,6 +10,8 @@ use Sylius\Component\Resource\Model\TranslationInterface;
 
 interface TermsTranslationInterface extends SlugAwareInterface, ResourceInterface, TranslationInterface
 {
+    public function getId(): ?int;
+
     public function getName(): ?string;
 
     public function setName(?string $name): void;
