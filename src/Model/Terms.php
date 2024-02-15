@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Resource\Model\TimestampableTrait;
 use Sylius\Component\Resource\Model\TranslatableTrait;
-use Sylius\Component\Resource\Model\TranslationInterface;
 
 class Terms implements TermsInterface
 {
@@ -112,10 +111,7 @@ class Terms implements TermsInterface
         $this->getTranslation()->setContent($content);
     }
 
-    /**
-     * @return TermsTranslationInterface
-     */
-    public function getTranslation(?string $locale = null): TranslationInterface
+    public function getTranslation(?string $locale = null): TermsTranslationInterface
     {
         /** @var TermsTranslationInterface $translation */
         $translation = $this->doGetTranslation($locale);

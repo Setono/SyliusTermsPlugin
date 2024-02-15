@@ -9,7 +9,6 @@ use Sylius\Component\Resource\Model\CodeAwareInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Resource\Model\TimestampableInterface;
 use Sylius\Component\Resource\Model\TranslatableInterface;
-use Sylius\Component\Resource\Model\TranslationInterface;
 
 interface TermsInterface extends ResourceInterface, CodeAwareInterface, ChannelsAwareInterface, TranslatableInterface, TimestampableInterface
 {
@@ -29,8 +28,5 @@ interface TermsInterface extends ResourceInterface, CodeAwareInterface, Channels
 
     public function setContent(string $content): void;
 
-    /**
-     * @return TermsTranslationInterface
-     */
-    public function getTranslation(?string $locale = null): TranslationInterface;
+    public function getTranslation(?string $locale = null): TermsTranslationInterface;
 }
