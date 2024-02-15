@@ -9,45 +9,38 @@
     ],
     "license": "MIT",
     "require": {
-        "php": ">=7.4",
-        "behat/transliterator": "^1.3",
+        "php": ">=8.1",
         "doctrine/collections": "^1.6",
         "doctrine/orm": "^2.7",
         "knplabs/knp-menu": "^3.1",
         "sylius/resource-bundle": "^1.6",
-        "symfony/config": "^4.4 || ^5.0",
-        "symfony/dependency-injection": "^4.4 || ^5.0",
-        "symfony/form": "^4.4 || ^5.0",
+        "symfony/config": "^5.4 || ^6.4 || ^7.0",
+        "symfony/dependency-injection": "^5.4 || ^6.4 || ^7.0",
+        "symfony/form": "^5.4 || ^6.4 || ^7.0",
         "symfony/http-foundation": "^4.4 || ^5.0.0",
         "symfony/http-kernel": "^4.4 || ^5.1.5",
-        "symfony/options-resolver": "^4.4 || ^5.0",
-        "symfony/routing": "^4.4 || ^5.0",
-        "symfony/translation-contracts": "^1.1 || ^2.4",
-        "thecodingmachine/safe": "^1.1",
-        "twig/twig": "^2.14",
-        "webmozart/assert": "^1.9"
+        "symfony/options-resolver": "^5.4 || ^6.4 || ^7.0",
+        "symfony/routing": "^5.4 || ^6.4 || ^7.0",
+        "symfony/translation-contracts": "^1.1 || ^2.4 || ^3.4",
+        "twig/twig": "^2.14 || ^3.8",
+        "webmozart/assert": "^1.11"
     },
     "require-dev": {
-        "fzaninotto/faker": "^1.9",
-        "phpspec/phpspec": "^7.1",
-        "phpunit/phpunit": "^9.5",
-        "psalm/plugin-phpunit": "^0.16.1",
-        "psalm/plugin-symfony": "^2.4",
-        "roave/security-advisories": "dev-latest",
-        "setono/code-quality-pack": "^2.1.1",
-        "sylius/sylius": "~1.7.0",
-        "symfony/debug-bundle": "^5.1",
-        "symfony/dotenv": "^5.1",
-        "symfony/intl": "^4.4 || ^5.0",
-        "symfony/proxy-manager-bridge": "^4.4.25",
-        "symfony/web-profiler-bundle": "^5.0"
+        "phpunit/phpunit": "^9.6",
+        "psalm/plugin-phpunit": "^0.18.4",
+        "setono/code-quality-pack": "^2.6",
+        "sylius/sylius": "~1.12.13",
+        "symfony/debug-bundle": "^5.4 || ^6.4 || ^7.0",
+        "symfony/dotenv": "^5.4 || ^6.4 || ^7.0",
+        "symfony/intl": "^5.4 || ^6.4 || ^7.0",
+        "symfony/web-profiler-bundle": "^5.4 || ^6.4 || ^7.0"
     },
     "config": {
-        "sort-packages": true
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.1-dev"
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": false,
+            "ergebnis/composer-normalize": true,
+            "symfony/thanks": false
         }
     },
     "autoload": {
