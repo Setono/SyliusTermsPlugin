@@ -6,6 +6,7 @@ namespace Setono\SyliusTermsPlugin\Controller\Action;
 
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
+use Sylius\Component\Locale\Context\LocaleContextInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Twig\Environment;
@@ -16,14 +17,18 @@ final class ShowTermsAction
     public function __construct(
         private readonly TermsRepositoryInterface $termsRepository,
         private readonly ChannelContextInterface $channelContext,
+        private readonly LocaleContextInterface $localeContext,
         private readonly Environment $twig,
     ) {
     }
 
     public function __invoke(string $slug): Response
     {
-        $channel = $this->channelContext->getChannel();
-        $terms = $this->termsRepository->findOneByChannelAndSlug($channel, $slug);
+        $terms = $this->termsRepository->findOneByChannelAndSlug(
+            $this->channelContext->getChannel(),
+            $this->localeContext->getLocaleCode(),
+            $slug,
+        );
 
         if (null === $terms) {
             throw new NotFoundHttpException('The terms page does not exist');
@@ -36,7 +41,7 @@ final class ShowTermsAction
                 '@SetonoSyliusTermsPlugin/Shop/Terms/Show/%s.html.twig',
                 (string) $terms->getCode(),
             ));
-        } catch (LoaderError $e) {
+        } catch (LoaderError) {
             $template = $this->twig->load('@SetonoSyliusTermsPlugin/Shop/Terms/show.html.twig');
         }
 

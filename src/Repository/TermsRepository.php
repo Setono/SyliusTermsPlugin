@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Repository;
 
-use Doctrine\ORM\QueryBuilder;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Channel\Model\ChannelInterface;
@@ -12,19 +11,15 @@ use Webmozart\Assert\Assert;
 
 class TermsRepository extends EntityRepository implements TermsRepositoryInterface
 {
-    public function createListQueryBuilder(): QueryBuilder
+    public function findByChannel(ChannelInterface $channel, string $locale): array
     {
-        return $this->createQueryBuilder('o')
-            ->leftJoin('o.translations', 'translation')
-        ;
-    }
-
-    public function findByChannel(ChannelInterface $channel): array
-    {
-        $objs = $this->createListQueryBuilder()
+        $objs = $this->createQueryBuilder('o')
+            ->addSelect('translation')
+            ->innerJoin('o.translations', 'translation', 'WITH', 'translation.locale = :locale')
             ->andWhere('o.enabled = true')
             ->andWhere(':channel MEMBER OF o.channels')
             ->setParameter('channel', $channel)
+            ->setParameter('locale', $locale)
             ->getQuery()
             ->getResult()
         ;
@@ -35,13 +30,16 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
         return $objs;
     }
 
-    public function findOneByChannelAndSlug(ChannelInterface $channel, string $slug): ?TermsInterface
+    public function findOneByChannelAndSlug(ChannelInterface $channel, string $locale, string $slug): ?TermsInterface
     {
-        $obj = $this->createListQueryBuilder()
-            ->andWhere('o.enabled = true')
+        $obj = $this->createQueryBuilder('o')
+            ->addSelect('translation')
+            ->innerJoin('o.translations', 'translation', 'WITH', 'translation.locale = :locale')
             ->andWhere('translation.slug = :slug')
             ->andWhere(':channel MEMBER OF o.channels')
+            ->andWhere('o.enabled = true')
             ->setParameter('channel', $channel)
+            ->setParameter('locale', $locale)
             ->setParameter('slug', $slug)
             ->getQuery()
             ->getOneOrNullResult()

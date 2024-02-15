@@ -15,4 +15,5 @@ setono_sylius_terms_partial_show:
                 method: findOneByChannelAndSlug
                 arguments:
                     - "expr:service('sylius.context.channel').getChannel()"
+                    - "expr:service('sylius.context.locale').getLocaleCode()"
                     - $slug
