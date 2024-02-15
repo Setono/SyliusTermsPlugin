@@ -24,7 +24,7 @@ final class TermsProvider implements TermsProviderInterface
     public function getTerms(): array
     {
         return $this->termsRepository->findByChannel(
-            $this->channelContext->getChannel()
+            $this->channelContext->getChannel(),
         );
     }
 }

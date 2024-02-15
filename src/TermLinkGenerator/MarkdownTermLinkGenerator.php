@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\TermLinkGenerator;
 
-use function Safe\preg_match;
-use function Safe\sprintf;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
@@ -37,7 +35,7 @@ final class MarkdownTermLinkGenerator implements TermLinkGeneratorInterface
             return sprintf(
                 '<a href="%s" data-generator="markdown">%s</a>',
                 $link,
-                $matches[1]
+                $matches[1],
             );
         }, htmlspecialchars($explanation));
     }

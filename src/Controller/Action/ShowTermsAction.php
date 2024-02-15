@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Controller\Action;
 
-use function Safe\sprintf;
 use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepositoryInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,7 +43,7 @@ final class ShowTermsAction
             // if not it throws an exception and we will use the default template
             $template = $this->twig->load(sprintf(
                 '@SetonoSyliusTermsPlugin/Shop/Terms/Show/%s.html.twig',
-                $terms->getCode()
+                $terms->getCode(),
             ));
         } catch (LoaderError $e) {
             $template = $this->twig->load('@SetonoSyliusTermsPlugin/Shop/Terms/show.html.twig');

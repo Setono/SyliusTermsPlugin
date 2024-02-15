@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\TermLinkGenerator;
 
-use function Safe\sprintf;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
@@ -35,7 +34,7 @@ final class FallbackTermLinkGenerator implements TermLinkGeneratorInterface
         return sprintf(
             '<a href="%s" data-generator="fallback">%s</a>',
             $link,
-            $explanation
+            $explanation,
         );
     }
 }

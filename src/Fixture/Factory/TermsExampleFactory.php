@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Fixture\Factory;
 
+use DateTime;
 use DateTimeInterface;
-use Safe\DateTime;
 use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Generator\TermSlugGeneratorInterface;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
@@ -47,7 +47,7 @@ class TermsExampleFactory extends AbstractExampleFactory
         TermsRepositoryInterface $termsRepository,
         RepositoryInterface $localeRepository,
         ChannelRepositoryInterface $channelRepository,
-        TermSlugGeneratorInterface $termsSlugGenerator
+        TermSlugGeneratorInterface $termsSlugGenerator,
     ) {
         $this->termsFactory = $termsFactory;
         $this->termsRepository = $termsRepository;

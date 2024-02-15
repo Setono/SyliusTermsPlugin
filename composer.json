@@ -1,24 +1,25 @@
 {
     "name": "setono/sylius-terms-plugin",
-    "type": "sylius-plugin",
     "description": "Sylius terms and conditions plugin",
+    "license": "MIT",
+    "type": "sylius-plugin",
     "keywords": [
         "sylius",
         "sylius-plugin",
         "terms"
     ],
-    "license": "MIT",
     "require": {
         "php": ">=8.1",
         "doctrine/collections": "^1.6",
         "doctrine/orm": "^2.7",
         "knplabs/knp-menu": "^3.1",
+        "sylius/core-bundle": "^1.0",
         "sylius/resource-bundle": "^1.6",
         "symfony/config": "^5.4 || ^6.4 || ^7.0",
         "symfony/dependency-injection": "^5.4 || ^6.4 || ^7.0",
         "symfony/form": "^5.4 || ^6.4 || ^7.0",
-        "symfony/http-foundation": "^4.4 || ^5.0.0",
-        "symfony/http-kernel": "^4.4 || ^5.1.5",
+        "symfony/http-foundation": "^5.4 || ^6.4 || ^7.0",
+        "symfony/http-kernel": "^5.4 || ^6.4 || ^7.0",
         "symfony/options-resolver": "^5.4 || ^6.4 || ^7.0",
         "symfony/routing": "^5.4 || ^6.4 || ^7.0",
         "symfony/translation-contracts": "^1.1 || ^2.4 || ^3.4",
@@ -26,23 +27,29 @@
         "webmozart/assert": "^1.11"
     },
     "require-dev": {
+        "api-platform/core": "^2.7.16",
+        "babdev/pagerfanta-bundle": "^3.8",
+        "behat/behat": "^3.14",
+        "doctrine/doctrine-bundle": "^2.11",
+        "infection/infection": "^0.27.9",
+        "jms/serializer-bundle": "^4.2",
+        "lexik/jwt-authentication-bundle": "^2.17",
+        "matthiasnoback/symfony-config-test": "^4.3 || ^5.1",
+        "matthiasnoback/symfony-dependency-injection-test": "^4.3 || ^5.0",
         "phpunit/phpunit": "^9.6",
-        "psalm/plugin-phpunit": "^0.18.4",
+        "psalm/plugin-phpunit": "^0.18",
         "setono/code-quality-pack": "^2.6",
         "sylius/sylius": "~1.12.13",
         "symfony/debug-bundle": "^5.4 || ^6.4 || ^7.0",
         "symfony/dotenv": "^5.4 || ^6.4 || ^7.0",
         "symfony/intl": "^5.4 || ^6.4 || ^7.0",
-        "symfony/web-profiler-bundle": "^5.4 || ^6.4 || ^7.0"
+        "symfony/property-info": "^5.4 || ^6.4 || ^7.0",
+        "symfony/serializer": "^5.4 || ^6.0.1",
+        "symfony/web-profiler-bundle": "^5.4 || ^6.4 || ^7.0",
+        "symfony/webpack-encore-bundle": "^1.17",
+        "willdurand/negotiation": "^3.1"
     },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": false,
-            "ergebnis/composer-normalize": true,
-            "symfony/thanks": false
-        }
-    },
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Setono\\SyliusTermsPlugin\\": "src/"
@@ -56,7 +63,15 @@
             "tests/Application/Kernel.php"
         ]
     },
-    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": false,
+            "ergebnis/composer-normalize": true,
+            "infection/extension-installer": true,
+            "symfony/thanks": false
+        },
+        "sort-packages": true
+    },
     "scripts": {
         "analyse": "psalm",
         "check-style": "ecs check",

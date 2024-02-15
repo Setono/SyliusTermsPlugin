@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\TermLinkGenerator;
 
 use RuntimeException;
-use function Safe\sprintf;
 use Setono\SyliusTermsPlugin\ClickStrategyApplicator\ClickStrategyApplicatorInterface;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 
@@ -32,7 +31,7 @@ final class CompositeTermLinkGenerator implements TermLinkGeneratorInterface
         throw new RuntimeException(sprintf(
             "%s:%s shouldn't be called",
             self::class,
-            __FUNCTION__
+            __FUNCTION__,
         ));
     }
 
@@ -41,7 +40,7 @@ final class CompositeTermLinkGenerator implements TermLinkGeneratorInterface
         foreach ($this->termLinkGenerators as $termLinkGenerator) {
             if ($termLinkGenerator->isApplicable($terms)) {
                 return $this->clickStrategyApplicator->applyClickStrategy(
-                    $termLinkGenerator->generate($terms)
+                    $termLinkGenerator->generate($terms),
                 );
             }
         }
@@ -49,7 +48,7 @@ final class CompositeTermLinkGenerator implements TermLinkGeneratorInterface
         throw new RuntimeException(sprintf(
             'Unable to generate link at %s:%s',
             self::class,
-            __FUNCTION__
+            __FUNCTION__,
         ));
     }
 }
