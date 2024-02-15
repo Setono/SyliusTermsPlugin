@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\DependencyInjection\Compiler;
 
 use RuntimeException;
-use function Safe\sprintf;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -25,7 +24,7 @@ final class CompositeClickStrategyApplicatorPass implements CompilerPassInterfac
                 throw new RuntimeException(sprintf(
                     'Service %s tagged with %s should have alias',
                     $clickStrategyApplicatorId,
-                    $tagName
+                    $tagName,
                 ));
             }
 

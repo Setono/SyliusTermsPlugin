@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Form\Type;
 
-use function Safe\sprintf;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\TermLinkGenerator\TermLinkGeneratorInterface;
 use Symfony\Component\Form\AbstractType;
@@ -26,7 +25,7 @@ final class TermsAcceptCollectionType extends AbstractType
 
     public function __construct(
         TermLinkGeneratorInterface $termLinkGenerator,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
     ) {
         $this->termLinkGenerator = $termLinkGenerator;
         $this->translator = $translator;
@@ -57,7 +56,7 @@ final class TermsAcceptCollectionType extends AbstractType
         foreach ($options['terms'] as $i => $terms) {
             if (!$terms instanceof TermsInterface) {
                 throw new InvalidConfigurationException(
-                    sprintf('Each object passed as terms list must implement "%s"', TermsInterface::class)
+                    sprintf('Each object passed as terms list must implement "%s"', TermsInterface::class),
                 );
             }
 
