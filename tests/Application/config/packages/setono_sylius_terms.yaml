@@ -1,0 +1,6 @@
+imports:
+    - { resource: "@SetonoSyliusTermsPlugin/Resources/config/app/config.yaml" }
+    - { resource: "@SetonoSyliusTermsPlugin/Resources/config/app/fixtures.yaml" }
+
+setono_sylius_terms:
+    click_strategy: new_window
