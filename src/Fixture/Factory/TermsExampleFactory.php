@@ -6,9 +6,9 @@ namespace Setono\SyliusTermsPlugin\Fixture\Factory;
 
 use DateTime;
 use DateTimeInterface;
-use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Generator\TermSlugGeneratorInterface;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
+use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Sylius\Bundle\CoreBundle\Fixture\Factory\AbstractExampleFactory;
 use Sylius\Bundle\CoreBundle\Fixture\OptionsResolver\LazyOption;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;

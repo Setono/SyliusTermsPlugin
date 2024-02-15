@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Controller\Action;
 
-use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepositoryInterface;
+use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

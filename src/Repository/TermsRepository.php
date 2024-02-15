@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusTermsPlugin\Doctrine\ORM;
+namespace Setono\SyliusTermsPlugin\Repository;
 
 use Doctrine\ORM\QueryBuilder;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;

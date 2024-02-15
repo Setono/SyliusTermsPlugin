@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\DependencyInjection;
 
 use Setono\SyliusTermsPlugin\ClickStrategy;
-use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepository;
 use Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsType;
 use Setono\SyliusTermsPlugin\Model\Terms;
 use Setono\SyliusTermsPlugin\Model\TermsTranslation;
+use Setono\SyliusTermsPlugin\Repository\TermsRepository;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 use Sylius\Component\Resource\Factory\Factory;

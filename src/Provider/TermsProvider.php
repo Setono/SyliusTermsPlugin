@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Provider;
 
-use Setono\SyliusTermsPlugin\Doctrine\ORM\TermsRepositoryInterface;
+use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 
 final class TermsProvider implements TermsProviderInterface
