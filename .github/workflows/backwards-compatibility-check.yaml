@@ -1,0 +1,30 @@
+# See https://github.com/Roave/BackwardCompatibilityCheck
+
+name: "Backwards Compatibility Check"
+
+on:
+    pull_request: ~
+
+jobs:
+    backwards-compatibility-check:
+        name: "Backwards Compatibility Check"
+
+        runs-on: "ubuntu-latest"
+
+        steps:
+            -   name: "Checkout"
+                uses: "actions/checkout@v4"
+                with:
+                    fetch-depth: 0
+
+            -   name: "Setup PHP, with composer and extensions"
+                uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: "8.1"
+                    coverage: "none"
+
+            -   name: "Install tool"
+                run: "composer global require roave/backward-compatibility-check"
+
+            -   name: "Check for BC breaks"
+                run: "~/.composer/vendor/bin/roave-backward-compatibility-check --from=origin/${{ github.event.pull_request.base.ref }} --format=github-actions"
