@@ -10,7 +10,7 @@ setono_sylius_terms:
     slug:
       not_blank: Veuillez saisir un identifiant (slug).
       unique: "L'identifiant est déjà utilisé."
-    explanation:
+    label:
       not_blank: Veuillez saisir une explication.
       max_length: L’explication ne doit pas comporter plus de 255 caractères.
     content:

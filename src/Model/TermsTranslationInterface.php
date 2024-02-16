@@ -16,9 +16,9 @@ interface TermsTranslationInterface extends SlugAwareInterface, ResourceInterfac
 
     public function setName(?string $name): void;
 
-    public function getExplanation(): ?string;
+    public function getLabel(): ?string;
 
-    public function setExplanation(?string $explanation): void;
+    public function setLabel(?string $label): void;
 
     public function getContent(): ?string;
 

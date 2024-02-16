@@ -22,14 +22,14 @@
                 <option name="groups">sylius</option>
             </constraint>
         </property>
-        <property name="explanation">
+        <property name="label">
             <constraint name="NotBlank">
-                <option name="message">setono_sylius_terms.terms.explanation.not_blank</option>
+                <option name="message">setono_sylius_terms.terms.label.not_blank</option>
                 <option name="groups">sylius</option>
             </constraint>
             <constraint name="Length">
                 <option name="max">255</option>
-                <option name="maxMessage">setono_sylius_terms.terms.explanation.max_length</option>
+                <option name="maxMessage">setono_sylius_terms.terms.label.max_length</option>
                 <option name="groups">sylius</option>
             </constraint>
         </property>

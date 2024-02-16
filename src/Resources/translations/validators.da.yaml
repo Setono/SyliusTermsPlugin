@@ -10,7 +10,7 @@ setono_sylius_terms:
         slug:
             not_blank: Angiv en slug.
             unique: Sluggen skal være unik.
-        explanation:
+        label:
             not_blank: Angiv beskrivelse.
             max_length: Beskrivelsen må ikke være længere end 255 tegn.
         content:

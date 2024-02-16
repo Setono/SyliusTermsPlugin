@@ -10,7 +10,7 @@ setono_sylius_terms:
     slug:
       not_blank: Bitte geben Sie einen Slug ein.
       unique: Der Slug wird bereits verwendet.
-    explanation:
+    label:
       not_blank: Bitte geben Sie eine Erklärung ein.
       max_length: Die Erklärung darf nicht mehr als 255 Zeichen enthalten.
     content:

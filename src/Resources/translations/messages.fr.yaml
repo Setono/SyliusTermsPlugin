@@ -24,7 +24,7 @@ setono_sylius_terms:
       name: Nom
       code: Code
       slug: Slug
-      explanation: Explication
-      explanation_placeholder: "Utiliser [link:Link text] pour indiquer l'endroit où le lien doit être placé dans le texte."
+      label: Étiquette
+      label_placeholder: "Utiliser [link:Link text] pour indiquer l'endroit où le lien doit être placé dans le texte."
       content: Contenu
       channels: Canaux

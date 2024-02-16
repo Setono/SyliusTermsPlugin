@@ -15,7 +15,7 @@ class TermsTranslation extends AbstractTranslation implements TermsTranslationIn
 
     protected ?string $slug = null;
 
-    protected ?string $explanation = null;
+    protected ?string $label = null;
 
     protected ?string $content = null;
 
@@ -49,14 +49,14 @@ class TermsTranslation extends AbstractTranslation implements TermsTranslationIn
         $this->slug = $slug;
     }
 
-    public function getExplanation(): ?string
+    public function getLabel(): ?string
     {
-        return $this->explanation;
+        return $this->label;
     }
 
-    public function setExplanation(?string $explanation): void
+    public function setLabel(?string $label): void
     {
-        $this->explanation = $explanation;
+        $this->label = $label;
     }
 
     public function getContent(): ?string

@@ -20,7 +20,7 @@ final class MarkdownTermLinkGenerator implements TermLinkGeneratorInterface
 
     public function isApplicable(TermsInterface $terms): bool
     {
-        return preg_match('/\[link:(.*?)\]/', (string) $terms->getExplanation()) === 1;
+        return preg_match('/\[link:(.*?)\]/', (string) $terms->getLabel()) === 1;
     }
 
     public function generate(TermsInterface $terms, ?string $locale = null): string
@@ -28,7 +28,7 @@ final class MarkdownTermLinkGenerator implements TermLinkGeneratorInterface
         $slug = $terms->getTranslation($locale)->getSlug();
         Assert::notEmpty($slug, 'Cannot generate link without a slug.');
 
-        $explanation = (string) $terms->getTranslation($locale)->getExplanation();
+        $label = (string) $terms->getTranslation($locale)->getLabel();
         $link = $this->router->generate('setono_sylius_terms_show', ['slug' => $slug]);
 
         return (string) preg_replace_callback('/\[link:(.*?)\]/', function ($matches) use ($link): string {
@@ -37,6 +37,6 @@ final class MarkdownTermLinkGenerator implements TermLinkGeneratorInterface
                 $link,
                 $matches[1],
             );
-        }, htmlspecialchars($explanation));
+        }, htmlspecialchars($label));
     }
 }

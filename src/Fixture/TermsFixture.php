@@ -22,7 +22,7 @@ final class TermsFixture extends AbstractResourceFixture
                 ->scalarNode('code')->cannotBeEmpty()->end()
                 ->scalarNode('name')->cannotBeEmpty()->end()
                 ->scalarNode('slug')->cannotBeEmpty()->end()
-                ->scalarNode('explanation')->cannotBeEmpty()->end()
+                ->scalarNode('label')->cannotBeEmpty()->end()
                 ->scalarNode('content')->cannotBeEmpty()->end()
 
                 ->variableNode('translations')->cannotBeEmpty()->defaultValue([])->end()
