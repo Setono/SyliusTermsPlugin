@@ -9,7 +9,6 @@ use DateTime;
 use DateTimeInterface;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
-use Setono\SyliusTermsPlugin\Generator\TermSlugGeneratorInterface;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Sylius\Bundle\CoreBundle\Fixture\Factory\AbstractExampleFactory;
@@ -21,6 +20,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class TermsExampleFactory extends AbstractExampleFactory
 {
@@ -33,7 +33,6 @@ class TermsExampleFactory extends AbstractExampleFactory
         private readonly TermsRepositoryInterface $termsRepository,
         private readonly RepositoryInterface $localeRepository,
         private readonly ChannelRepositoryInterface $channelRepository,
-        private readonly TermSlugGeneratorInterface $termsSlugGenerator,
     ) {
         $this->faker = FakerFactory::create();
         $this->optionsResolver = new OptionsResolver();
@@ -84,7 +83,7 @@ class TermsExampleFactory extends AbstractExampleFactory
         $terms->setName($options['name']);
         $terms->setLabel($options['label']);
         $terms->setContent($options['content']);
-        $terms->setSlug($options['slug'] ?? $this->termsSlugGenerator->generate($terms, $localeCode));
+        $terms->setSlug($options['slug'] ?? (new AsciiSlugger())->slug($options['name'])->toString());
     }
 
     protected function configureOptions(OptionsResolver $resolver): void

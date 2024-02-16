@@ -90,5 +90,17 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
                 ],
             ],
         ]);
+
+        $container->prependExtensionConfig('sylius_ui', [
+            'events' => [
+                'setono_sylius_terms.admin.terms.create.javascripts' => [
+                    'blocks' => [
+                        'javascripts' => [
+                            'template' => '@SetonoSyliusTermsPlugin/Admin/Terms/_javascripts.html.twig',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
     }
 }
