@@ -108,7 +108,6 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
     {# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
     {{ form_row(form.notes, {'attr': {'rows': 3}}) }}
     {% if form.terms is defined %}
-        {% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
         {{ form_row(form.terms) }}
     {% endif %}
     ```
@@ -124,27 +123,6 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
 * If you see `Grid "setono_sylius_terms_terms" does not exists`
 
     Then you forgot to import config from `Step 3: Import config` section.
-
-* If you see `Uncaught ReferenceError: $ is not defined` in your js console
-
-    This means `jQuery` was loaded after plugin's javascript code.
-    Plugin's javascript code injecting into main template via `sylius.shop.layout.javascripts`
-    Sonata block. So check your custom `templates/bundles/SyliusShopBundle/layout.html.twig`
-    it's `javascript` block should be like this:
-    
-    ```twig
-    {# layout.html.twig #}
-    
-    {% block javascripts %}
-        // We expect jquery to be loaded here
-        {% include '@SyliusUi/_javascripts.html.twig' with {'path': 'assets/shop/js/app.js'} %}
-    
-        // But if you have it as separate script - just make sure
-        // it placed before `sylius.shop.layout.javascripts` sonata block
-    
-        {{ sonata_block_render_event('sylius.shop.layout.javascripts') }}
-    {% endblock %}
-    ```
 
 [ico-version]: https://poser.pugx.org/setono/sylius-terms-plugin/v/stable
 [ico-unstable-version]: https://poser.pugx.org/setono/sylius-terms-plugin/v/unstable
