@@ -1,7 +1,6 @@
 # Sylius terms and conditions plugin
 
 [![Latest Version][ico-version]][link-packagist]
-[![Latest Unstable Version][ico-unstable-version]][link-packagist]
 [![Software License][ico-license]](LICENSE)
 [![Build Status][ico-github-actions]][link-github-actions]
 [![Code Coverage][ico-code-coverage]][link-code-coverage]
@@ -129,7 +128,6 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
     Then you forgot to import config from `Step 3: Import config` section.
 
 [ico-version]: https://poser.pugx.org/setono/sylius-terms-plugin/v/stable
-[ico-unstable-version]: https://poser.pugx.org/setono/sylius-terms-plugin/v/unstable
 [ico-license]: https://poser.pugx.org/setono/sylius-terms-plugin/license
 [ico-github-actions]: https://github.com/Setono/SyliusTermsPlugin/workflows/build/badge.svg
 [ico-code-coverage]: https://codecov.io/gh/Setono/SyliusTermsPlugin/graph/badge.svg
