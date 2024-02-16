@@ -1,5 +1,4 @@
 {{ form_row(form.notes, {'attr': {'rows': 3}}) }}
 {% if form.terms is defined %}
-    {% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
     {{ form_row(form.terms) }}
 {% endif %}
