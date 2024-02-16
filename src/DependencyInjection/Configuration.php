@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\DependencyInjection;
 
-use Setono\SyliusTermsPlugin\ClickStrategy;
 use Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsType;
 use Setono\SyliusTermsPlugin\Model\Terms;
@@ -36,17 +35,6 @@ final class Configuration implements ConfigurationInterface
                             ->defaultValue('terms')
                             ->cannotBeEmpty()
                             ->info('The path prefix for displaying terms on the frontend. Example: https://example.com/terms/privacy-policy - here "terms" is the path prefix')
-                        ->end()
-                    ->end()
-                ->end()
-                ->scalarNode('click_strategy')
-                    ->info('What should happen when a user clicks the terms link on the Place order page? Either open a new window or show the terms directly on the page')
-
-                    // @todo Remove checks? To have ability to specify custom strategies with service tag aliases
-                    ->defaultValue(ClickStrategy::CLICK_STRATEGY_MODAL)
-                    ->validate()
-                        ->ifNotInArray(ClickStrategy::getClickStrategies())
-                        ->thenInvalid('Invalid click strategy %s. Must be one of [' . implode(', ', ClickStrategy::getClickStrategies()) . ']')
         ;
 
         $this->addResourcesSection($rootNode);

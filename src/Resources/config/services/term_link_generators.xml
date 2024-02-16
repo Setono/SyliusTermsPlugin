@@ -2,25 +2,22 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-
     <services>
-
         <service id="setono_sylius_terms.term_link_generator.composite"
-                 class="Setono\SyliusTermsPlugin\TermLinkGenerator\CompositeTermLinkGenerator">
-            <argument type="service" id="setono_sylius_terms.click_strategy_applicator.composite" />
-        </service>
+                 class="Setono\SyliusTermsPlugin\TermLinkGenerator\CompositeTermLinkGenerator"/>
 
         <service id="setono_sylius_terms.term_link_generator.markdown"
                  class="Setono\SyliusTermsPlugin\TermLinkGenerator\MarkdownTermLinkGenerator">
-            <argument type="service" id="router" />
-            <tag name="setono_sylius_terms.term_link_generator" />
+            <argument type="service" id="router"/>
+
+            <tag name="setono_sylius_terms.term_link_generator"/>
         </service>
 
         <service id="setono_sylius_terms.term_link_generator.fallback"
                  class="Setono\SyliusTermsPlugin\TermLinkGenerator\FallbackTermLinkGenerator">
-            <argument type="service" id="router" />
-            <tag name="setono_sylius_terms.term_link_generator" priority="-100" />
-        </service>
+            <argument type="service" id="router"/>
 
+            <tag name="setono_sylius_terms.term_link_generator" priority="-100"/>
+        </service>
     </services>
 </container>
