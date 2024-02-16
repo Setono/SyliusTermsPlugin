@@ -10,12 +10,8 @@ use Webmozart\Assert\Assert;
 
 final class MarkdownTermLinkGenerator implements TermLinkGeneratorInterface
 {
-    /** @var RouterInterface */
-    private $router;
-
-    public function __construct(RouterInterface $router)
+    public function __construct(private readonly RouterInterface $router)
     {
-        $this->router = $router;
     }
 
     public function isApplicable(TermsInterface $terms): bool
@@ -31,12 +27,10 @@ final class MarkdownTermLinkGenerator implements TermLinkGeneratorInterface
         $label = (string) $terms->getTranslation($locale)->getLabel();
         $link = $this->router->generate('setono_sylius_terms_show', ['slug' => $slug]);
 
-        return (string) preg_replace_callback('/\[link:(.*?)\]/', function ($matches) use ($link): string {
-            return sprintf(
-                '<a href="%s" data-generator="markdown">%s</a>',
-                $link,
-                $matches[1],
-            );
-        }, htmlspecialchars($label));
+        return (string) preg_replace_callback('/\[link:(.*?)\]/', fn ($matches): string => sprintf(
+            '<a href="%s" data-generator="markdown">%s</a>',
+            $link,
+            $matches[1],
+        ), htmlspecialchars($label));
     }
 }

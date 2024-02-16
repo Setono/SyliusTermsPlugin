@@ -12,12 +12,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 final class CompleteTypeExtension extends AbstractTypeExtension
 {
-    /** @var TermsProviderInterface */
-    private $termsProvider;
-
-    public function __construct(TermsProviderInterface $termsProvider)
+    public function __construct(private readonly TermsProviderInterface $termsProvider)
     {
-        $this->termsProvider = $termsProvider;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

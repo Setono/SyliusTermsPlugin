@@ -43,7 +43,7 @@ final class TermsAcceptCollectionType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->addEventListener(FormEvents::POST_SUBMIT, [$this, 'checkAcceptedTerms']);
+        $builder->addEventListener(FormEvents::POST_SUBMIT, $this->checkAcceptedTerms(...));
 
         /** @var TermsInterface $terms */
         foreach ($options['terms'] as $terms) {

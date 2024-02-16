@@ -24,9 +24,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TermsExampleFactory extends AbstractExampleFactory
 {
-    private FakerGenerator $faker;
+    private readonly FakerGenerator $faker;
 
-    private OptionsResolver $optionsResolver;
+    private readonly OptionsResolver $optionsResolver;
 
     public function __construct(
         private readonly FactoryInterface $termsFactory,
@@ -90,14 +90,11 @@ class TermsExampleFactory extends AbstractExampleFactory
     protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
-            ->setDefault('name', function (Options $options): string {
+            ->setDefault('name', fn (Options $options): string =>
                 /** @psalm-suppress MixedArgumentTypeCoercion */
-                return implode(' ', (array) $this->faker->words(3));
-            })
+                implode(' ', (array) $this->faker->words(3)))
 
-            ->setDefault('code', function (Options $options): string {
-                return StringInflector::nameToCode($options['name']);
-            })
+            ->setDefault('code', fn (Options $options): string => StringInflector::nameToCode($options['name']))
 
             ->setDefault('channels', LazyOption::randomOnes($this->channelRepository, 3))
             ->setAllowedTypes('channels', ['array'])
@@ -109,9 +106,7 @@ class TermsExampleFactory extends AbstractExampleFactory
                 return $this->faker->text(60); // @todo add link to this text
             })
 
-            ->setDefault('content', function (Options $options): string {
-                return $this->faker->paragraph;
-            })
+            ->setDefault('content', fn (Options $options): string => $this->faker->paragraph)
 
             ->setDefault('translations', [])
             ->setAllowedTypes('translations', ['array'])
@@ -139,7 +134,7 @@ class TermsExampleFactory extends AbstractExampleFactory
     {
         return static function (Options $options, null|object|string $previousValue) {
             if (null === $previousValue) {
-                return $previousValue;
+                return null;
             }
 
             if (is_object($previousValue)) {
