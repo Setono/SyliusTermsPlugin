@@ -18,6 +18,7 @@
         "sylius/channel-bundle": "^1.0",
         "sylius/core": "^1.0",
         "sylius/core-bundle": "^1.0",
+        "sylius/locale": "^1.0",
         "sylius/resource-bundle": "^1.6",
         "sylius/ui-bundle": "^1.0",
         "symfony/config": "^5.4 || ^6.4 || ^7.0",
