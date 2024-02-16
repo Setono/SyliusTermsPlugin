@@ -4,20 +4,19 @@
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                       http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-
-    <mapped-superclass name="Setono\SyliusTermsPlugin\Model\TermsTranslation" table="setono_sylius_terms__terms_translation">
+    <mapped-superclass name="Setono\SyliusTermsPlugin\Model\TermsTranslation"
+                       table="setono_sylius_terms__terms_translation">
         <id name="id" column="id" type="integer">
-            <generator strategy="AUTO" />
+            <generator strategy="AUTO"/>
         </id>
 
         <field name="name" type="string"/>
         <field name="slug" column="slug" type="string"/>
-        <field name="explanation" type="string"/>
+        <field name="label" type="string"/>
         <field name="content" type="text"/>
 
         <unique-constraints>
-            <unique-constraint columns="locale,slug" name="uniq_slug" />
+            <unique-constraint columns="locale,slug" name="uniq_slug"/>
         </unique-constraints>
     </mapped-superclass>
-
 </doctrine-mapping>

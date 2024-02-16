@@ -27,7 +27,7 @@ Here is a list of terms. Notice the `terms_and_conditions` which is associated w
 
 ![Screenshot showing admin terms update page](docs/images/admin-terms-update.png)
 
-The `Explanation` field is the text shown on the complete order page. Notice you can use a placeholder (`[link:Link text]`) to tell where the link should be.
+The `Label` field is the text shown on the complete order page. Notice you can use a placeholder (`[link:Link text]`) to tell where the link should be.
 
 ![Screenshot showing admin terms translation update page](docs/images/admin-terms-update-translation.png)
 

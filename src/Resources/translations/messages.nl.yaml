@@ -24,7 +24,7 @@ setono_sylius_terms:
             name: Naam
             code: Code
             slug: Slug
-            explanation: Uitleg
-            explanation_placeholder: Gebruik [link:Link text] om aan te geven waar in de tekst de link geplaatst dient te worden
+            label: Etiket
+            label_placeholder: Gebruik [link:Link text] om aan te geven waar in de tekst de link geplaatst dient te worden
             content: Content
             channels: Kanalen

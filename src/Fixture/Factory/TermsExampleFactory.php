@@ -82,7 +82,7 @@ class TermsExampleFactory extends AbstractExampleFactory
         $terms->setFallbackLocale($localeCode);
 
         $terms->setName($options['name']);
-        $terms->setExplanation($options['explanation']);
+        $terms->setLabel($options['label']);
         $terms->setContent($options['content']);
         $terms->setSlug($options['slug'] ?? $this->termsSlugGenerator->generate($terms, $localeCode));
     }
@@ -105,7 +105,7 @@ class TermsExampleFactory extends AbstractExampleFactory
 
             ->setDefault('slug', null)
 
-            ->setDefault('explanation', function (Options $options): string {
+            ->setDefault('label', function (Options $options): string {
                 return $this->faker->text(60); // @todo add link to this text
             })
 

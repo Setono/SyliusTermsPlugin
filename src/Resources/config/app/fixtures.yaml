@@ -80,7 +80,7 @@ sylius_fixtures:
                                 code: eula_us
                                 name: EULA for United States
                                 slug: eula-us
-                                explanation: Accept US EULA terms
+                                label: Accept US EULA terms
                                 created_at: "-3 day"
                                 updated_at: now
                                 channels:
@@ -89,7 +89,7 @@ sylius_fixtures:
                                 code: eula_eu
                                 name: EULA for EU
                                 slug: eula-eu
-                                explanation: Accept [link:EU EULA terms]
+                                label: Accept [link:EU EULA terms]
                                 translations:
                                     fr_FR:
                                         name: CLUF
@@ -102,7 +102,7 @@ sylius_fixtures:
                                 code: terms_and_conditions
                                 name: Terms and Conditions
                                 slug: terms-conditions
-                                explanation: Accept [link:Terms and conditions]
+                                label: Accept [link:Terms and conditions]
                                 translations:
                                     fr_FR:
                                         name: Termes et conditions

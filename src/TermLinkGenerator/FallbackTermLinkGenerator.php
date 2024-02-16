@@ -24,13 +24,13 @@ final class FallbackTermLinkGenerator implements TermLinkGeneratorInterface
         $slug = $terms->getTranslation($locale)->getSlug();
         Assert::notEmpty($slug, 'Cannot generate link without a slug.');
 
-        $explanation = $terms->getTranslation($locale)->getExplanation();
+        $label = $terms->getTranslation($locale)->getLabel();
         $link = $this->urlGenerator->generate('setono_sylius_terms_show', ['slug' => $slug]);
 
         return sprintf(
             '<a href="%s" data-generator="fallback">%s</a>',
             $link,
-            (string) $explanation,
+            (string) $label,
         );
     }
 }

@@ -23,9 +23,9 @@ interface TermsInterface extends ResourceInterface, CodeAwareInterface, Channels
 
     public function setSlug(?string $slug): void;
 
-    public function getExplanation(): ?string;
+    public function getLabel(): ?string;
 
-    public function setExplanation(string $explanation): void;
+    public function setLabel(string $label): void;
 
     public function getContent(): ?string;
 

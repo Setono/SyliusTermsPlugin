@@ -10,8 +10,8 @@ setono_sylius_terms:
         slug:
             not_blank: Please enter slug.
             unique: Terms slug must be unique.
-        explanation:
-            not_blank: Please enter explanation.
-            max_length: Explanation must not be longer than 255 characters.
+        label:
+            not_blank: Please enter label.
+            max_length: The label must not be longer than 255 characters.
         content:
             not_blank: Please enter content.

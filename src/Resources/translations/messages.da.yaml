@@ -24,7 +24,7 @@ setono_sylius_terms:
             name: Navn
             code: Kode
             slug: Slug
-            explanation: Forklaring
-            explanation_placeholder: Brug [link:Linktekst] til at fortælle hvor linket skal være i teksten
+            label: Tekst til afkrydsningsfelt
+            label_placeholder: Brug [link:Linktekst] til at fortælle hvor linket skal være i teksten
             content: Indhold
             channels: Kanaler

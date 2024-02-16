@@ -10,7 +10,7 @@ setono_sylius_terms:
         slug:
             not_blank: Voer aub een slug in.
             unique: De slug is al in gebruik.
-        explanation:
+        label:
             not_blank: Voer aub een uitleg in.
             max_length: De uitleg mag niet langer zijn dan 255 tekens.
         content:

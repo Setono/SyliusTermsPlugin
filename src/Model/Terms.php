@@ -93,14 +93,14 @@ class Terms implements TermsInterface
         $this->getTranslation()->setSlug($slug);
     }
 
-    public function getExplanation(): ?string
+    public function getLabel(): ?string
     {
-        return $this->getTranslation()->getExplanation();
+        return $this->getTranslation()->getLabel();
     }
 
-    public function setExplanation(?string $explanation): void
+    public function setLabel(?string $label): void
     {
-        $this->getTranslation()->setExplanation($explanation);
+        $this->getTranslation()->setLabel($label);
     }
 
     public function getContent(): ?string

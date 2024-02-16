@@ -24,7 +24,7 @@ setono_sylius_terms:
             name: Name
             code: Code
             slug: Slug
-            explanation: Explanation
-            explanation_placeholder: Use [link:Link text] to tell where the link should be placed in the text
+            label: Label
+            label_placeholder: Use [link:Link text] to tell where the link should be placed in the text
             content: Content
             channels: Channels
