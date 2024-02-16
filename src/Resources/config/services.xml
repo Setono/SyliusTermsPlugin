@@ -7,9 +7,8 @@
         <import resource="services/event_subscriber.xml"/>
         <import resource="services/fixture.xml"/>
         <import resource="services/form.xml"/>
-        <import resource="services/form_extension.xml"/>
         <import resource="services/generator.xml"/>
         <import resource="services/provider.xml"/>
-        <import resource="services/term_link_generator.xml"/>
+        <import resource="services/renderer.xml"/>
     </imports>
 </container>

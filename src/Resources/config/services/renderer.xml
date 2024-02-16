@@ -3,11 +3,8 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Setono\SyliusTermsPlugin\Form\Extension\FormTypeExtension">
-            <argument type="service" id="setono_sylius_terms.provider.terms"/>
-            <argument>%setono_sylius_terms.forms%</argument>
-
-            <tag name="form.type_extension"/>
+        <service id="setono_sylius_terms.renderer.label" class="Setono\SyliusTermsPlugin\Renderer\LabelRenderer">
+            <argument type="service" id="router"/>
         </service>
     </services>
 </container>
