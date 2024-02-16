@@ -1,17 +1,11 @@
 setono_sylius_terms:
     terms:
         code:
-            not_blank: Please enter terms code.
             regex: Term code can only be comprised of letters, numbers, dashes and underscores.
             unique: This code is already in use.
         name:
-            not_blank: Please enter name.
             max_length: Name must not be longer than 255 characters.
         slug:
-            not_blank: Please enter slug.
             unique: Terms slug must be unique.
         label:
-            not_blank: Please enter label.
             max_length: The label must not be longer than 255 characters.
-        content:
-            not_blank: Please enter content.

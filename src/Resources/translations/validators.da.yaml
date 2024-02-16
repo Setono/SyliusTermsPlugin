@@ -1,17 +1,11 @@
 setono_sylius_terms:
     terms:
         code:
-            not_blank: Angiv en kode.
             regex: Koden kan kun bestå af bogstaver, tal, bindestreger og underscores.
             unique: Denne kode er allerede i brug.
         name:
-            not_blank: Angiv navn.
             max_length: Navnet må ikke være længere end 255 tegn.
         slug:
-            not_blank: Angiv en slug.
             unique: Sluggen skal være unik.
         label:
-            not_blank: Angiv beskrivelse.
             max_length: Beskrivelsen må ikke være længere end 255 tegn.
-        content:
-            not_blank: Angiv indhold.

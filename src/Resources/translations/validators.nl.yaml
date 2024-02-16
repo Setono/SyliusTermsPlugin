@@ -1,17 +1,11 @@
 setono_sylius_terms:
     terms:
         code:
-            not_blank: Voer aub een code in voor de voorwaarden.
             regex: De code voor de voorwaarden mag uitsluitend bestaan uit letters, cijfers, - en _.
             unique: De code is al in gebruik.
         name:
-            not_blank: Voer aub een naam in.
             max_length: De naam mag niet langer zijn dan 255 tekens.
         slug:
-            not_blank: Voer aub een slug in.
             unique: De slug is al in gebruik.
         label:
-            not_blank: Voer aub een uitleg in.
             max_length: De uitleg mag niet langer zijn dan 255 tekens.
-        content:
-            not_blank: Voer aub content in.

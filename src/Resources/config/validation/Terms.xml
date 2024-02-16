@@ -14,7 +14,6 @@
         </constraint>
         <property name="code">
             <constraint name="NotBlank">
-                <option name="message">setono_sylius_terms.terms.code.not_blank</option>
                 <option name="groups">setono_sylius_terms</option>
             </constraint>
             <constraint name="Regex">
