@@ -1,19 +1,20 @@
 {% from '@SyliusAdmin/Macro/translationForm.html.twig' import translationFormWithSlug %}
 
 <div class="ui two column stackable grid">
-    <div class="six wide column">
+    <div class="seven wide column">
         {{ form_errors(form) }}
 
         <div class="ui segment">
-            {{ form_row(form.code) }}
-            <div class="two fields">
+                {{ form_row(form.code) }}
                 {{ form_row(form.enabled) }}
+            <div class="two fields">
+                {{ form_row(form.forms) }}
                 {{ form_row(form.channels) }}
             </div>
-            {{ form_row(form.forms) }}
+
         </div>
     </div>
-    <div class="ten wide column">
+    <div class="nine wide column">
         {{ translationFormWithSlug(form.translations, '@SyliusAdmin/Product/_slugField.html.twig', terms) }}
     </div>
 </div>
