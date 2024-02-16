@@ -3,40 +3,39 @@
 <constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/services/constraint-mapping-1.0.xsd">
-
     <class name="Setono\SyliusTermsPlugin\Model\TermsTranslation">
         <property name="name">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_terms.terms.name.not_blank</option>
-                <option name="groups">sylius</option>
+                <option name="groups">setono_sylius_terms</option>
             </constraint>
             <constraint name="Length">
                 <option name="max">255</option>
                 <option name="maxMessage">setono_sylius_terms.terms.name.max_length</option>
-                <option name="groups">sylius</option>
+                <option name="groups">setono_sylius_terms</option>
             </constraint>
         </property>
         <property name="slug">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_terms.terms.slug.not_blank</option>
-                <option name="groups">sylius</option>
+                <option name="groups">setono_sylius_terms</option>
             </constraint>
         </property>
         <property name="label">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_terms.terms.label.not_blank</option>
-                <option name="groups">sylius</option>
+                <option name="groups">setono_sylius_terms</option>
             </constraint>
             <constraint name="Length">
                 <option name="max">255</option>
                 <option name="maxMessage">setono_sylius_terms.terms.label.max_length</option>
-                <option name="groups">sylius</option>
+                <option name="groups">setono_sylius_terms</option>
             </constraint>
         </property>
         <property name="content">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_terms.terms.content.not_blank</option>
-                <option name="groups">sylius</option>
+                <option name="groups">setono_sylius_terms</option>
             </constraint>
         </property>
         <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
@@ -46,8 +45,7 @@
             </option>
             <option name="errorPath">slug</option>
             <option name="message">setono_sylius_terms.terms.slug.unique</option>
-            <option name="groups">sylius</option>
+            <option name="groups">setono_sylius_terms</option>
         </constraint>
     </class>
-
 </constraint-mapping>

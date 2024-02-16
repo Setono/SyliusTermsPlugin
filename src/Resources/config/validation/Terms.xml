@@ -3,27 +3,25 @@
 <constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/services/constraint-mapping-1.0.xsd">
-
     <class name="Setono\SyliusTermsPlugin\Model\Terms">
         <property name="translations">
-            <constraint name="Valid" />
+            <constraint name="Valid"/>
         </property>
         <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
             <option name="fields">code</option>
             <option name="message">setono_sylius_terms.terms.code.unique</option>
-            <option name="groups">sylius</option>
+            <option name="groups">setono_sylius_terms</option>
         </constraint>
         <property name="code">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_terms.terms.code.not_blank</option>
-                <option name="groups">sylius</option>
+                <option name="groups">setono_sylius_terms</option>
             </constraint>
             <constraint name="Regex">
                 <option name="message">setono_sylius_terms.terms.code.regex</option>
                 <option name="pattern">/^[\w-]*$/</option>
-                <option name="groups">sylius</option>
+                <option name="groups">setono_sylius_terms</option>
             </constraint>
         </property>
     </class>
-
 </constraint-mapping>
