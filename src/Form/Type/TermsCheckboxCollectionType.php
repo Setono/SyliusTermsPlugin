@@ -22,10 +22,13 @@ final class TermsCheckboxCollectionType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // The only reason we add the terms in an event listener
+        // is to be able to collect the validation groups from the parent forms
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (PreSetDataEvent $event) use ($options): void {
             $form = $event->getForm();
             $parent = $form->getParent();
 
+            // We need to collect all validation groups from the parent forms, so that our constraints are applied
             $validationGroups = [];
             while (null !== $parent) {
                 $groups = $parent->getConfig()->getOption('validation_groups');

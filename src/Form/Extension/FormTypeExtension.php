@@ -16,7 +16,11 @@ use Symfony\Component\Form\FormTypeInterface;
 
 final class FormTypeExtension extends AbstractTypeExtension
 {
-    /** @var list<class-string<FormTypeInterface>> */
+    /**
+     * Holds a list of form types where terms are allowed to be added
+     *
+     * @var list<class-string<FormTypeInterface>>
+     */
     private array $forms;
 
     /**
