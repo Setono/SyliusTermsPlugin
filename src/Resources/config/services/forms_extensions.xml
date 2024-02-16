@@ -3,11 +3,10 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-
-        <service id="Setono\SyliusTermsPlugin\Form\Extension\CompleteTypeExtension">
+        <service id="Setono\SyliusTermsPlugin\Form\Extension\FormTypeExtension">
             <argument type="service" id="setono_sylius_terms.provider.terms"/>
-            <tag name="form.type_extension" extended_type="Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType" />
-        </service>
 
+            <tag name="form.type_extension"/>
+        </service>
     </services>
 </container>
