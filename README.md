@@ -6,7 +6,9 @@
 [![Build Status][ico-github-actions]][link-github-actions]
 [![Code Coverage][ico-code-coverage]][link-code-coverage]
 
-Will add the requirement to check off terms and conditions when the customer checks out
+Will add a checkbox to the selects form(s) where the customer has to accept the terms and conditions before continuing.
+
+This can be used to make sure the customer has accepted the terms and conditions before placing an order.
 
 * [Screenshots](#screenshots)
 * [Installation](#installation)
@@ -24,6 +26,9 @@ Before the customer can place order, he/she has to check the required terms
 Here is a list of terms. Notice the `terms_and_conditions` which is associated with multiple channels.
 
 ![Screenshot showing admin terms index page](docs/images/admin-terms-index.png)
+
+Notice that you select the form where the terms are shown. As default only the `Checkout > Complete` form is available,
+but you can add more in the `setono_sylius_terms.forms` configuration option.
 
 ![Screenshot showing admin terms update page](docs/images/admin-terms-update.png)
 
