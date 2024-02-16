@@ -1,0 +1,6 @@
+setono_sylius_terms_shop:
+    resource: "@SetonoSyliusTermsPlugin/Resources/config/routes/shop.yaml"
+
+setono_sylius_terms_admin:
+    resource: "@SetonoSyliusTermsPlugin/Resources/config/routes/admin.yaml"
+    prefix: /admin

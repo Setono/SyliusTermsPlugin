@@ -68,13 +68,9 @@ return [
 
 ### Step 3: Import config
 ```yaml
-# config/packages/_sylius.yaml
+# config/packages/setono_sylius_terms.yaml
 imports:
-    # ...
-    
     - { resource: "@SetonoSyliusTermsPlugin/Resources/config/app/config.yaml" }
-    
-    # ...
 ```
 
 ### Step 4: Import routing
@@ -82,15 +78,8 @@ imports:
 ```yaml
 # config/routes/setono_sylius_terms.yaml
 
-setono_sylius_terms_shop:
-    resource: "@SetonoSyliusTermsPlugin/Resources/config/shop_routing.yaml"
-    prefix: /{_locale}
-    requirements:
-        _locale: ^[a-z]{2}(?:_[A-Z]{2})?$
-
-setono_sylius_terms_admin:
-    resource: "@SetonoSyliusTermsPlugin/Resources/config/admin_routing.yaml"
-    prefix: /admin
+setono_sylius_terms:
+    resource: "@SetonoSyliusTermsPlugin/Resources/config/routes.yaml"
 ```
 
 ### Step 5: Update your database schema

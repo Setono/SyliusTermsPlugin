@@ -1,0 +1,2 @@
+setono_sylius_terms:
+    resource: "@SetonoSyliusTermsPlugin/Resources/config/routes.yaml"

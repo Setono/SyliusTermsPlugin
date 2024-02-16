@@ -1,9 +1,0 @@
-setono_sylius_terms_shop:
-    resource: "@SetonoSyliusTermsPlugin/Resources/config/shop_routing.yaml"
-    prefix: /{_locale}
-    requirements:
-        _locale: ^[a-z]{2}(?:_[A-Z]{2})?$
-
-setono_sylius_terms_admin:
-    resource: "@SetonoSyliusTermsPlugin/Resources/config/admin_routing.yaml"
-    prefix: /admin
