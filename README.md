@@ -35,14 +35,9 @@ The `Label` field is the text shown on the complete order page. Notice you can u
 
 ### Step 1: Download the plugin
 
-Open a command console, enter your project directory and execute the following command to download the latest stable version of this plugin:
-
 ```bash
-$ composer require setono/sylius-terms-plugin
+composer require setono/sylius-terms-plugin
 ```
-
-This command requires you to have Composer installed globally, as explained in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
-
 
 ### Step 2: Enable the plugin
 
@@ -81,6 +76,8 @@ imports:
 setono_sylius_terms:
     resource: "@SetonoSyliusTermsPlugin/Resources/config/routes.yaml"
 ```
+
+There's also a version for non-localized stores: `@SetonoSyliusTermsPlugin/Resources/config/routes_no_locale.yaml`
 
 ### Step 5: Update your database schema
 
@@ -160,7 +157,7 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
 [ico-unstable-version]: https://poser.pugx.org/setono/sylius-terms-plugin/v/unstable
 [ico-license]: https://poser.pugx.org/setono/sylius-terms-plugin/license
 [ico-github-actions]: https://github.com/Setono/SyliusTermsPlugin/workflows/build/badge.svg
-[ico-code-coverage]: https://codecov.io/gh/Setono/SyliusTermsPlugin/branch/master/graph/badge.svg
+[ico-code-coverage]: https://codecov.io/gh/Setono/SyliusTermsPlugin/graph/badge.svg
 
 [link-packagist]: https://packagist.org/packages/setono/sylius-terms-plugin
 [link-github-actions]: https://github.com/Setono/SyliusTermsPlugin/actions
