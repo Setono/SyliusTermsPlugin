@@ -13,7 +13,7 @@ interface TermsRepositoryInterface extends RepositoryInterface
     /**
      * @return array<array-key, TermsInterface>
      */
-    public function findByChannel(ChannelInterface $channel, string $locale): array;
+    public function findByClassAndChannelAndLocale(string $class, ChannelInterface $channel, string $locale): array;
 
     public function findOneByChannelAndSlug(ChannelInterface $channel, string $locale, string $slug): ?TermsInterface;
 }

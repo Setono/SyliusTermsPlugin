@@ -5,6 +5,7 @@
     <services>
         <service id="Setono\SyliusTermsPlugin\Form\Extension\FormTypeExtension">
             <argument type="service" id="setono_sylius_terms.provider.terms"/>
+            <argument>%setono_sylius_terms.forms%</argument>
 
             <tag name="form.type_extension"/>
         </service>

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\DependencyInjection;
 
+use ReflectionClass;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use function Symfony\Component\String\u;
 
 final class SetonoSyliusTermsExtension extends AbstractResourceExtension implements PrependExtensionInterface
 {
@@ -18,11 +20,18 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
         /**
          * @psalm-suppress PossiblyNullArgument
          *
-         * @var array{routing: array{terms: string}, resources: array} $config
+         * @var array{forms: array<class-string, array{label: string|null}>, routing: array{terms: string}, resources: array} $config
          */
         $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
 
+        foreach ($config['forms'] as $form => $formConfig) {
+            $reflectionClass = new ReflectionClass($form);
+            $label = $formConfig['label'] ?? sprintf('setono_sylius_terms.form.terms.term_form.%s', u($reflectionClass->getShortName())->snake()->trimSuffix('_type')->toString());
+            $config['forms'][$form]['label'] = $label;
+        }
+
+        $container->setParameter('setono_sylius_terms.forms', $config['forms']);
         $container->setParameter('setono_sylius_terms.terms_path', $config['routing']['terms']);
 
         $loader->load('services.xml');

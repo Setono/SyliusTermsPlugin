@@ -15,6 +15,7 @@
         <service id="setono_sylius_terms.form.type.terms"
                  class="Setono\SyliusTermsPlugin\Form\Type\TermsType">
             <argument>%setono_sylius_terms.model.terms.class%</argument>
+            <argument>%setono_sylius_terms.forms%</argument>
             <argument>%setono_sylius_terms.form.type.terms.validation_groups%</argument>
 
             <tag name="form.type"/>

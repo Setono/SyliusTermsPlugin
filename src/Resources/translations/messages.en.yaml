@@ -28,3 +28,6 @@ setono_sylius_terms:
             label_placeholder: Use [link:Link text] to tell where the link should be placed in the text
             content: Content
             channels: Channels
+            forms: Forms
+            term_form:
+                complete: Checkout > Complete order

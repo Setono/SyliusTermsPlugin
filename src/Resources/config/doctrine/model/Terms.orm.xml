@@ -12,6 +12,7 @@
 
         <field name="code" type="string" column="code" unique="true"/>
         <field name="enabled" type="boolean"/>
+        <field name="forms" type="json" nullable="true"/>
 
         <field name="createdAt" column="created_at" type="datetime">
             <gedmo:timestampable on="create"/>

@@ -9,6 +9,7 @@ use Setono\SyliusTermsPlugin\Form\Type\TermsType;
 use Setono\SyliusTermsPlugin\Model\Terms;
 use Setono\SyliusTermsPlugin\Model\TermsTranslation;
 use Setono\SyliusTermsPlugin\Repository\TermsRepository;
+use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Component\Resource\Factory\Factory;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
@@ -28,6 +29,15 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
+                ->arrayNode('forms')
+                    ->defaultValue([CompleteType::class => ['label' => null]])
+                    ->useAttributeAsKey('class')
+                    ->arrayPrototype()
+                        ->children()
+                            ->scalarNode('label')->defaultNull()->end()
+                        ->end()
+                    ->end()
+                ->end()
                 ->arrayNode('routing')
                     ->addDefaultsIfNotSet()
                     ->children()
@@ -64,7 +74,6 @@ final class Configuration implements ConfigurationInterface
                                         ->scalarNode('form')->defaultValue(TermsType::class)->cannotBeEmpty()->end()
                                     ->end()
                                 ->end()
-
                                 ->arrayNode('translation')
                                     ->addDefaultsIfNotSet()
                                     ->children()
