@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\Form\Type;
 
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
+use Setono\SyliusTermsPlugin\Renderer\LabelRendererInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -15,6 +16,10 @@ use Symfony\Component\Validator\Constraints\IsTrue;
 
 final class TermsCheckboxCollectionType extends AbstractType
 {
+    public function __construct(private readonly LabelRendererInterface $labelRenderer)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (PreSetDataEvent $event) use ($options): void {
@@ -34,10 +39,11 @@ final class TermsCheckboxCollectionType extends AbstractType
 
             $validationGroups = array_filter(array_merge(...$validationGroups), static fn (mixed $group): bool => is_string($group));
 
-            /** @var TermsInterface $term */
-            foreach ($options['terms'] as $term) {
-                $form->add((string) $term->getCode(), CheckboxType::class, [
-                    'label' => $term->getLabel(),
+            /** @var TermsInterface $terms */
+            foreach ($options['terms'] as $terms) {
+                $form->add((string) $terms->getCode(), CheckboxType::class, [
+                    'label' => $this->labelRenderer->render($terms),
+                    'label_html' => true,
                     'required' => false,
                     'value' => true,
                     'mapped' => false,
