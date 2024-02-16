@@ -5,3 +5,5 @@ setono_sylius_terms:
             unique: De code is al in gebruik.
         slug:
             unique: De slug is al in gebruik.
+    terms_checkbox:
+        required: U moet de voorwaarden accepteren om door te gaan.

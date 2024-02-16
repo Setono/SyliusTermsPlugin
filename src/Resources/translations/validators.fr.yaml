@@ -5,3 +5,5 @@ setono_sylius_terms:
             unique: Le code est déjà utilisé.
         slug:
             unique: "L'identifiant est déjà utilisé."
+    terms_checkbox:
+        required: Vous devez accepter les conditions pour continuer.

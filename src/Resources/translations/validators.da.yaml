@@ -5,3 +5,5 @@ setono_sylius_terms:
             unique: Denne kode er allerede i brug.
         slug:
             unique: Sluggen skal være unik.
+    terms_checkbox:
+        required: Du skal acceptere betingelserne for at fortsætte.

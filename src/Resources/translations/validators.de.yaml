@@ -5,3 +5,5 @@ setono_sylius_terms:
             unique: Der Code wird bereits verwendet.
         slug:
             unique: Der Slug wird bereits verwendet.
+    terms_checkbox:
+        required: Sie müssen die Konditionen akzeptieren, um fortzufahren.

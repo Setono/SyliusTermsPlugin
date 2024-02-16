@@ -31,6 +31,7 @@
         "symfony/routing": "^5.4 || ^6.4 || ^7.0",
         "symfony/string": "^5.4 || ^6.4 || ^7.0",
         "symfony/translation-contracts": "^1.1 || ^2.4 || ^3.4",
+        "symfony/validator": "^5.4 || ^6.4 || ^7.0",
         "twig/twig": "^2.14 || ^3.8",
         "webmozart/assert": "^1.11"
     },

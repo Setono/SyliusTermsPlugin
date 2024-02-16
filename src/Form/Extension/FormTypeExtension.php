@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\Form\Extension;
 
 use Generator;
-use Setono\SyliusTermsPlugin\Form\Type\TermsAcceptCollectionType;
+use Setono\SyliusTermsPlugin\Form\Type\TermsCheckboxCollectionType;
 use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Event\PreSetDataEvent;
@@ -42,7 +42,7 @@ final class FormTypeExtension extends AbstractTypeExtension
                 return;
             }
 
-            $event->getForm()->add('terms', TermsAcceptCollectionType::class, [
+            $event->getForm()->add('terms', TermsCheckboxCollectionType::class, [
                 'terms' => $terms,
             ]);
         });

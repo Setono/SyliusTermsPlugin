@@ -28,13 +28,5 @@
 
             <tag name="form.type"/>
         </service>
-
-        <service id="setono_sylius_terms.form.type.terms_accept_collection"
-                 class="Setono\SyliusTermsPlugin\Form\Type\TermsAcceptCollectionType">
-            <argument type="service" id="setono_sylius_terms.term_link_generator.composite"/>
-            <argument type="service" id="translator"/>
-
-            <tag name="form.type"/>
-        </service>
     </services>
 </container>
