@@ -3,9 +3,5 @@ setono_sylius_terms:
         code:
             regex: Le code pour les conditions ne peut comporter que des lettres, des chiffres, - et _.
             unique: Le code est déjà utilisé.
-        name:
-            max_length: Le nom ne doit pas comporter plus de 255 caractères.
         slug:
             unique: "L'identifiant est déjà utilisé."
-        label:
-            max_length: L’explication ne doit pas comporter plus de 255 caractères.

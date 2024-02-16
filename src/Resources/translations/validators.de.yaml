@@ -3,9 +3,5 @@ setono_sylius_terms:
         code:
             regex: Der Code für die Konditionen darf lediglich aus Buchstaben, Zahlen, Bindestrichen und Unterstrichen bestehen.
             unique: Der Code wird bereits verwendet.
-        name:
-            max_length: Der Name darf nicht mehr als 255 Zeichen enthalten.
         slug:
             unique: Der Slug wird bereits verwendet.
-        label:
-            max_length: Die Erklärung darf nicht mehr als 255 Zeichen enthalten.

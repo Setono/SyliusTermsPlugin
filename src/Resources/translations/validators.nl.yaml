@@ -3,9 +3,5 @@ setono_sylius_terms:
         code:
             regex: De code voor de voorwaarden mag uitsluitend bestaan uit letters, cijfers, - en _.
             unique: De code is al in gebruik.
-        name:
-            max_length: De naam mag niet langer zijn dan 255 tekens.
         slug:
             unique: De slug is al in gebruik.
-        label:
-            max_length: De uitleg mag niet langer zijn dan 255 tekens.

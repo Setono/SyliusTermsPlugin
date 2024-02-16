@@ -3,9 +3,5 @@ setono_sylius_terms:
         code:
             regex: Term code can only be comprised of letters, numbers, dashes and underscores.
             unique: This code is already in use.
-        name:
-            max_length: Name must not be longer than 255 characters.
         slug:
             unique: Terms slug must be unique.
-        label:
-            max_length: The label must not be longer than 255 characters.

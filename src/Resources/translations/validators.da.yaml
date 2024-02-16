@@ -3,9 +3,5 @@ setono_sylius_terms:
         code:
             regex: Koden kan kun bestå af bogstaver, tal, bindestreger og underscores.
             unique: Denne kode er allerede i brug.
-        name:
-            max_length: Navnet må ikke være længere end 255 tegn.
         slug:
             unique: Sluggen skal være unik.
-        label:
-            max_length: Beskrivelsen må ikke være længere end 255 tegn.
