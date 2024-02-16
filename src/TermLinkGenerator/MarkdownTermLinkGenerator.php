@@ -27,8 +27,8 @@ final class MarkdownTermLinkGenerator implements TermLinkGeneratorInterface
         $label = (string) $terms->getTranslation($locale)->getLabel();
         $link = $this->router->generate('setono_sylius_terms_show', ['slug' => $slug]);
 
-        return (string) preg_replace_callback('/\[link:(.*?)\]/', fn ($matches): string => sprintf(
-            '<a href="%s" data-generator="markdown">%s</a>',
+        return (string) preg_replace_callback('/\[link:(.*?)\]/', static fn ($matches): string => sprintf(
+            '<a href="%s" data-generator="markdown" target="_blank">%s</a>',
             $link,
             $matches[1],
         ), htmlspecialchars($label));
