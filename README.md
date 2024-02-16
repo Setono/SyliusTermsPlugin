@@ -61,14 +61,7 @@ return [
 
 **NOTE** that you must instantiate the plugin before the grid bundle, else you will see an exception like `You have requested a non-existent parameter "setono_sylius_terms.model.terms.class".`
 
-### Step 3: Import config
-```yaml
-# config/packages/setono_sylius_terms.yaml
-imports:
-    - { resource: "@SetonoSyliusTermsPlugin/Resources/config/app/config.yaml" }
-```
-
-### Step 4: Import routing
+### Step 3: Import routing
 
 ```yaml
 # config/routes/setono_sylius_terms.yaml
@@ -79,14 +72,14 @@ setono_sylius_terms:
 
 There's also a version for non-localized stores: `@SetonoSyliusTermsPlugin/Resources/config/routes_no_locale.yaml`
 
-### Step 5: Update your database schema
+### Step 4: Update your database schema
 
 ```bash
 $ php bin/console doctrine:migrations:diff
 $ php bin/console doctrine:migrations:migrate
 ```
 
-### Step 6: Override checkout complete form
+### Step 5: Override checkout complete form
 
 Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig):
 
