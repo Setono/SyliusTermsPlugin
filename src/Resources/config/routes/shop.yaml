@@ -1,19 +1,5 @@
-setono_sylius_terms_show:
+setono_sylius_terms_shop_show_terms:
     path: '/%setono_sylius_terms.terms_path%/{slug}'
     methods: [GET]
     defaults:
         _controller: setono_sylius_terms.controller.action.show_terms
-
-setono_sylius_terms_partial_show:
-    path: '/%setono_sylius_terms.terms_path%/{slug}/partial'
-    methods: [GET]
-    defaults:
-        _controller: setono_sylius_terms.controller.terms::showAction
-        _sylius:
-            template: "@SetonoSyliusTermsPlugin/Shop/Terms/partialShow.html.twig"
-            repository:
-                method: findOneByChannelAndSlug
-                arguments:
-                    - "expr:service('sylius.context.channel').getChannel()"
-                    - "expr:service('sylius.context.locale').getLocaleCode()"
-                    - $slug

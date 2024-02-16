@@ -24,7 +24,7 @@ final class LabelRenderer implements LabelRendererInterface
 
         $label = htmlspecialchars($label);
 
-        $link = $this->urlGenerator->generate('setono_sylius_terms_show', ['slug' => $slug]);
+        $link = $this->urlGenerator->generate('setono_sylius_terms_shop_show_terms', ['slug' => $slug]);
 
         $replaced = (string) preg_replace_callback('/\[link:(.*?)\]/', static fn ($matches): string => sprintf(
             '<a href="%s" target="_blank">%s</a>',
