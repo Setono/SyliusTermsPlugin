@@ -38,11 +38,11 @@ final class ShowTermsAction
             // here we test if the user has placed a special template for this particular set of terms
             // if not it throws an exception, and we will use the default template
             $template = $this->twig->load(sprintf(
-                '@SetonoSyliusTermsPlugin/Shop/Terms/Show/%s.html.twig',
+                '@SetonoSyliusTermsPlugin/shop/terms/show/%s.html.twig',
                 (string) $terms->getCode(),
             ));
         } catch (LoaderError) {
-            $template = $this->twig->load('@SetonoSyliusTermsPlugin/Shop/Terms/show.html.twig');
+            $template = $this->twig->load('@SetonoSyliusTermsPlugin/shop/terms/show.html.twig');
         }
 
         return new Response($template->render([

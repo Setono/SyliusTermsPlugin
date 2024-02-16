@@ -97,7 +97,6 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
     ```twig
     {# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
     {% if form.terms is defined %}
-        {% form_theme form.terms '@SetonoSyliusTermsPlugin/Shop/Form/termsTheme.html.twig' %}
         {{ form_row(form.terms) }}
     {% endif %}
     ```

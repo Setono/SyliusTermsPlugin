@@ -68,7 +68,7 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
                             'type' => 'twig',
                             'label' => 'setono_sylius_terms.ui.channels',
                             'options' => [
-                                'template' => '@SetonoSyliusTermsPlugin/Admin/Grid/Field/channels.html.twig',
+                                'template' => '@SetonoSyliusTermsPlugin/admin/grid/field/channels.html.twig',
                             ],
                         ],
                     ],
@@ -96,7 +96,7 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
                 'setono_sylius_terms.admin.terms.create.javascripts' => [
                     'blocks' => [
                         'javascripts' => [
-                            'template' => '@SetonoSyliusTermsPlugin/Admin/Terms/_javascripts.html.twig',
+                            'template' => '@SetonoSyliusTermsPlugin/admin/terms/_javascripts.html.twig',
                         ],
                     ],
                 ],

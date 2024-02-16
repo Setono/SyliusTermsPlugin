@@ -9,7 +9,7 @@ setono_sylius_terms_admin_terms:
             all:
                 subheader: setono_sylius_terms.ui.manage_terms
                 templates:
-                    form: "@SetonoSyliusTermsPlugin/Admin/Terms/_form.html.twig"
+                    form: "@SetonoSyliusTermsPlugin/admin/terms/_form.html.twig"
             index:
                 icon: 'check circle outline'
     type: sylius.resource
