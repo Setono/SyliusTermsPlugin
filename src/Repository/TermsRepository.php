@@ -11,15 +11,23 @@ use Webmozart\Assert\Assert;
 
 class TermsRepository extends EntityRepository implements TermsRepositoryInterface
 {
-    public function findByChannel(ChannelInterface $channel, string $locale): array
+    public function findByClassAndChannelAndLocale(string $class, ChannelInterface $channel, string $locale): array
     {
+        // See https://dev.mysql.com/doc/refman/8.0/en/string-comparison-functions.html
+        // The manual says: To search for \, specify it as \\\\
+        // That is why below we replace \ with \\\\
+        $class = str_replace('\\', '\\\\\\\\', $class);
+
         $objs = $this->createQueryBuilder('o')
             ->addSelect('translation')
             ->innerJoin('o.translations', 'translation', 'WITH', 'translation.locale = :locale')
             ->andWhere('o.enabled = true')
+            ->andWhere('o.forms IS NOT NULL')
+            ->andWhere('o.forms LIKE :class')
             ->andWhere(':channel MEMBER OF o.channels')
-            ->setParameter('channel', $channel)
             ->setParameter('locale', $locale)
+            ->setParameter('class', '%"' . $class . '"%')
+            ->setParameter('channel', $channel)
             ->getQuery()
             ->getResult()
         ;

@@ -17,9 +17,10 @@ final class TermsProvider implements TermsProviderInterface
     ) {
     }
 
-    public function getTerms(): array
+    public function getTerms(string $class): array
     {
-        return $this->termsRepository->findByChannel(
+        return $this->termsRepository->findByClassAndChannelAndLocale(
+            $class,
             $this->channelContext->getChannel(),
             $this->localeContext->getLocaleCode(),
         );

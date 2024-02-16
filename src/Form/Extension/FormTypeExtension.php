@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Form\Extension;
 
+use Generator;
 use Setono\SyliusTermsPlugin\Form\Type\TermsAcceptCollectionType;
 use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
-use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
@@ -20,11 +20,11 @@ final class FormTypeExtension extends AbstractTypeExtension
     private array $forms;
 
     /**
-     * @param array<class-string<FormTypeInterface>, array> $forms
+     * @param array<class-string<FormTypeInterface>, array{label: string}> $forms
      */
     public function __construct(
         private readonly TermsProviderInterface $termsProvider,
-        array $forms = [CompleteType::class => []],
+        array $forms,
     ) {
         $this->forms = array_keys($forms);
     }
@@ -37,8 +37,8 @@ final class FormTypeExtension extends AbstractTypeExtension
                 return;
             }
 
-            $terms = $this->termsProvider->getTerms();
-            if (0 === count($terms)) {
+            $terms = $this->termsProvider->getTerms($formTypeClass::class);
+            if ([] === $terms) {
                 return;
             }
 
@@ -48,7 +48,7 @@ final class FormTypeExtension extends AbstractTypeExtension
         });
     }
 
-    public static function getExtendedTypes(): \Generator
+    public static function getExtendedTypes(): Generator
     {
         yield FormType::class;
     }

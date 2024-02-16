@@ -22,10 +22,13 @@ class Terms implements TermsInterface
 
     protected ?int $id = null;
 
+    protected ?string $code = null;
+
     /** @var Collection<array-key, ChannelInterface> */
     protected Collection $channels;
 
-    protected ?string $code = null;
+    /** @var list<class-string>|null */
+    protected ?array $forms = [];
 
     public function __construct()
     {
@@ -37,30 +40,6 @@ class Terms implements TermsInterface
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getChannels(): Collection
-    {
-        return $this->channels;
-    }
-
-    public function hasChannel(ChannelInterface $channel): bool
-    {
-        return $this->channels->contains($channel);
-    }
-
-    public function addChannel(ChannelInterface $channel): void
-    {
-        if (!$this->hasChannel($channel)) {
-            $this->channels->add($channel);
-        }
-    }
-
-    public function removeChannel(ChannelInterface $channel): void
-    {
-        if ($this->hasChannel($channel)) {
-            $this->channels->removeElement($channel);
-        }
     }
 
     public function getCode(): ?string
@@ -111,6 +90,59 @@ class Terms implements TermsInterface
     public function setContent(?string $content): void
     {
         $this->getTranslation()->setContent($content);
+    }
+
+    public function getChannels(): Collection
+    {
+        return $this->channels;
+    }
+
+    public function hasChannel(ChannelInterface $channel): bool
+    {
+        return $this->channels->contains($channel);
+    }
+
+    public function addChannel(ChannelInterface $channel): void
+    {
+        if (!$this->hasChannel($channel)) {
+            $this->channels->add($channel);
+        }
+    }
+
+    public function removeChannel(ChannelInterface $channel): void
+    {
+        if ($this->hasChannel($channel)) {
+            $this->channels->removeElement($channel);
+        }
+    }
+
+    public function getForms(): array
+    {
+        return $this->forms ?? [];
+    }
+
+    public function addForm(string $form): void
+    {
+        if (null === $this->forms) {
+            $this->forms = [];
+        }
+
+        if (in_array($form, $this->forms, true)) {
+            return;
+        }
+
+        $this->forms[] = $form;
+    }
+
+    public function removeForm(string $form): void
+    {
+        if (null === $this->forms) {
+            return;
+        }
+
+        $forms = array_values(array_filter($this->forms, static fn (string $f) => $f !== $form));
+
+        $this->forms = [] === $forms ? null : $forms;
     }
 
     public function getTranslation(?string $locale = null): TermsTranslationInterface
