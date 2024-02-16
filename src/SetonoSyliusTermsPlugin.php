@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin;
 
-use Setono\SyliusTermsPlugin\DependencyInjection\Compiler\CompositeClickStrategyApplicatorPass;
 use Setono\SyliusTermsPlugin\DependencyInjection\Compiler\CompositeTermLinkGeneratorPass;
 use Sylius\Bundle\CoreBundle\Application\SyliusPluginTrait;
 use Sylius\Bundle\ResourceBundle\AbstractResourceBundle;
@@ -27,6 +26,5 @@ final class SetonoSyliusTermsPlugin extends AbstractResourceBundle
         parent::build($container);
 
         $container->addCompilerPass(new CompositeTermLinkGeneratorPass());
-        $container->addCompilerPass(new CompositeClickStrategyApplicatorPass());
     }
 }
