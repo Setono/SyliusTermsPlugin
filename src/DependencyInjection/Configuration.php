@@ -29,6 +29,16 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
+                ->arrayNode('routing')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('terms')
+                            ->defaultValue('terms')
+                            ->cannotBeEmpty()
+                            ->info('The path prefix for displaying terms on the frontend. Example: https://example.com/terms/privacy-policy - here "terms" is the path prefix')
+                        ->end()
+                    ->end()
+                ->end()
                 ->scalarNode('click_strategy')
                     ->info('What should happen when a user clicks the terms link on the Place order page? Either open a new window or show the terms directly on the page')
 

@@ -17,12 +17,13 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension
         /**
          * @psalm-suppress PossiblyNullArgument
          *
-         * @var array{click_strategy: string, resources: array} $config
+         * @var array{routing: array{terms: string}, click_strategy: string, resources: array} $config
          */
         $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
 
         $container->setParameter('setono_sylius_terms.click_strategy', $config['click_strategy']);
+        $container->setParameter('setono_sylius_terms.terms_path', $config['routing']['terms']);
 
         $loader->load('services.xml');
 
