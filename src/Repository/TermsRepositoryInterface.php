@@ -15,5 +15,7 @@ interface TermsRepositoryInterface extends RepositoryInterface
      */
     public function findByClassAndChannelAndLocale(string $class, ChannelInterface $channel, string $locale): array;
 
-    public function findOneByChannelAndSlug(ChannelInterface $channel, string $locale, string $slug): ?TermsInterface;
+    public function findOneByChannelAndLocaleAndSlug(ChannelInterface $channel, string $locale, string $slug): ?TermsInterface;
+
+    public function findOneByChannelAndLocaleAndCode(ChannelInterface $channel, string $locale, string $code): ?TermsInterface;
 }

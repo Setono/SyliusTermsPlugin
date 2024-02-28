@@ -38,7 +38,7 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
         return $objs;
     }
 
-    public function findOneByChannelAndSlug(ChannelInterface $channel, string $locale, string $slug): ?TermsInterface
+    public function findOneByChannelAndLocaleAndSlug(ChannelInterface $channel, string $locale, string $slug): ?TermsInterface
     {
         $obj = $this->createQueryBuilder('o')
             ->addSelect('translation')
@@ -49,6 +49,29 @@ class TermsRepository extends EntityRepository implements TermsRepositoryInterfa
             ->setParameter('channel', $channel)
             ->setParameter('locale', $locale)
             ->setParameter('slug', $slug)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+
+        Assert::nullOrIsInstanceOf($obj, TermsInterface::class);
+
+        return $obj;
+    }
+
+    public function findOneByChannelAndLocaleAndCode(
+        ChannelInterface $channel,
+        string $locale,
+        string $code,
+    ): ?TermsInterface {
+        $obj = $this->createQueryBuilder('o')
+            ->addSelect('translation')
+            ->innerJoin('o.translations', 'translation', 'WITH', 'translation.locale = :locale')
+            ->andWhere(':channel MEMBER OF o.channels')
+            ->andWhere('o.code = :code')
+            ->andWhere('o.enabled = true')
+            ->setParameter('locale', $locale)
+            ->setParameter('channel', $channel)
+            ->setParameter('code', $code)
             ->getQuery()
             ->getOneOrNullResult()
         ;

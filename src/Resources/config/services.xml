@@ -9,5 +9,6 @@
         <import resource="services/form.xml"/>
         <import resource="services/provider.xml"/>
         <import resource="services/renderer.xml"/>
+        <import resource="services/twig.xml"/>
     </imports>
 </container>

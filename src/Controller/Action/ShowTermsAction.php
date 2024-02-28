@@ -24,7 +24,7 @@ final class ShowTermsAction
 
     public function __invoke(string $slug): Response
     {
-        $terms = $this->termsRepository->findOneByChannelAndSlug(
+        $terms = $this->termsRepository->findOneByChannelAndLocaleAndSlug(
             $this->channelContext->getChannel(),
             $this->localeContext->getLocaleCode(),
             $slug,

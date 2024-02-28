@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="setono_sylius_terms.twig.terms_extension" class="Setono\SyliusTermsPlugin\Twig\TermsExtension">
+            <tag name="twig.extension"/>
+        </service>
+
+        <service id="setono_sylius_terms.twig.terms_runtime" class="Setono\SyliusTermsPlugin\Twig\TermsRuntime">
+            <argument type="service" id="sylius.context.channel"/>
+            <argument type="service" id="sylius.context.locale"/>
+            <argument type="service" id="setono_sylius_terms.repository.terms"/>
+
+            <tag name="twig.runtime"/>
+        </service>
+    </services>
+</container>
