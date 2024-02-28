@@ -22,9 +22,11 @@ setono_sylius_terms:
         terms:
             translations: Vertalingen
             name: Naam
+            name_help: De naam wordt zowel als referentie, maar ook als linktekst gebruikt bij het tonen van de voorwaarden link
             code: Code
             slug: Slug
             label: Etiket
-            label_placeholder: Gebruik [link:Link text] om aan te geven waar in de tekst de link geplaatst dient te worden
+            label_help: Gebruik [link:Link text] om aan te geven waar in de tekst de link geplaatst dient te worden
             content: Content
+            content_help: Als de content leeg is, zal het etiket naast het selectievakje geen link bevatten
             channels: Kanalen

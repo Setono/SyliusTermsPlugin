@@ -16,11 +16,16 @@ final class LabelRenderer implements LabelRendererInterface
 
     public function render(TermsInterface $terms): string
     {
-        $slug = $terms->getSlug();
-        Assert::notNull($slug);
-
         $label = $terms->getLabel();
         Assert::notNull($label);
+
+        // if the terms has no content, we don't need to create a link because the terms will be empty
+        if ($terms->getContent() === null || '' === $terms->getContent()) {
+            return $label;
+        }
+
+        $slug = $terms->getSlug();
+        Assert::notNull($slug);
 
         $label = htmlspecialchars($label);
 

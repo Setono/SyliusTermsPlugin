@@ -16,19 +16,19 @@ final class TermsTranslationType extends AbstractResourceType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'setono_sylius_terms.form.terms.name',
+                'help' => 'setono_sylius_terms.form.terms.name_help',
             ])
             ->add('slug', TextType::class, [
                 'label' => 'setono_sylius_terms.form.terms.slug',
             ])
             ->add('label', TextType::class, [
                 'label' => 'setono_sylius_terms.form.terms.label',
-                'attr' => [
-                    'placeholder' => 'setono_sylius_terms.form.terms.label_placeholder',
-                ],
+                'help' => 'setono_sylius_terms.form.terms.label_help',
             ])
             ->add('content', TextareaType::class, [
                 'required' => false,
                 'label' => 'setono_sylius_terms.form.terms.content',
+                'help' => 'setono_sylius_terms.form.terms.content_help',
             ])
         ;
     }

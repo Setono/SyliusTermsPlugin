@@ -22,9 +22,11 @@ setono_sylius_terms:
     terms:
       translations: Traductions
       name: Nom
+      name_help: Le nom est utilisé à la fois comme référence, mais aussi comme texte de lien lors de l'affichage du lien des conditions
       code: Code
       slug: Slug
       label: Étiquette
-      label_placeholder: "Utiliser [link:Link text] pour indiquer l'endroit où le lien doit être placé dans le texte."
+      label_help: "Utiliser [link:Link text] pour indiquer l'endroit où le lien doit être placé dans le texte."
       content: Contenu
+      content_help: Si le contenu est vide, l'étiquette à côté de la case à cocher n'aura pas de lien
       channels: Canaux

@@ -22,9 +22,11 @@ setono_sylius_terms:
         terms:
             translations: Oversættelser
             name: Navn
+            name_help: Navnet bruges både som reference og som linktekst, når betingelseslinket vises
             code: Kode
             slug: Slug
             label: Tekst til afkrydsningsfelt
-            label_placeholder: Brug [link:Linktekst] til at fortælle hvor linket skal være i teksten
+            label_help: Brug [link:Linktekst] til at fortælle hvor linket skal være i teksten
             content: Indhold
+            content_help: Hvis indholdet er tomt vil teksten ved siden af afkrydsningsfeltet ikke have et link
             channels: Kanaler

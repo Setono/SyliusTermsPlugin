@@ -22,11 +22,13 @@ setono_sylius_terms:
         terms:
             translations: Translations
             name: Name
+            name_help: The name is used both as a reference, but also as the link text when showing the terms link
             code: Code
             slug: Slug
             label: Label
-            label_placeholder: Use [link:Link text] to tell where the link should be placed in the text
+            label_help: Use [link:Link text] to tell where the link should be placed in the text
             content: Content
+            content_help: If the content is empty the label next to the checkbox will not have a link
             channels: Channels
             forms: Forms
             term_form:
