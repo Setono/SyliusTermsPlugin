@@ -13,9 +13,9 @@ interface TermsProviderInterface
      * Returns an array of terms based on the current channel and locale
      * Returns an empty array if there are no valid terms
      *
-     * @param class-string<FormTypeInterface> $class
+     * @param class-string<FormTypeInterface> $form
      *
      * @return TermsInterface[]
      */
-    public function getTerms(string $class): array;
+    public function getTerms(string $form): array;
 }
