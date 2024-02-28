@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Fixture\Factory;
 
-use Closure;
-use DateTime;
-use DateTimeInterface;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Sylius\Bundle\CoreBundle\Fixture\Factory\AbstractExampleFactory;
 use Sylius\Bundle\CoreBundle\Fixture\OptionsResolver\LazyOption;
+use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Formatter\StringInflector;
 use Sylius\Component\Locale\Model\LocaleInterface;
@@ -57,6 +55,9 @@ class TermsExampleFactory extends AbstractExampleFactory
             $terms->addChannel($channel);
         }
 
+        $terms->setEnabled($options['enabled']);
+        $terms->setForms($options['forms']);
+
         // add translation for each defined locales
         foreach ($this->getLocales() as $localeCode) {
             $this->createTranslation($terms, $localeCode, $options);
@@ -66,9 +67,6 @@ class TermsExampleFactory extends AbstractExampleFactory
         foreach ($options['translations'] as $localeCode => $translationOptions) {
             $this->createTranslation($terms, $localeCode, $translationOptions);
         }
-
-        $terms->setCreatedAt($options['created_at']);
-        $terms->setUpdatedAt($options['updated_at']);
 
         return $terms;
     }
@@ -101,6 +99,9 @@ class TermsExampleFactory extends AbstractExampleFactory
 
             ->setDefault('slug', null)
 
+            ->setDefault('enabled', true)
+            ->setAllowedTypes('enabled', ['bool'])
+
             ->setDefault('label', function (Options $options): string {
                 return $this->faker->text(60); // @todo add link to this text
             })
@@ -110,13 +111,8 @@ class TermsExampleFactory extends AbstractExampleFactory
             ->setDefault('translations', [])
             ->setAllowedTypes('translations', ['array'])
 
-            ->setDefault('created_at', null)
-            ->setAllowedTypes('created_at', ['null', 'string', DateTimeInterface::class])
-            ->setNormalizer('created_at', self::getDateTimeNormalizer())
-
-            ->setDefault('updated_at', null)
-            ->setAllowedTypes('updated_at', ['null', 'string', DateTimeInterface::class])
-            ->setNormalizer('updated_at', self::getDateTimeNormalizer())
+            ->setDefault('forms', [CompleteType::class])
+            ->setAllowedTypes('forms', ['array'])
         ;
     }
 
@@ -127,20 +123,5 @@ class TermsExampleFactory extends AbstractExampleFactory
         foreach ($locales as $locale) {
             yield $locale->getCode();
         }
-    }
-
-    private static function getDateTimeNormalizer(): Closure
-    {
-        return static function (Options $options, null|object|string $previousValue) {
-            if (null === $previousValue) {
-                return null;
-            }
-
-            if (is_object($previousValue)) {
-                return $previousValue;
-            }
-
-            return new DateTime($previousValue);
-        };
     }
 }

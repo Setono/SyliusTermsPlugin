@@ -121,6 +121,15 @@ class Terms implements TermsInterface
         return $this->forms ?? [];
     }
 
+    public function setForms(array $forms): void
+    {
+        $this->forms = null;
+
+        foreach ($forms as $form) {
+            $this->addForm($form);
+        }
+    }
+
     public function addForm(string $form): void
     {
         if (null === $this->forms) {

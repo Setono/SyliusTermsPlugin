@@ -37,6 +37,11 @@ interface TermsInterface extends ResourceInterface, CodeAwareInterface, Channels
     public function getForms(): array;
 
     /**
+     * @param list<class-string> $forms
+     */
+    public function setForms(array $forms): void;
+
+    /**
      * @param class-string $form
      */
     public function addForm(string $form): void;

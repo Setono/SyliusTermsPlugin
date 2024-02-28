@@ -81,8 +81,6 @@ sylius_fixtures:
                                 name: EULA for United States
                                 slug: eula-us
                                 label: Accept US EULA terms
-                                created_at: "-3 day"
-                                updated_at: now
                                 channels:
                                   - FASHION_WEB
                             terms_eula_eu:
@@ -94,8 +92,6 @@ sylius_fixtures:
                                     fr_FR:
                                         name: CLUF
                                         slug: cluf
-                                created_at: "-3 day"
-                                updated_at: now
                                 channels:
                                   - EU_WEB
                             terms_terms_and_conditions:
@@ -109,8 +105,6 @@ sylius_fixtures:
                                         slug: termes-conditions
                                     de_DE:
                                         name: Geschäftsbedingungen
-                                created_at: "-3 day"
-                                updated_at: now
                                 channels:
                                   - FASHION_WEB
                                   - EU_WEB

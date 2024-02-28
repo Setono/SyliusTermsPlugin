@@ -24,12 +24,10 @@ final class TermsFixture extends AbstractResourceFixture
                 ->scalarNode('slug')->cannotBeEmpty()->end()
                 ->scalarNode('label')->cannotBeEmpty()->end()
                 ->scalarNode('content')->cannotBeEmpty()->end()
-
+                ->booleanNode('enabled')->defaultTrue()->end()
+                ->variableNode('forms')->end()
                 ->variableNode('translations')->cannotBeEmpty()->defaultValue([])->end()
                 ->variableNode('channels')->cannotBeEmpty()->defaultValue([])->end()
-
-                ->scalarNode('created_at')->cannotBeEmpty()->end()
-                ->scalarNode('updated_at')->cannotBeEmpty()->end()
         ;
     }
 }
