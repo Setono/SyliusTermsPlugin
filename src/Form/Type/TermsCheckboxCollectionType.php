@@ -32,11 +32,11 @@ final class TermsCheckboxCollectionType extends AbstractType
             $validationGroups = [];
             while (null !== $parent) {
                 $groups = $parent->getConfig()->getOption('validation_groups');
-                if (!is_array($groups)) {
-                    continue;
+
+                if (is_array($groups)) {
+		            $validationGroups[] = $groups;
                 }
 
-                $validationGroups[] = $groups;
                 $parent = $parent->getParent();
             }
 
