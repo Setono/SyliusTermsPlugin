@@ -9,54 +9,52 @@
         "terms"
     ],
     "require": {
-        "php": ">=8.1",
-        "doctrine/collections": "^1.6",
+        "php": "^8.2",
+        "doctrine/collections": "^2.2",
         "doctrine/orm": "^2.7",
         "fakerphp/faker": "^1.23",
         "knplabs/knp-menu": "^3.1",
-        "sylius/channel": "^1.0",
-        "sylius/channel-bundle": "^1.0",
-        "sylius/core": "^1.0",
-        "sylius/core-bundle": "^1.0",
-        "sylius/locale": "^1.0",
+        "sylius/core-bundle": "^2.0",
         "sylius/resource-bundle": "^1.6",
-        "sylius/ui-bundle": "^1.0",
-        "symfony/config": "^5.4 || ^6.4 || ^7.0",
-        "symfony/dependency-injection": "^5.4 || ^6.4 || ^7.0",
-        "symfony/event-dispatcher": "^5.4 || ^6.4 || ^7.0",
-        "symfony/form": "^5.4 || ^6.4 || ^7.0",
-        "symfony/http-foundation": "^5.4 || ^6.4 || ^7.0",
-        "symfony/http-kernel": "^5.4 || ^6.4 || ^7.0",
-        "symfony/options-resolver": "^5.4 || ^6.4 || ^7.0",
-        "symfony/routing": "^5.4 || ^6.4 || ^7.0",
-        "symfony/string": "^5.4 || ^6.4 || ^7.0",
+        "sylius/twig-extra": "^0.8",
+        "sylius/twig-hooks": "^0.8",
+        "symfony/config": "^6.4 || ^7.3",
+        "symfony/dependency-injection": "^6.4 || ^7.3",
+        "symfony/event-dispatcher": "^6.4 || ^7.3",
+        "symfony/form": "^6.4 || ^7.3",
+        "symfony/http-foundation": "^6.4 || ^7.3",
+        "symfony/http-kernel": "^6.4 || ^7.3",
+        "symfony/options-resolver": "^6.4 || ^7.3",
+        "symfony/routing": "^6.4 || ^7.3",
+        "symfony/string": "^6.4 || ^7.3",
         "symfony/translation-contracts": "^1.1 || ^2.4 || ^3.4",
-        "symfony/validator": "^5.4 || ^6.4 || ^7.0",
+        "symfony/validator": "^6.4 || ^7.3",
         "twig/twig": "^2.14 || ^3.8",
         "webmozart/assert": "^1.11"
     },
     "require-dev": {
         "api-platform/core": "^2.7.16",
-        "babdev/pagerfanta-bundle": "^3.8",
+        "babdev/pagerfanta-bundle": "^4.4",
         "behat/behat": "^3.14",
         "doctrine/doctrine-bundle": "^2.11",
         "infection/infection": "^0.27.9",
         "jms/serializer-bundle": "^4.2",
-        "lexik/jwt-authentication-bundle": "^2.17",
+        "lexik/jwt-authentication-bundle": "^3.1",
         "matthiasnoback/symfony-config-test": "^4.3 || ^5.1",
         "matthiasnoback/symfony-dependency-injection-test": "^4.3 || ^5.0",
         "phpspec/prophecy-phpunit": "^2.1",
         "phpunit/phpunit": "^9.6",
         "psalm/plugin-phpunit": "^0.18",
         "setono/code-quality-pack": "^2.7",
-        "sylius/sylius": "~1.12.13",
-        "symfony/debug-bundle": "^5.4 || ^6.4 || ^7.0",
-        "symfony/dotenv": "^5.4 || ^6.4 || ^7.0",
-        "symfony/intl": "^5.4 || ^6.4 || ^7.0",
-        "symfony/property-info": "^5.4 || ^6.4 || ^7.0",
-        "symfony/serializer": "^5.4 || ^6.4 || ^7.0",
-        "symfony/web-profiler-bundle": "^5.4 || ^6.4 || ^7.0",
-        "symfony/webpack-encore-bundle": "^1.17",
+        "sylius/sylius": "^2.0",
+        "sylius/test-application": "^2.0.0@alpha",
+        "symfony/debug-bundle": "^6.4 || ^7.3",
+        "symfony/dotenv": "^6.4 || ^7.3",
+        "symfony/intl": "^6.4 || ^7.3",
+        "symfony/property-info": "^6.4 || ^7.3",
+        "symfony/serializer": "^6.4 || ^7.3",
+        "symfony/web-profiler-bundle": "^6.4 || ^7.3",
+        "symfony/webpack-encore-bundle": "^2.2",
         "willdurand/negotiation": "^3.1"
     },
     "prefer-stable": true,
@@ -67,18 +65,19 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Setono\\SyliusTermsPlugin\\Tests\\": "tests/"
-        },
-        "classmap": [
-            "tests/Application/Kernel.php"
-        ]
+            "Setono\\SyliusTermsPlugin\\Tests\\": "tests/",
+            "Tests\\Setono\\SyliusTermsPlugin\\": "tests/TestApplication/src"
+        }
     },
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": false,
             "ergebnis/composer-normalize": true,
             "infection/extension-installer": true,
-            "symfony/thanks": false
+            "php-http/discovery": true,
+            "symfony/thanks": false,
+            "symfony/runtime": true,
+            "symfony/flex": true
         },
         "sort-packages": true
     },
@@ -87,5 +86,8 @@
         "check-style": "ecs check",
         "fix-style": "ecs check --fix",
         "phpunit": "phpunit"
+    },
+    "extra": {
+        "public-dir": "vendor/sylius/test-application/public"
     }
 }

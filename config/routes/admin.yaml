@@ -1,0 +1,12 @@
+setono_sylius_terms_admin_terms:
+    resource: |
+        alias: setono_sylius_terms.terms
+        section: admin
+        except: [show]
+        templates: "@SyliusAdmin\\shared\\crud"
+        redirect: update
+        grid: setono_sylius_terms_terms
+        vars:
+            all:
+                hook_prefix: 'setono_sylius_terms.admin.terms'
+    type: sylius.resource

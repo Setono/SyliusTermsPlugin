@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service
+            id="setono_sylius_terms.admin.twig.component.terms.form"
+            class="Setono\SyliusTermsPlugin\Twig\Component\Terms\FormComponent"
+        >
+            <argument type="service" id="setono_sylius_terms.repository.terms" />
+            <argument type="service" id="form.factory" />
+            <argument>%setono_sylius_terms.model.terms.class%</argument>
+            <argument>Setono\SyliusTermsPlugin\Form\Type\TermsType</argument>
+            <argument type="service" id="sylius.generator.slug" />
+
+            <tag name="sylius.live_component.admin" key="setono_sylius_terms:admin:terms:form" />
+        </service>
+    </services>
+</container>

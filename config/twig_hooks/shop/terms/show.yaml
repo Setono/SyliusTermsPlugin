@@ -1,0 +1,27 @@
+sylius_twig_hooks:
+    hooks:
+        'setono_sylius_terms.shop.terms.show':
+            content:
+                template: '@SetonoSyliusTermsPlugin/shop/terms/show/content.html.twig'
+                priority: 0
+
+        'setono_sylius_terms.shop.terms.show.content':
+            header:
+                template: '@SetonoSyliusTermsPlugin/shop/terms/show/content/header.html.twig'
+                priority: 100
+            main:
+                template: '@SetonoSyliusTermsPlugin/shop/terms/show/content/main.html.twig'
+                priority: 0
+
+        'setono_sylius_terms.shop.terms.show.content.header':
+            breadcrumbs:
+                template: '@SetonoSyliusTermsPlugin/shop/terms/show/content/header/breadcrumbs.html.twig'
+                priority: 0
+
+        'setono_sylius_terms.shop.terms.show.content.main':
+            name:
+                template: '@SetonoSyliusTermsPlugin/shop/terms/show/content/main/name.html.twig'
+                priority: 100
+            content:
+                template: '@SetonoSyliusTermsPlugin/shop/terms/show/content/main/content.html.twig'
+                priority: 0

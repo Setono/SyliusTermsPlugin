@@ -1,0 +1,7 @@
+{% extends '@SyliusShop/shared/layout/base.html.twig' %}
+
+{% block title %}{{ terms.name }} | {{ parent() }}{% endblock %}
+
+{% block content %}
+    {% hook 'setono_sylius_terms.shop.terms.show' %}
+{% endblock %}

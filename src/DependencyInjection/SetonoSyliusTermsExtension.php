@@ -7,6 +7,7 @@ namespace Setono\SyliusTermsPlugin\DependencyInjection;
 use ReflectionClass;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -17,13 +18,19 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
+
+        $loader->load('services.xml');
+    }
+
+    public function prepend(ContainerBuilder $container): void
+    {
         /**
          * @psalm-suppress PossiblyNullArgument
          *
          * @var array{forms: array<class-string, array{label: string|null}>, routing: array{terms: string}, resources: array} $config
          */
-        $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $config = $this->getCurrentConfiguration($container);
 
         foreach ($config['forms'] as $form => $formConfig) {
             $reflectionClass = new ReflectionClass($form);
@@ -34,18 +41,8 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
         $container->setParameter('setono_sylius_terms.forms', $config['forms']);
         $container->setParameter('setono_sylius_terms.terms_path', $config['routing']['terms']);
 
-        $loader->load('services.xml');
+        $this->registerResources('setono_sylius_terms', SyliusResourceBundle::DRIVER_DOCTRINE_ORM, $config['resources'], $container);
 
-        $this->registerResources(
-            'setono_sylius_terms',
-            SyliusResourceBundle::DRIVER_DOCTRINE_ORM,
-            $config['resources'],
-            $container,
-        );
-    }
-
-    public function prepend(ContainerBuilder $container): void
-    {
         $container->prependExtensionConfig('sylius_grid', [
             'grids' => [
                 'setono_sylius_terms_terms' => [
@@ -68,7 +65,7 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
                             'type' => 'twig',
                             'label' => 'setono_sylius_terms.ui.channels',
                             'options' => [
-                                'template' => '@SetonoSyliusTermsPlugin/admin/grid/field/channels.html.twig',
+                                'template' => '@SyliusAdmin/shared/grid/field/channels.html.twig',
                             ],
                         ],
                     ],
@@ -90,17 +87,15 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
                 ],
             ],
         ]);
+    }
 
-        $container->prependExtensionConfig('sylius_ui', [
-            'events' => [
-                'setono_sylius_terms.admin.terms.create.javascripts' => [
-                    'blocks' => [
-                        'javascripts' => [
-                            'template' => '@SetonoSyliusTermsPlugin/admin/terms/_javascripts.html.twig',
-                        ],
-                    ],
-                ],
-            ],
-        ]);
+    /** @return array<array-key, mixed> */
+    private function getCurrentConfiguration(ContainerBuilder $container): array
+    {
+        /** @var ConfigurationInterface $configuration */
+        $configuration = $this->getConfiguration([], $container);
+        $configs = $container->getExtensionConfig($this->getAlias());
+
+        return $this->processConfiguration($configuration, $configs);
     }
 }

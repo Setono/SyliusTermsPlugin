@@ -1,0 +1,6 @@
+sylius_twig_hooks:
+    hooks:
+        'sylius_shop.checkout.complete.content.form':
+            terms:
+                template: '@SetonoSyliusTermsPlugin/shop/checkout/complete/content/form/terms.html.twig'
+                priority: 50

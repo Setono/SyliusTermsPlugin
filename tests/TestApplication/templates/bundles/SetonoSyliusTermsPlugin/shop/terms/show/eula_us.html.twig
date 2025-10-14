@@ -1,0 +1,22 @@
+{% extends '@SyliusShop/shared/layout/base.html.twig' %}
+
+{% block title %}{{ terms.name }} | {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="container mt-4 mb-5">
+        {% from '@SyliusShop/shared/breadcrumbs.html.twig' import breadcrumbs as breadcrumbs %}
+
+        {{ breadcrumbs([
+            { label: 'sylius.ui.home'|trans, path: path('sylius_shop_homepage')},
+            { label: terms.name, active: true }
+        ]) }}
+
+        <div class="row mt-3">
+            <h1>NOTICE: This is a special template only for the EULA US terms</h1>
+            <h1>{{ terms.name }}</h1>
+
+            {{ terms.content|raw }}
+        </div>
+    </div>
+{% endblock %}
+

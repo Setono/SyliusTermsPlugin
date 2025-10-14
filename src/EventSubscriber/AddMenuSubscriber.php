@@ -35,9 +35,15 @@ final class AddMenuSubscriber implements EventSubscriberInterface
         $item
             ->addChild('terms', [
                 'route' => 'setono_sylius_terms_admin_terms_index',
+                'extras' => [
+                    'routes' => [
+                        ['route' => 'setono_sylius_terms_admin_terms_create'],
+                        ['route' => 'setono_sylius_terms_admin_terms_update'],
+                    ],
+                ],
             ])
             ->setLabel('setono_sylius_terms.menu.admin.main.configuration.terms')
-            ->setLabelAttribute('icon', 'check circle outline')
+            ->setLabelAttribute('icon', 'tabler:circle-check')
         ;
     }
 }

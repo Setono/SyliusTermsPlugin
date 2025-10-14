@@ -1,0 +1,51 @@
+sylius_twig_hooks:
+    hooks:
+        'setono_sylius_terms.admin.terms.update.content':
+            form:
+                component: 'setono_sylius_terms:admin:terms:form'
+                props:
+                    resource: '@=_context.resource'
+                    form: '@=_context.form'
+                    template: '@SetonoSyliusTermsPlugin/admin/terms/form.html.twig'
+                configuration:
+                    render_rest: false
+                    method: 'PUT'
+                priority: 0
+
+        'setono_sylius_terms.admin.terms.update.content.form.sections':
+            general:
+                template: '@SetonoSyliusTermsPlugin/admin/terms/form/sections/general.html.twig'
+                priority: 100
+            translations:
+                template: '@SetonoSyliusTermsPlugin/admin/terms/form/sections/translations.html.twig'
+                priority: 0
+
+        'setono_sylius_terms.admin.terms.update.content.form.sections.general':
+            default:
+                enabled: false
+            code:
+                template: '@SetonoSyliusTermsPlugin/admin/terms/form/sections/general/code.html.twig'
+                priority: 300
+            enabled:
+                template: '@SetonoSyliusTermsPlugin/admin/terms/form/sections/general/enabled.html.twig'
+                priority: 200
+            channels:
+                template: '@SetonoSyliusTermsPlugin/admin/terms/form/sections/general/channels.html.twig'
+                priority: 100
+            forms:
+                template: '@SetonoSyliusTermsPlugin/admin/terms/form/sections/general/forms.html.twig'
+                priority: 0
+
+        'setono_sylius_terms.admin.terms.update.content.form.sections.translations':
+            name:
+                template: '@SetonoSyliusTermsPlugin/admin/terms/form/sections/translations/name.html.twig'
+                priority: 300
+            slug:
+                template: '@SetonoSyliusTermsPlugin/admin/terms/form/sections/translations/slug.html.twig'
+                priority: 200
+            label:
+                template: '@SetonoSyliusTermsPlugin/admin/terms/form/sections/translations/label.html.twig'
+                priority: 100
+            content:
+                template: '@SetonoSyliusTermsPlugin/admin/terms/form/sections/translations/content.html.twig'
+                priority: 0

@@ -18,4 +18,18 @@ final class SetonoSyliusTermsPlugin extends AbstractResourceBundle
             SyliusResourceBundle::DRIVER_DOCTRINE_ORM,
         ];
     }
+
+    public function getPath(): string
+    {
+        return \dirname(__DIR__);
+    }
+
+    protected function getConfigFilesPath(): string
+    {
+        return sprintf(
+            '%s/config/doctrine/%s',
+            $this->getPath(),
+            strtolower($this->getDoctrineMappingDirectory()),
+        );
+    }
 }
