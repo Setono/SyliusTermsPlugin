@@ -1,20 +1,33 @@
-{% from '@SyliusAdmin/Macro/translationForm.html.twig' import translationFormWithSlug %}
+{% if form is not defined %}
+    {% set form = hookable_metadata.context.form %}
+{% endif %}
 
-<div class="ui two column stackable grid">
-    <div class="seven wide column">
-        {{ form_errors(form) }}
+{% if resource is not defined %}
+    {% set resource = hookable_metadata.context.resource|default(null) %}
+{% endif %}
 
-        <div class="ui segment">
-                {{ form_row(form.code) }}
-                {{ form_row(form.enabled) }}
-            <div class="two fields">
-                {{ form_row(form.forms) }}
-                {{ form_row(form.channels) }}
+{% form_theme form '@SyliusAdmin/shared/form_theme.html.twig' %}
+
+<div class="container-xl" {{ attributes }}>
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id': form.vars.id}}) }}
+    {% if hookable_metadata.configuration.method is defined %}
+        <input type="hidden" name="_method" value="{{ hookable_metadata.configuration.method }}"/>
+    {% elseif form.vars.data.id|default(null) is not null %}
+        <input type="hidden" name="_method" value="PUT"/>
+    {% endif %}
+    {{ form_errors(form) }}
+    {{ form_widget(form._token) }}
+    <div class="grid gap-4">
+        <div class="g-col-12 g-col-xl-6 card" style="grid-row: 1 / 4;">
+            <div class="card-body">
+                {% hook 'form#left' with { form, resource } %}
             </div>
-
+        </div>
+        <div class="g-col-12 g-col-xl-6 g-start-xl-7 card">
+            <div class="card-body">
+                {% hook 'form#right' with { form, resource } %}
+            </div>
         </div>
     </div>
-    <div class="nine wide column">
-        {{ translationFormWithSlug(form.translations, '@SyliusAdmin/Product/_slugField.html.twig', terms) }}
-    </div>
+    {{ form_end(form, {render_rest: hookable_metadata.configuration.render_rest|default(false)}) }}
 </div>

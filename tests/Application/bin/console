@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use Setono\SyliusTermsPlugin\Tests\Application\Kernel;
+use Tests\Setono\SyliusTermsPlugin\Application\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\ErrorHandler\Debug;

@@ -2,14 +2,8 @@ setono_sylius_terms_admin_terms:
     resource: |
         alias: setono_sylius_terms.terms
         section: admin
-        templates: "@SyliusAdmin\\Crud"
+        templates: "@SyliusAdmin\\shared\\crud"
         redirect: update
+        except: [show]
         grid: setono_sylius_terms_terms
-        vars:
-            all:
-                subheader: setono_sylius_terms.ui.manage_terms
-                templates:
-                    form: "@SetonoSyliusTermsPlugin/admin/terms/_form.html.twig"
-            index:
-                icon: 'check circle outline'
     type: sylius.resource

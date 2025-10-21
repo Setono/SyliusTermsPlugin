@@ -24,7 +24,7 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.1" # Always use the lowest version of PHP since a higher version could create actual syntax errors in lower versions
+                    - "8.2" # Always use the lowest version of PHP since a higher version could create actual syntax errors in lower versions
 
                 dependencies:
                     - "highest"
@@ -72,7 +72,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.1"
                     - "8.2"
 
                 dependencies:
@@ -80,8 +79,8 @@ jobs:
                     - "highest"
                 
                 symfony:
-                    - "~5.4.0"
                     - "~6.4.0"
+                    - "~7.1.0"
 
         steps:
             -   name: "Checkout"
@@ -119,7 +118,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.1"
                     - "8.2"
 
                 dependencies:
@@ -127,8 +125,8 @@ jobs:
                     - "highest"
 
                 symfony:
-                    - "~5.4.0"
                     - "~6.4.0"
+                    - "~7.1.0"
 
         steps:
             -   name: "Checkout"
@@ -163,7 +161,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.1"
                     - "8.2"
                 
                 dependencies:
@@ -171,8 +168,8 @@ jobs:
                     - "highest"
 
                 symfony:
-                    - "~5.4.0"
                     - "~6.4.0"
+                    - "~7.1.0"
 
         steps:
             -   name: "Checkout"
@@ -204,7 +201,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.1"
                     - "8.2"
 
                 dependencies:
@@ -212,8 +208,8 @@ jobs:
                     - "highest"
                 
                 symfony:
-                    - "~5.4.0"
                     - "~6.4.0"
+                    - "~7.1.0"
 
         steps:
             -   name: "Start MySQL"

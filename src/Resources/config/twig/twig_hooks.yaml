@@ -1,0 +1,34 @@
+sylius_twig_hooks:
+  hooks:
+    'sylius_admin.terms.create.content':
+      form:
+        component: 'setono_sylius_terms:terms:form'
+        props:
+          form: '@=_context.form'
+          resource: '@=_context.resource'
+          template: '@SetonoSyliusTermsPlugin/admin/terms/_form.html.twig'
+        priority: 0
+    'sylius_admin.terms.create.content.form#left':
+      form:
+        template: '@SetonoSyliusTermsPlugin/admin/terms/form/left.html.twig'
+    'sylius_admin.terms.create.content.form#right':
+      form:
+        template: '@SetonoSyliusTermsPlugin/admin/terms/form/right.html.twig'
+    'sylius_admin.terms.update.content':
+      form:
+        component: 'setono_sylius_terms:terms:form'
+        props:
+          form: '@=_context.form'
+          resource: '@=_context.resource'
+          template: '@SetonoSyliusTermsPlugin/admin/terms/_form.html.twig'
+        priority: 0
+    'sylius_admin.terms.update.content.form#left':
+      form:
+        template: '@SetonoSyliusTermsPlugin/admin/terms/form/left.html.twig'
+    'sylius_admin.terms.update.content.form#right':
+      form:
+        template: '@SetonoSyliusTermsPlugin/admin/terms/form/right.html.twig'
+    'sylius_shop.checkout.complete.content.form':
+      terms:
+        template: '@SetonoSyliusTermsPlugin/shop/checkout/terms.html.twig'
+        priority: 50

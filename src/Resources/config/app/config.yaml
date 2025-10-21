@@ -1,0 +1,2 @@
+imports:
+  - { resource: "@SetonoSyliusTermsPlugin/Resources/config/twig/twig_hooks.yaml" }

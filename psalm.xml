@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
-    phpVersion="8.1"
+    phpVersion="8.2"
     errorLevel="1"
     findUnusedBaselineEntry="false"
     findUnusedPsalmSuppress="false"
@@ -30,6 +30,11 @@
     </forbiddenFunctions>
     <issueHandlers>
         <MissingTemplateParam errorLevel="suppress"/> <!-- At some point we will add template params, but it's difficult when supporting multiple versions of Sylius/SF/Doctrine etc -->
+        <InvalidArgument>
+            <errorLevel type="suppress">
+                <directory name="src/Fixture"/>
+            </errorLevel>
+        </InvalidArgument>
         <MixedAssignment>
             <errorLevel type="suppress">
                 <directory name="src/Fixture"/>
@@ -40,5 +45,21 @@
                 <directory name="src/Fixture"/>
             </errorLevel>
         </MixedArgument>
+        <MixedArrayAccess>
+            <errorLevel type="suppress">
+                <directory name="src/Twig/Component"/>
+            </errorLevel>
+        </MixedArrayAccess>
+        <MixedArrayAssignment>
+            <errorLevel type="suppress">
+                <directory name="src/Twig/Component"/>
+            </errorLevel>
+        </MixedArrayAssignment>
+        <PropertyNotSetInConstructor>
+            <errorLevel type="suppress">
+                <directory name="src/Model"/>
+                <directory name="src/Twig/Component"/>
+            </errorLevel>
+        </PropertyNotSetInConstructor>
     </issueHandlers>
 </psalm>

@@ -83,38 +83,6 @@ $ php bin/console doctrine:migrations:diff
 $ php bin/console doctrine:migrations:migrate
 ```
 
-### Step 5: Override checkout complete form
-
-Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig):
-
-* If you haven't your own `templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig` yet:
-
-    ```bash
-    $ cp vendor/sylius/sylius/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig \
-    templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
-    ```
-
-* If you already have it:
-
-    Add terms field (exactly this conditional way):
-
-    ```twig
-    {# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
-    {% if form.terms is defined %}
-        {{ form_row(form.terms) }}
-    {% endif %}
-    ```
-    
-    So the final template will look like this:
-
-    ```twig
-    {# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
-    {{ form_row(form.notes, {'attr': {'rows': 3}}) }}
-    {% if form.terms is defined %}
-        {{ form_row(form.terms) }}
-    {% endif %}
-    ```
-
 # Troubleshooting
 
 * If you see `Neither the property "terms" nor one of the methods "terms()", "getterms()"/"isterms()"/"hasterms()" or "__call()" exist and have public access in class "Symfony\Component\Form\FormView".`

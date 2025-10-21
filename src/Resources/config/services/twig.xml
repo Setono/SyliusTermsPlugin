@@ -14,5 +14,19 @@
 
             <tag name="twig.runtime"/>
         </service>
+
+        <service id="setono_sylius_terms.twig.component.terms.form" class="\Setono\SyliusTermsPlugin\Twig\Component\TermsComponent">
+            <argument type="service" id="setono_sylius_terms.repository.terms" />
+            <argument type="service" id="form.factory" />
+            <argument>%setono_sylius_terms.model.terms.class%</argument>
+            <argument>Setono\SyliusTermsPlugin\Form\Type\TermsType</argument>
+            <argument type="service" id="sylius.generator.slug" />
+
+            <call method="setLiveResponder">
+                <argument type="service" id="ux.live_component.live_responder"/>
+            </call>
+
+            <tag name="sylius.live_component.admin" key="setono_sylius_terms:terms:form" />
+        </service>
     </services>
 </container>
