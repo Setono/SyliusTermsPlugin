@@ -104,7 +104,7 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
         {{ form_row(form.terms) }}
     {% endif %}
     ```
-    
+
     So the final template will look like this:
 
     ```twig
