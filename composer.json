@@ -14,13 +14,8 @@
         "doctrine/orm": "^2.7",
         "fakerphp/faker": "^1.23",
         "knplabs/knp-menu": "^3.1",
-        "sylius/channel": "^1.0",
-        "sylius/channel-bundle": "^1.0",
-        "sylius/core": "^1.0",
         "sylius/core-bundle": "^1.0",
-        "sylius/locale": "^1.0",
         "sylius/resource-bundle": "^1.6",
-        "sylius/ui-bundle": "^1.0",
         "symfony/config": "^5.4 || ^6.4 || ^7.0",
         "symfony/dependency-injection": "^5.4 || ^6.4 || ^7.0",
         "symfony/event-dispatcher": "^5.4 || ^6.4 || ^7.0",
@@ -49,7 +44,8 @@
         "phpunit/phpunit": "^9.6",
         "psalm/plugin-phpunit": "^0.18",
         "setono/code-quality-pack": "^2.7",
-        "sylius/sylius": "~1.12.13",
+        "sylius/sylius": "^1.14",
+        "sylius/test-application": "^1.14.0@alpha",
         "symfony/debug-bundle": "^5.4 || ^6.4 || ^7.0",
         "symfony/dotenv": "^5.4 || ^6.4 || ^7.0",
         "symfony/intl": "^5.4 || ^6.4 || ^7.0",
@@ -67,18 +63,18 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Setono\\SyliusTermsPlugin\\Tests\\": "tests/"
-        },
-        "classmap": [
-            "tests/Application/Kernel.php"
-        ]
+            "Setono\\SyliusTermsPlugin\\Tests\\": "tests/",
+            "Tests\\Setono\\SyliusTermsPlugin\\": "tests/TestApplication/src"
+        }
     },
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": false,
             "ergebnis/composer-normalize": true,
             "infection/extension-installer": true,
-            "symfony/thanks": false
+            "symfony/thanks": false,
+            "symfony/runtime": true,
+            "symfony/flex": true
         },
         "sort-packages": true
     },
@@ -87,5 +83,8 @@
         "check-style": "ecs check",
         "fix-style": "ecs check --fix",
         "phpunit": "phpunit"
+    },
+    "extra": {
+        "public-dir": "vendor/sylius/test-application/public"
     }
 }

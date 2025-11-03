@@ -1,9 +1,11 @@
 /.build/
+/var/
 /vendor/
 /node_modules/
 /composer.lock
 
-/tests/Application/yarn.lock
+/tests/TestApplication/.env.local
+/tests/TestApplication/.env.*.local
 
 /.phpunit.result.cache
 
