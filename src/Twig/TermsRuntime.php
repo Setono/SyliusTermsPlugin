@@ -10,12 +10,12 @@ use Sylius\Component\Locale\Context\LocaleContextInterface;
 use Twig\Environment;
 use Twig\Extension\RuntimeExtensionInterface;
 
-final class TermsRuntime implements RuntimeExtensionInterface
+final readonly class TermsRuntime implements RuntimeExtensionInterface
 {
     public function __construct(
-        private readonly ChannelContextInterface $channelContext,
-        private readonly LocaleContextInterface $localeContext,
-        private readonly TermsRepositoryInterface $termsRepository,
+        private ChannelContextInterface $channelContext,
+        private LocaleContextInterface $localeContext,
+        private TermsRepositoryInterface $termsRepository,
     ) {
     }
 
@@ -23,7 +23,7 @@ final class TermsRuntime implements RuntimeExtensionInterface
      * Returns a <a href="...">...</a> link to the terms if the given terms code exists
      * else it returns an empty string
      */
-    public function link(Environment $env, string $code, string $template = null): string
+    public function link(Environment $env, string $code, ?string $template = null): string
     {
         $terms = $this->termsRepository->findOneByChannelAndLocaleAndCode(
             $this->channelContext->getChannel(),

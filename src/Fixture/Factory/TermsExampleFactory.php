@@ -11,6 +11,7 @@ use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Sylius\Bundle\CoreBundle\Fixture\Factory\AbstractExampleFactory;
 use Sylius\Bundle\CoreBundle\Fixture\OptionsResolver\LazyOption;
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
+use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Formatter\StringInflector;
 use Sylius\Component\Locale\Model\LocaleInterface;
@@ -40,15 +41,14 @@ class TermsExampleFactory extends AbstractExampleFactory
 
     public function create(array $options = []): TermsInterface
     {
+        /** @var array{code: string, channels: list<ChannelInterface>, enabled: bool, forms: list<class-string>, translations: array<string, array<string, mixed>>} $options */
         $options = $this->optionsResolver->resolve($options);
 
         /** @var TermsInterface|null $terms */
         $terms = $this->termsRepository->findOneBy(['code' => $options['code']]);
 
-        if (null === $terms) {
-            /** @var TermsInterface $terms */
-            $terms = $this->termsFactory->createNew();
-        }
+        /** @var TermsInterface $terms */
+        $terms ??= $this->termsFactory->createNew();
 
         $terms->setCode($options['code']);
         foreach ($options['channels'] as $channel) {
@@ -73,6 +73,7 @@ class TermsExampleFactory extends AbstractExampleFactory
 
     protected function createTranslation(TermsInterface $terms, string $localeCode, array $options = []): void
     {
+        /** @var array{name: string, label: string, content: string, slug: string|null} $options */
         $options = $this->optionsResolver->resolve($options);
 
         $terms->setCurrentLocale($localeCode);
@@ -87,11 +88,14 @@ class TermsExampleFactory extends AbstractExampleFactory
     protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
-            ->setDefault('name', fn (Options $options): string =>
-                /** @psalm-suppress MixedArgumentTypeCoercion */
-                implode(' ', (array) $this->faker->words(3)))
+            ->setDefault('name', fn (Options $options): string => implode(' ', [$this->faker->word(), $this->faker->word(), $this->faker->word()]))
 
-            ->setDefault('code', fn (Options $options): string => StringInflector::nameToCode($options['name']))
+            ->setDefault('code', static function (Options $options): string {
+                /** @var string $name */
+                $name = $options['name'];
+
+                return StringInflector::nameToCode($name);
+            })
 
             ->setDefault('channels', LazyOption::randomOnes($this->channelRepository, 3))
             ->setAllowedTypes('channels', ['array'])
@@ -116,12 +120,18 @@ class TermsExampleFactory extends AbstractExampleFactory
         ;
     }
 
+    /**
+     * @return iterable<string>
+     */
     private function getLocales(): iterable
     {
         /** @var LocaleInterface[] $locales */
         $locales = $this->localeRepository->findAll();
         foreach ($locales as $locale) {
-            yield $locale->getCode();
+            $code = $locale->getCode();
+            if (null !== $code) {
+                yield $code;
+            }
         }
     }
 }

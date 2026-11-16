@@ -8,9 +8,9 @@ use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Webmozart\Assert\Assert;
 
-final class LabelRenderer implements LabelRendererInterface
+final readonly class LabelRenderer implements LabelRendererInterface
 {
-    public function __construct(private readonly UrlGeneratorInterface $urlGenerator)
+    public function __construct(private UrlGeneratorInterface $urlGenerator)
     {
     }
 
