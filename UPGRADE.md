@@ -10,6 +10,7 @@
 - Dropped: Sylius 1.x (and 2.0/2.1), PHP `< 8.2`, Symfony `< 6.4` and `7.0`–`7.3`.
 - Not yet supported: Symfony 8, Symfony UX 3.
 - The plugin requires `sylius/shop-bundle: ^2.2`. Apps that install `sylius/sylius` already have it.
+- `league/commonmark` (`^2.10.2`) and `symfony/html-sanitizer` (`^6.4.50 || ^7.4.23`) are new requirements, and the plugin enables `framework.html_sanitizer`. The floors are the oldest releases without known security advisories.
 
 ### Default value and behaviour changes
 
@@ -40,6 +41,16 @@ setono_sylius_terms:
 - A Form without a `label` gets the translation key `setono_sylius_terms.form.terms.term_form.<code>`. In 2.x the key was derived from the form type's short class name.
 - The `setono_sylius_terms.forms` parameter is keyed by Form code and holds only the enabled Forms, each with `type`, `label`, `hooks` and `saved_event`.
 
+#### Content is Markdown that allows HTML, and its output is sanitised
+
+2.x Content, which is HTML, carries over without conversion. Every rendering of it is sanitised: scripts, event handlers, unsafe URLs and `class` and `style` attributes are removed. Some 2.x Content renders differently:
+
+- A line indented by four spaces after a blank line becomes a code block.
+- Plain text that starts with `1.`, `-` or `#` becomes a list or a heading.
+- Styling held in `class` and `style` attributes is dropped.
+
+Markdown headings in rendered Content now carry `id` attributes, such as `id="content-payment"` for `## Payment`. See the README's Content section to loosen or tighten the sanitizer.
+
 ### Plugin file layout
 
 The plugin follows the Sylius 2 plugin skeleton. `src/Resources/{config,translations,views,public}` moved to the repository root:
@@ -66,6 +77,10 @@ Paths to plugin files drop `Resources/`. Template paths (`@SetonoSyliusTermsPlug
 - The admin routes mount under `/%sylius_admin.path_name%` instead of a literal `/admin`, so they stay inside the admin firewall and access rule when the admin path is changed.
 - The route `setono_sylius_terms_shop_show_terms` is renamed to `setono_sylius_terms_shop_terms_show`, with no alias. Prefer `terms_path(code)` over generating the URL by name.
 - The Terms page path and the `routing.terms` option are unchanged.
+
+### Template paths
+
+- Overridden templates that print content with `|raw` must switch to the `terms_content` filter, which renders and sanitises it: `{{ terms.content|terms_content }}`.
 
 ### Removed classes, services, templates, files and translation keys
 

@@ -13,6 +13,7 @@ This can be used to make sure the customer has accepted the terms and conditions
 * [Forms](#forms)
 * [Required and optional terms, and position](#required-and-optional-terms-and-position)
 * [Finding and checking the Terms on a Form in code](#finding-and-checking-the-terms-on-a-form-in-code)
+* [Content](#content)
 * [Terms versions](#terms-versions)
 * [Installation](#installation)
 
@@ -132,6 +133,99 @@ final class CompleteCheckoutCommand
     /** @var list<string> */
     #[RequiredTermsTicked(form: 'checkout_complete')]
     public array $terms = [];
+}
+```
+
+## Content
+
+The Content of a Terms is Markdown ([CommonMark](https://commonmark.org/) plus GitHub's tables and autolinks) that
+allows raw HTML, so Content written as HTML works too. Every rendering of Content is sanitised: scripts, event
+handlers, unsafe URLs and `class` and `style` attributes are removed.
+
+Print Content with the `terms_content` filter, never with `|raw`:
+
+```twig
+{{ terms.content|terms_content }}
+```
+
+Headings render at the level they are written at. Markdown headings get an `id`: `## Payment` becomes
+`<h2 id="content-payment">`, and a second `## Payment` gets `content-payment-1`. `##` headings also end in a `#`
+permalink to themselves, and they make up the outline (see below). Headings written as raw HTML, such as
+`<h2>Payment</h2>`, get no id and aren't in the outline.
+
+### Rendering Content in code
+
+`ContentRendererInterface` returns the sanitised HTML and the outline of the `##` headings, both from the same parse:
+
+```php
+/** @var \Setono\SyliusTermsPlugin\Renderer\ContentRendererInterface $contentRenderer */
+$rendered = $contentRenderer->render($translation->getContent() ?? '');
+
+$rendered->html; // sanitised, safe to print
+
+foreach ($rendered->outline as $heading) {
+    $heading->id;   // content-payment, so link to it with "#content-payment"
+    $heading->text; // Payment, as plain text
+}
+```
+
+### Loosening or tightening the sanitiser
+
+Content goes through the `setono_sylius_terms.content` sanitizer of
+[Symfony's HTML sanitizer](https://symfony.com/doc/current/html_sanitizer.html), which the plugin configures and
+enables. It allows:
+
+* the elements and attributes the sanitizer considers safe, which include every element Markdown produces, tables
+  included, but not `class` or `style`
+* links with an `http`, `https`, `mailto`, `tel` or relative URL
+* images with an `http`, `https` or relative `src`
+* `id` on `h1`–`h6` only
+* input of any length
+
+Your own config for the sanitizer is merged into the plugin's:
+
+```yaml
+# config/packages/html_sanitizer.yaml
+framework:
+    html_sanitizer:
+        sanitizers:
+            setono_sylius_terms.content:
+                allowed_link_schemes: ['sms'] # also allow sms: links
+                force_https_urls: true        # rewrite http:// links and images to https://
+                drop_elements: ['img']        # remove images
+```
+
+Lists such as `allowed_link_schemes` add to the plugin's entries and can't remove them. To allow `id` on other
+elements than headings, add
+`without_attribute_sanitizers: ['Setono\SyliusTermsPlugin\Sanitizer\HeadingIdAttributeSanitizer']`.
+
+### Replacing or decorating the renderer
+
+Every place that shows Content renders it through `Setono\SyliusTermsPlugin\Renderer\ContentRendererInterface`.
+Decorate it to change the output, or replace it to render Content another way. **A replacement has to sanitise its
+output itself**, because the `terms_content` filter prints what it returns unescaped.
+
+```php
+use Setono\SyliusTermsPlugin\Renderer\ContentRendererInterface;
+use Setono\SyliusTermsPlugin\Renderer\RenderedContent;
+use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
+
+#[AsDecorator(ContentRendererInterface::class)]
+final class ResponsiveTablesContentRenderer implements ContentRendererInterface
+{
+    public function __construct(private readonly ContentRendererInterface $decorated)
+    {
+    }
+
+    public function render(string $content): RenderedContent
+    {
+        $rendered = $this->decorated->render($content);
+
+        // The decorated renderer has sanitised the HTML already, so the class added here stays
+        $html = str_replace(['<table>', '</table>'], ['<div class="table-responsive"><table>', '</table></div>'], $rendered->html);
+
+        return new RenderedContent($html, $rendered->outline);
+    }
 }
 ```
 
