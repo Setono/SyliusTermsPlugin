@@ -7,10 +7,12 @@ namespace Setono\SyliusTermsPlugin\Tests\Unit\Renderer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Renderer\LabelRenderer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Webmozart\Assert\InvalidArgumentException;
 
 final class LabelRendererTest extends TestCase
 {
@@ -31,6 +33,38 @@ final class LabelRendererTest extends TestCase
         $renderer = new LabelRenderer($urlGenerator->reveal());
 
         self::assertSame($expected, $renderer->render($terms->reveal()));
+    }
+
+    #[Test]
+    public function it_requires_a_label(): void
+    {
+        $terms = $this->prophesize(TermsInterface::class);
+        $terms->getLabel()->willReturn(null);
+        $terms->getContent()->willReturn(null);
+
+        $renderer = new LabelRenderer($this->prophesize(UrlGeneratorInterface::class)->reveal());
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $renderer->render($terms->reveal());
+    }
+
+    #[Test]
+    public function it_requires_a_slug_to_link_to_the_content(): void
+    {
+        $urlGenerator = $this->prophesize(UrlGeneratorInterface::class);
+        $urlGenerator->generate(Argument::cetera())->willReturn('https://example.com/terms/');
+
+        $terms = $this->prophesize(TermsInterface::class);
+        $terms->getLabel()->willReturn('Accept terms');
+        $terms->getSlug()->willReturn(null);
+        $terms->getContent()->willReturn('content');
+
+        $renderer = new LabelRenderer($urlGenerator->reveal());
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $renderer->render($terms->reveal());
     }
 
     /**
