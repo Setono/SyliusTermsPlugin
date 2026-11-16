@@ -1,0 +1,6 @@
+# Extends the plugin's content sanitizer the way an app would. The functional tests check that this reaches it
+framework:
+    html_sanitizer:
+        sanitizers:
+            setono_sylius_terms.content:
+                allowed_link_schemes: ['sms']

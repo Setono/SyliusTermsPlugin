@@ -12,6 +12,7 @@ use Setono\SyliusTermsPlugin\Checker\RequiredTermsCheckerInterface;
 use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeChecker;
 use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeCheckerInterface;
 use Setono\SyliusTermsPlugin\Controller\Action\ShowTermsAction;
+use Setono\SyliusTermsPlugin\Converter\ContentConverter;
 use Setono\SyliusTermsPlugin\DependencyInjection\SetonoSyliusTermsExtension;
 use Setono\SyliusTermsPlugin\EventListener\CreateTermsVersionListener;
 use Setono\SyliusTermsPlugin\EventListener\PreventTermsVersionEditListener;
@@ -30,16 +31,21 @@ use Setono\SyliusTermsPlugin\Model\TermsVersion;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslation;
 use Setono\SyliusTermsPlugin\Provider\TermsProvider;
 use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
+use Setono\SyliusTermsPlugin\Renderer\ContentRenderer;
+use Setono\SyliusTermsPlugin\Renderer\ContentRendererInterface;
 use Setono\SyliusTermsPlugin\Renderer\LabelRenderer;
 use Setono\SyliusTermsPlugin\Renderer\LabelRendererInterface;
+use Setono\SyliusTermsPlugin\Sanitizer\HeadingIdAttributeSanitizer;
 use Setono\SyliusTermsPlugin\Snapshotter\TermsVersionSnapshotter;
 use Setono\SyliusTermsPlugin\Snapshotter\TermsVersionSnapshotterInterface;
+use Setono\SyliusTermsPlugin\Twig\ContentRuntime;
 use Setono\SyliusTermsPlugin\Twig\TermsExtension;
 use Setono\SyliusTermsPlugin\Twig\TermsRuntime;
 use Setono\SyliusTermsPlugin\Validator\Constraints\RequiredTermsTickedValidator;
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Sylius\Bundle\ShopBundle\Form\Type\CustomerRegistrationType;
 use Symfony\Component\Config\Resource\ResourceInterface;
+use Symfony\Component\DependencyInjection\Reference;
 
 final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
 {
@@ -104,6 +110,10 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         yield 'form terms lookup' => [FormTermsLookup::class];
         yield 'required terms checker' => [RequiredTermsChecker::class];
         yield 'required terms ticked validator' => [RequiredTermsTickedValidator::class];
+        yield 'content converter' => [ContentConverter::class];
+        yield 'content renderer' => [ContentRenderer::class];
+        yield 'heading id attribute sanitizer' => [HeadingIdAttributeSanitizer::class];
+        yield 'content runtime' => [ContentRuntime::class];
     }
 
     #[Test]
@@ -117,6 +127,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias(TermsVersionSnapshotterInterface::class, TermsVersionSnapshotter::class);
         $this->assertContainerBuilderHasAlias(FormTermsLookupInterface::class, FormTermsLookup::class);
         $this->assertContainerBuilderHasAlias(RequiredTermsCheckerInterface::class, RequiredTermsChecker::class);
+        $this->assertContainerBuilderHasAlias(ContentRendererInterface::class, ContentRenderer::class);
     }
 
     #[Test]
@@ -194,6 +205,39 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasService('setono_sylius_terms.repository.terms_version');
         $this->assertContainerBuilderHasService('setono_sylius_terms.factory.terms_version');
         $this->assertContainerBuilderHasService('setono_sylius_terms.factory.terms_version_translation');
+    }
+
+    #[Test]
+    public function it_renders_content_with_the_plugins_converter_and_sanitizer(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(ContentRenderer::class, 0, new Reference(ContentConverter::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(ContentRenderer::class, 1, new Reference('html_sanitizer.sanitizer.setono_sylius_terms.content'));
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(ContentRuntime::class, 'twig.runtime');
+    }
+
+    #[Test]
+    public function it_prepends_the_content_sanitizer(): void
+    {
+        $this->load();
+
+        self::assertSame([[
+            'html_sanitizer' => [
+                'enabled' => true,
+                'sanitizers' => [
+                    'setono_sylius_terms.content' => [
+                        'allow_safe_elements' => true,
+                        'allowed_link_schemes' => ['http', 'https', 'mailto', 'tel'],
+                        'allow_relative_links' => true,
+                        'allowed_media_schemes' => ['http', 'https'],
+                        'allow_relative_medias' => true,
+                        'with_attribute_sanitizers' => [HeadingIdAttributeSanitizer::class],
+                        'max_input_length' => -1,
+                    ],
+                ],
+            ],
+        ]], $this->container->getExtensionConfig('framework'));
     }
 
     #[Test]

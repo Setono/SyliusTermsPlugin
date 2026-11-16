@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Setono\SyliusTermsPlugin\Renderer\ContentRendererInterface;
+use Setono\SyliusTermsPlugin\Twig\ContentRuntime;
 use Setono\SyliusTermsPlugin\Twig\TermsExtension;
 use Setono\SyliusTermsPlugin\Twig\TermsRuntime;
 
@@ -19,6 +21,13 @@ return static function (ContainerConfigurator $container): void {
             service('sylius.context.channel'),
             service('sylius.context.locale'),
             service('setono_sylius_terms.repository.terms'),
+        ])
+        ->tag('twig.runtime')
+    ;
+
+    $services->set(ContentRuntime::class)
+        ->args([
+            service(ContentRendererInterface::class),
         ])
         ->tag('twig.runtime')
     ;

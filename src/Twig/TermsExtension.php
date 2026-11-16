@@ -5,10 +5,21 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\Twig;
 
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 final class TermsExtension extends AbstractExtension
 {
+    /**
+     * @return list<TwigFilter>
+     */
+    public function getFilters(): array
+    {
+        return [
+            new TwigFilter('terms_content', [ContentRuntime::class, 'render'], ['is_safe' => ['html']]),
+        ];
+    }
+
     /**
      * @return list<TwigFunction>
      */
