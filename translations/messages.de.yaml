@@ -8,6 +8,12 @@ setono_sylius_terms:
     code: Code
     name: Name
     channels: Kanäle
+    position: Position
+    forms: Formulare
+    required: Erforderlich
+    enabled: Aktiviert
+    placement: Platzierung
+    delete_terms_warning: Beim Löschen der Konditionen werden auch alle ihre Versionen gelöscht. Um den Versionsverlauf zu behalten, deaktivieren Sie die Konditionen stattdessen.
 
   menu:
     admin:
@@ -30,6 +36,14 @@ setono_sylius_terms:
       content: Inhalt
       content_help: Wenn der Inhalt leer ist, wird das Etikett neben dem Kontrollkästchen keinen Link enthalten
       channels: Kanäle
+      forms: Formulare
+      slug_help: Leer lassen, um ihn aus dem Namen zu erzeugen. Eine Änderung des Slugs ändert die Adresse der Konditionen-Seite, und die alte Adresse funktioniert nicht mehr.
+      generate_slug: Slug aus dem Namen erzeugen
+      required: Erforderlich
+      required_help: Kunden müssen erforderliche Konditionen ankreuzen, bevor sie das Formular absenden können. Optionale Konditionen dürfen leer bleiben.
+      position: Position
+      position_help: Legt die Reihenfolge der Konditionen auf jedem Formular fest, die niedrigste zuerst. Leer lassen, um die Konditionen ans Ende zu setzen.
+      unconfigured_form: "%code% (nicht konfiguriert)"
       term_form:
         checkout_complete: Kasse > Bestellung abschließen
         registration: Konto > Registrieren

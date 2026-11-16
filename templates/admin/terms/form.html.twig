@@ -1,0 +1,16 @@
+{# Rendered with \Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent #}
+
+{% form_theme form '@SetonoSyliusTermsPlugin/admin/terms/form_theme.html.twig' %}
+
+<div class="container-xl" {{ attributes }}>
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id': form.vars.id}}) }}
+    <div class="card-body">
+        {% if form.vars.data.id|default(null) is not null %}
+            <input type="hidden" name="_method" value="PUT"/>
+        {% endif %}
+        {{ form_errors(form) }}
+
+        {% hook 'form' with { form, resource } %}
+    </div>
+    {{ form_end(form, {render_rest: hookable_metadata.configuration.render_rest|default(false)}) }}
+</div>

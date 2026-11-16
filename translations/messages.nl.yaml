@@ -8,6 +8,12 @@ setono_sylius_terms:
         code: Code
         name: Naam
         channels: Kanalen
+        position: Positie
+        forms: Formulieren
+        required: Verplicht
+        enabled: Ingeschakeld
+        placement: Plaatsing
+        delete_terms_warning: Als je de voorwaarden verwijdert, worden ook al hun versies verwijderd. Schakel de voorwaarden in plaats daarvan uit om de versiegeschiedenis te bewaren.
 
     menu:
         admin:
@@ -30,6 +36,14 @@ setono_sylius_terms:
             content: Content
             content_help: Als de content leeg is, zal het etiket naast het selectievakje geen link bevatten
             channels: Kanalen
+            forms: Formulieren
+            slug_help: Laat leeg om hem uit de naam te maken. Als je de slug wijzigt, wijzigt het adres van de voorwaardenpagina en werkt het oude adres niet meer.
+            generate_slug: Slug uit de naam maken
+            required: Verplicht
+            required_help: Klanten moeten verplichte voorwaarden aanvinken voordat ze het formulier kunnen versturen. Optionele voorwaarden mogen leeg blijven.
+            position: Positie
+            position_help: Bepaalt de volgorde van de voorwaarden op elk formulier, laagste eerst. Laat leeg om de voorwaarden als laatste te plaatsen.
+            unconfigured_form: "%code% (niet geconfigureerd)"
             term_form:
                 checkout_complete: Afrekenen > Bestelling afronden
                 registration: Account > Registreren

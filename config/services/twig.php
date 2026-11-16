@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Setono\SyliusTermsPlugin\Generator\SlugGeneratorInterface;
 use Setono\SyliusTermsPlugin\Renderer\ContentRendererInterface;
+use Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent;
 use Setono\SyliusTermsPlugin\Twig\ContentRuntime;
 use Setono\SyliusTermsPlugin\Twig\TermsExtension;
 use Setono\SyliusTermsPlugin\Twig\TermsRuntime;
@@ -30,5 +32,16 @@ return static function (ContainerConfigurator $container): void {
             service(ContentRendererInterface::class),
         ])
         ->tag('twig.runtime')
+    ;
+
+    $services->set(TermsFormComponent::class)
+        ->args([
+            service('setono_sylius_terms.repository.terms'),
+            service('form.factory'),
+            param('setono_sylius_terms.model.terms.class'),
+            param('setono_sylius_terms.form.terms.class'),
+            service(SlugGeneratorInterface::class),
+        ])
+        ->tag('sylius.live_component.admin', ['key' => 'setono_sylius_terms:admin:terms:form'])
     ;
 };

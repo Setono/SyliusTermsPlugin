@@ -8,6 +8,7 @@ use Setono\SyliusTermsPlugin\Form\Extension\FormTypeExtension;
 use Setono\SyliusTermsPlugin\Form\Type\TermsCheckboxCollectionType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsType;
+use Setono\SyliusTermsPlugin\Generator\SlugGeneratorInterface;
 use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
 use Setono\SyliusTermsPlugin\Renderer\LabelRendererInterface;
 
@@ -31,6 +32,7 @@ return static function (ContainerConfigurator $container): void {
     $services->set(TermsTranslationType::class)
         ->args([
             param('setono_sylius_terms.model.terms_translation.class'),
+            service(SlugGeneratorInterface::class),
             param('setono_sylius_terms.form.type.terms_translation.validation_groups'),
         ])
         ->tag('form.type')

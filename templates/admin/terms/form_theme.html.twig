@@ -1,0 +1,47 @@
+{% extends '@SyliusAdmin/shared/form_theme.html.twig' %}
+
+{% block _setono_sylius_terms_terms_forms_row %}
+    {{ form_label(form) }}
+
+    {% for choice in form %}
+        {{ form_row(choice, sylius_test_form_attribute('form-code', choice.vars.value)|merge({ label_attr: { class: 'checkbox-switch' } })) }}
+    {% endfor %}
+
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+{% endblock %}
+
+{% block _setono_sylius_terms_terms_channels_row %}
+    {{ form_label(form) }}
+
+    {% for channel in form %}
+        {{ form_row(channel, sylius_test_form_attribute('channel-code', channel.vars.value)|merge({ label_attr: { class: 'checkbox-switch' } })) }}
+    {% endfor %}
+
+    {{ form_errors(form) }}
+{% endblock %}
+
+{% block _setono_sylius_terms_terms_translations_entry_slug_row %}
+    {% set locale = form.parent.vars.name %}
+
+    <div class="mb-3 field">
+        {{ form_label(form) }}
+        <div class="input-group">
+            {{ form_widget(form, sylius_test_form_attribute('slug', locale)) }}
+            <button
+                class="btn btn-outline-secondary"
+                type="button"
+                title="{{ 'setono_sylius_terms.form.terms.generate_slug'|trans }}"
+                aria-label="{{ 'setono_sylius_terms.form.terms.generate_slug'|trans }}"
+                data-action="live#action"
+                data-live-action-param="generateTermsSlug"
+                data-live-locale-code-param="{{ locale }}"
+                {{ sylius_test_html_attribute('generate-slug-button', locale) }}
+            >
+                {{ ux_icon('tabler:wand', {'class': 'icon mx-0'}) }}
+            </button>
+        </div>
+        {{ form_help(form) }}
+        {{ form_errors(form) }}
+    </div>
+{% endblock %}

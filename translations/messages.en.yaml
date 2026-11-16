@@ -8,6 +8,12 @@ setono_sylius_terms:
         code: Code
         name: Name
         channels: Channels
+        position: Position
+        forms: Forms
+        required: Required
+        enabled: Enabled
+        placement: Placement
+        delete_terms_warning: Deleting the terms also deletes all their versions. To keep the version history, disable the terms instead.
         
     menu:
         admin:
@@ -30,6 +36,13 @@ setono_sylius_terms:
             content: Content
             content_help: If the content is empty the label next to the checkbox will not have a link
             channels: Channels
+            slug_help: Leave it blank to make it from the name. Changing the slug changes the address of the terms page, and the old address stops working.
+            generate_slug: Generate the slug from the name
+            required: Required
+            required_help: Customers must tick required terms before they can submit the form. Optional terms may be left unticked.
+            position: Position
+            position_help: Orders the terms on every form, lowest first. Leave it blank to put the terms last.
+            unconfigured_form: "%code% (not configured)"
             forms: Forms
             term_form:
                 checkout_complete: Checkout > Complete order
