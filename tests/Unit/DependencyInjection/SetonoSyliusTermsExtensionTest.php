@@ -16,12 +16,15 @@ use Setono\SyliusTermsPlugin\Form\Extension\FormTypeExtension;
 use Setono\SyliusTermsPlugin\Form\Type\TermsCheckboxCollectionType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsType;
+use Setono\SyliusTermsPlugin\Model\Terms;
+use Setono\SyliusTermsPlugin\Model\TermsTranslation;
 use Setono\SyliusTermsPlugin\Provider\TermsProvider;
 use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
 use Setono\SyliusTermsPlugin\Renderer\LabelRenderer;
 use Setono\SyliusTermsPlugin\Renderer\LabelRendererInterface;
 use Setono\SyliusTermsPlugin\Twig\TermsExtension;
 use Setono\SyliusTermsPlugin\Twig\TermsRuntime;
+use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Symfony\Component\Config\Resource\ResourceInterface;
 
 final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
@@ -89,5 +92,94 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
 
         $this->assertContainerBuilderHasAlias(TermsProviderInterface::class, TermsProvider::class);
         $this->assertContainerBuilderHasAlias(LabelRendererInterface::class, LabelRenderer::class);
+    }
+
+    #[Test]
+    public function it_derives_a_form_label_from_the_form_type_by_default(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasParameter('setono_sylius_terms.forms', [
+            CompleteType::class => ['label' => 'setono_sylius_terms.form.terms.term_form.complete'],
+        ]);
+    }
+
+    #[Test]
+    public function it_keeps_a_configured_form_label(): void
+    {
+        $this->load(['forms' => [CompleteType::class => ['label' => 'app.ui.accept_terms']]]);
+
+        $this->assertContainerBuilderHasParameter('setono_sylius_terms.forms', [
+            CompleteType::class => ['label' => 'app.ui.accept_terms'],
+        ]);
+    }
+
+    #[Test]
+    public function it_sets_the_terms_path(): void
+    {
+        $this->load(['routing' => ['terms' => 'vilkaar']]);
+
+        $this->assertContainerBuilderHasParameter('setono_sylius_terms.terms_path', 'vilkaar');
+    }
+
+    #[Test]
+    public function it_registers_the_terms_resource(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasParameter('setono_sylius_terms.model.terms.class', Terms::class);
+        $this->assertContainerBuilderHasParameter('setono_sylius_terms.model.terms_translation.class', TermsTranslation::class);
+        $this->assertContainerBuilderHasService('setono_sylius_terms.repository.terms');
+    }
+
+    #[Test]
+    public function it_prepends_the_terms_grid(): void
+    {
+        $this->load();
+
+        self::assertSame([[
+            'grids' => [
+                'setono_sylius_terms_terms' => [
+                    'driver' => [
+                        'name' => 'doctrine/orm',
+                        'options' => [
+                            'class' => '%setono_sylius_terms.model.terms.class%',
+                        ],
+                    ],
+                    'fields' => [
+                        'code' => [
+                            'type' => 'string',
+                            'label' => 'setono_sylius_terms.ui.code',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'label' => 'setono_sylius_terms.ui.name',
+                        ],
+                        'channels' => [
+                            'type' => 'twig',
+                            'label' => 'setono_sylius_terms.ui.channels',
+                            'options' => [
+                                'template' => '@SetonoSyliusTermsPlugin/admin/grid/field/channels.html.twig',
+                            ],
+                        ],
+                    ],
+                    'actions' => [
+                        'main' => [
+                            'create' => [
+                                'type' => 'create',
+                            ],
+                        ],
+                        'item' => [
+                            'update' => [
+                                'type' => 'update',
+                            ],
+                            'delete' => [
+                                'type' => 'delete',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]], $this->container->getExtensionConfig('sylius_grid'));
     }
 }

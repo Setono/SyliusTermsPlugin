@@ -1,0 +1,22 @@
+# https://docs.codecov.com/docs/codecovyml-reference
+# The code-coverage job in .github/workflows/build.yaml runs the unit and functional suites with pcov and uploads the
+# coverage of the files in phpunit.xml.dist's <source> (src/). Browser tests don't count
+coverage:
+    # Color coverage in Codecov's UI: red under 90%, green at 100%
+    range: "90...100"
+    status:
+        project:
+            default:
+                # A ratchet: a change may not lower coverage below its base commit. Most of the 2.x code is rewritten
+                # by the 3.0 slices, which bring the project up; the release-readiness slice (#121) sweeps what's left
+                target: auto
+                threshold: 0%
+        patch:
+            default:
+                # Every change covers all the lines it adds or modifies
+                target: 100%
+
+comment:
+    layout: "condensed_header, diff, files"
+    # Only comment on pull requests that change coverage
+    require_changes: true

@@ -13,6 +13,10 @@ doctrine:
 
         url: '%env(resolve:DATABASE_URL)%'
 
+        # dama/doctrine-test-bundle wraps each test in a transaction and needs savepoints for the nested ones.
+        # DBAL 4 always uses them; Sylius 2.2 is on DBAL 3, where they are opt-in
+        use_savepoints: true
+
 when@prod:
     doctrine:
         orm:
