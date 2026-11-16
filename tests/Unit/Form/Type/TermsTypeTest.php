@@ -18,12 +18,10 @@ use Sylius\Bundle\ChannelBundle\Form\Type\ChannelChoiceType;
 use Sylius\Bundle\ResourceBundle\Form\Type\ResourceTranslationsType;
 use Sylius\Resource\Doctrine\Persistence\RepositoryInterface;
 use Sylius\Resource\Translation\Provider\TranslationLocaleProviderInterface;
-use Symfony\Component\Form\ChoiceList\View\ChoiceView;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\Forms;
-use Symfony\Component\Form\FormView;
 use Symfony\Component\Validator\Validation;
 
 final class TermsTypeTest extends TestCase
@@ -38,34 +36,24 @@ final class TermsTypeTest extends TestCase
     #[Test]
     public function the_forms_field_offers_the_configured_forms_by_their_label(): void
     {
-        $choices = $this->getFormsChoices($this->createForm(new Terms()));
+        $checkboxes = self::getFormsCheckboxes($this->createForm(new Terms()));
 
-        self::assertSame(['checkout_complete', 'newsletter'], array_keys($choices));
-        self::assertSame('setono_sylius_terms.form.terms.term_form.checkout_complete', $choices['checkout_complete']->label);
-        self::assertSame([], $choices['checkout_complete']->labelTranslationParameters);
-        self::assertSame('app.form.newsletter', $choices['newsletter']->label);
+        self::assertSame([
+            'checkout_complete' => ['label' => 'setono_sylius_terms.form.terms.term_form.checkout_complete', 'parameters' => [], 'ticked' => false],
+            'newsletter' => ['label' => 'app.form.newsletter', 'parameters' => [], 'ticked' => false],
+        ], $checkboxes);
     }
 
     #[Test]
     public function a_stored_form_code_that_is_not_configured_is_offered_ticked_and_flagged(): void
     {
-        $form = $this->createForm(self::createTerms(['newsletter', 'legacy_form']));
+        $checkboxes = self::getFormsCheckboxes($this->createForm(self::createTerms(['newsletter', 'legacy_form'])));
 
-        $choices = $this->getFormsChoices($form);
-
-        self::assertSame(['checkout_complete', 'newsletter', 'legacy_form'], array_keys($choices));
-        self::assertSame('setono_sylius_terms.form.terms.unconfigured_form', $choices['legacy_form']->label);
-        self::assertSame(['%code%' => 'legacy_form'], $choices['legacy_form']->labelTranslationParameters);
-
-        $checked = [];
-        foreach (self::getChild($form->createView(), 'forms')->children as $checkbox) {
-            $value = $checkbox->vars['value'];
-            self::assertIsString($value);
-
-            $checked[$value] = $checkbox->vars['checked'];
-        }
-
-        self::assertSame(['checkout_complete' => false, 'newsletter' => true, 'legacy_form' => true], $checked);
+        self::assertSame([
+            'checkout_complete' => ['label' => 'setono_sylius_terms.form.terms.term_form.checkout_complete', 'parameters' => [], 'ticked' => false],
+            'newsletter' => ['label' => 'app.form.newsletter', 'parameters' => [], 'ticked' => true],
+            'legacy_form' => ['label' => 'setono_sylius_terms.form.terms.unconfigured_form', 'parameters' => ['%code%' => 'legacy_form'], 'ticked' => true],
+        ], $checkboxes);
     }
 
     #[Test]
@@ -92,7 +80,7 @@ final class TermsTypeTest extends TestCase
         self::assertSame(['newsletter'], $terms->getForms());
 
         // Once removed, the code is no longer offered
-        self::assertSame(['checkout_complete', 'newsletter'], array_keys($this->getFormsChoices($this->createForm($terms))));
+        self::assertSame(['checkout_complete', 'newsletter'], array_keys(self::getFormsCheckboxes($this->createForm($terms))));
     }
 
     #[Test]
@@ -113,7 +101,7 @@ final class TermsTypeTest extends TestCase
     #[Test]
     public function required_is_ticked_for_new_terms(): void
     {
-        self::assertTrue(self::getChild($this->createForm(new Terms())->createView(), 'required')->vars['checked']);
+        self::assertTrue($this->createForm(new Terms())->get('required')->getData());
     }
 
     #[Test]
@@ -160,33 +148,29 @@ final class TermsTypeTest extends TestCase
     }
 
     /**
-     * @return array<string, ChoiceView>
+     * The checkboxes of the Forms field by their value. Read from the forms rather than their views, whose types
+     * differ between Symfony 6.4 and 7.4
+     *
+     * @return array<string, array{label: mixed, parameters: mixed, ticked: mixed}>
      */
-    private function getFormsChoices(FormInterface $form): array
+    private static function getFormsCheckboxes(FormInterface $form): array
     {
-        $choiceViews = self::getChild($form->createView(), 'forms')->vars['choices'];
-        self::assertIsArray($choiceViews);
+        $checkboxes = [];
 
-        $choices = [];
-        foreach ($choiceViews as $choice) {
-            self::assertInstanceOf(ChoiceView::class, $choice);
-            self::assertIsString($choice->value);
+        foreach ($form->get('forms') as $checkbox) {
+            $config = $checkbox->getConfig();
 
-            $choices[$choice->value] = $choice;
+            $value = $config->getOption('value');
+            self::assertIsString($value);
+
+            $checkboxes[$value] = [
+                'label' => $config->getOption('label'),
+                'parameters' => $config->getOption('label_translation_parameters'),
+                'ticked' => $checkbox->getData(),
+            ];
         }
 
-        return $choices;
-    }
-
-    /**
-     * Reads the child from FormView::$children, which Symfony 6.4 types more precisely than FormView's array access
-     */
-    private static function getChild(FormView $view, string $name): FormView
-    {
-        $child = $view->children[$name] ?? null;
-        self::assertInstanceOf(FormView::class, $child);
-
-        return $child;
+        return $checkboxes;
     }
 
     private function createForm(TermsInterface $terms): FormInterface
