@@ -7,6 +7,8 @@ namespace Setono\SyliusTermsPlugin\Tests\Unit\DependencyInjection;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Setono\SyliusTermsPlugin\Checker\RequiredTermsChecker;
+use Setono\SyliusTermsPlugin\Checker\RequiredTermsCheckerInterface;
 use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeChecker;
 use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeCheckerInterface;
 use Setono\SyliusTermsPlugin\Controller\Action\ShowTermsAction;
@@ -20,6 +22,8 @@ use Setono\SyliusTermsPlugin\Form\Extension\FormTypeExtension;
 use Setono\SyliusTermsPlugin\Form\Type\TermsCheckboxCollectionType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsType;
+use Setono\SyliusTermsPlugin\Lookup\FormTermsLookup;
+use Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface;
 use Setono\SyliusTermsPlugin\Model\Terms;
 use Setono\SyliusTermsPlugin\Model\TermsTranslation;
 use Setono\SyliusTermsPlugin\Model\TermsVersion;
@@ -32,7 +36,9 @@ use Setono\SyliusTermsPlugin\Snapshotter\TermsVersionSnapshotter;
 use Setono\SyliusTermsPlugin\Snapshotter\TermsVersionSnapshotterInterface;
 use Setono\SyliusTermsPlugin\Twig\TermsExtension;
 use Setono\SyliusTermsPlugin\Twig\TermsRuntime;
+use Setono\SyliusTermsPlugin\Validator\Constraints\RequiredTermsTickedValidator;
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
+use Sylius\Bundle\ShopBundle\Form\Type\CustomerRegistrationType;
 use Symfony\Component\Config\Resource\ResourceInterface;
 
 final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
@@ -95,6 +101,9 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         yield 'terms version snapshotter' => [TermsVersionSnapshotter::class];
         yield 'create terms version listener' => [CreateTermsVersionListener::class];
         yield 'prevent terms version edit listener' => [PreventTermsVersionEditListener::class];
+        yield 'form terms lookup' => [FormTermsLookup::class];
+        yield 'required terms checker' => [RequiredTermsChecker::class];
+        yield 'required terms ticked validator' => [RequiredTermsTickedValidator::class];
     }
 
     #[Test]
@@ -106,6 +115,16 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias(LabelRendererInterface::class, LabelRenderer::class);
         $this->assertContainerBuilderHasAlias(VersionedTextChangeCheckerInterface::class, VersionedTextChangeChecker::class);
         $this->assertContainerBuilderHasAlias(TermsVersionSnapshotterInterface::class, TermsVersionSnapshotter::class);
+        $this->assertContainerBuilderHasAlias(FormTermsLookupInterface::class, FormTermsLookup::class);
+        $this->assertContainerBuilderHasAlias(RequiredTermsCheckerInterface::class, RequiredTermsChecker::class);
+    }
+
+    #[Test]
+    public function it_registers_the_required_terms_ticked_validator_as_a_constraint_validator(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(RequiredTermsTickedValidator::class, 'validator.constraint_validator');
     }
 
     #[Test]
@@ -118,22 +137,32 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
     }
 
     #[Test]
-    public function it_derives_a_form_label_from_the_form_type_by_default(): void
+    public function it_sets_the_enabled_forms_by_code(): void
     {
-        $this->load();
+        $this->load(['forms' => [
+            'contact' => ['enabled' => false],
+            'newsletter' => ['type' => 'App\Form\Type\NewsletterType', 'label' => 'app.form.newsletter'],
+        ]]);
 
         $this->assertContainerBuilderHasParameter('setono_sylius_terms.forms', [
-            CompleteType::class => ['label' => 'setono_sylius_terms.form.terms.term_form.complete'],
-        ]);
-    }
-
-    #[Test]
-    public function it_keeps_a_configured_form_label(): void
-    {
-        $this->load(['forms' => [CompleteType::class => ['label' => 'app.ui.accept_terms']]]);
-
-        $this->assertContainerBuilderHasParameter('setono_sylius_terms.forms', [
-            CompleteType::class => ['label' => 'app.ui.accept_terms'],
+            'checkout_complete' => [
+                'type' => CompleteType::class,
+                'label' => 'setono_sylius_terms.form.terms.term_form.checkout_complete',
+                'hooks' => ['sylius_shop.checkout.complete.content.form' => 50],
+                'saved_event' => 'sylius.order.post_complete',
+            ],
+            'registration' => [
+                'type' => CustomerRegistrationType::class,
+                'label' => 'setono_sylius_terms.form.terms.term_form.registration',
+                'hooks' => ['sylius_shop.account.register.content.form' => 50],
+                'saved_event' => 'sylius.customer.post_register',
+            ],
+            'newsletter' => [
+                'type' => 'App\Form\Type\NewsletterType',
+                'label' => 'app.form.newsletter',
+                'hooks' => [],
+                'saved_event' => null,
+            ],
         ]);
     }
 

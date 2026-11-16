@@ -4,31 +4,24 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\DependencyInjection;
 
-use ReflectionClass;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
-use function Symfony\Component\String\u;
 
 final class SetonoSyliusTermsExtension extends AbstractResourceExtension implements PrependExtensionInterface
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
         /**
-         * @var array{forms: array<class-string, array{label: string|null}>, routing: array{terms: string}, resources: array} $config
+         * @var array{forms: array<string, array{type: class-string, label: string, hooks: array<string, int>, saved_event: string|null}>, routing: array{terms: string}, resources: array} $config
          */
         $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
 
-        foreach ($config['forms'] as $form => $formConfig) {
-            $reflectionClass = new ReflectionClass($form);
-            $label = $formConfig['label'] ?? sprintf('setono_sylius_terms.form.terms.term_form.%s', u($reflectionClass->getShortName())->snake()->trimSuffix('_type')->toString());
-            $config['forms'][$form]['label'] = $label;
-        }
-
+        // The enabled Forms by code, with every key set. See Configuration
         $container->setParameter('setono_sylius_terms.forms', $config['forms']);
         $container->setParameter('setono_sylius_terms.terms_path', $config['routing']['terms']);
 

@@ -10,6 +10,9 @@ Will add a checkbox to the selects form(s) where the customer has to accept the 
 This can be used to make sure the customer has accepted the terms and conditions before placing an order.
 
 * [Screenshots](#screenshots)
+* [Forms](#forms)
+* [Required and optional terms, and position](#required-and-optional-terms-and-position)
+* [Finding and checking the Terms on a Form in code](#finding-and-checking-the-terms-on-a-form-in-code)
 * [Terms versions](#terms-versions)
 * [Installation](#installation)
 
@@ -27,14 +30,110 @@ Here is a list of terms. Notice the `terms_and_conditions` which is associated w
 
 ![Screenshot showing admin terms index page](docs/images/admin-terms-index.png)
 
-Notice that you select the form where the terms are shown. As default only the `Checkout > Complete` form is available,
-but you can add more in the `setono_sylius_terms.forms` configuration option.
+Notice that you select the forms where the terms are shown. By default the checkout complete, registration and contact
+forms are available, and you can add more in the `setono_sylius_terms.forms` configuration option (see [Forms](#forms)).
 
 ![Screenshot showing admin terms update page](docs/images/admin-terms-update.png)
 
 The `Label` field is the text shown on the complete order page. Notice you can use a placeholder (`[link:Link text]`) to tell where the link should be.
 
 ![Screenshot showing admin terms translation update page](docs/images/admin-terms-update-translation.png)
+
+## Forms
+
+A Form is a shop form that Terms can be placed on. Each Form is configured under a short code, and a Terms stores the
+codes of the Forms it is placed on. Three Forms are available out of the box:
+
+| Code                | Form type                                                     | Hook                                               |
+|---------------------|---------------------------------------------------------------|----------------------------------------------------|
+| `checkout_complete` | `Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType`    | `sylius_shop.checkout.complete.content.form`       |
+| `registration`      | `Sylius\Bundle\ShopBundle\Form\Type\CustomerRegistrationType` | `sylius_shop.account.register.content.form`        |
+| `contact`           | `Sylius\Bundle\CoreBundle\Form\Type\ContactType`              | `sylius_shop.contact.contact_request.content.form` |
+
+Each is hooked at priority 50, just before the submit button. The admin picks which Terms appear on each Form.
+
+### Adding a Form
+
+Your entries add to the three defaults:
+
+```yaml
+# config/packages/setono_sylius_terms.yaml
+setono_sylius_terms:
+    forms:
+        newsletter:
+            type: App\Form\Type\NewsletterType           # required: the form type the Terms checkboxes are added to
+            label: app.form.newsletter                     # optional: what the admin shows for the Form
+            hooks: { app.newsletter.form: 50 }             # the Twig hooks the checkboxes render in, with their priority
+            saved_event: app.newsletter.post_subscribe     # optional: the event dispatched once the form's data is saved
+```
+
+* Set `hooks: []` to render the checkboxes yourself with `{{ form_row(form.terms) }}`.
+* Without a `label`, the admin shows the translation key `setono_sylius_terms.form.terms.term_form.<code>`.
+
+### Changing or switching off a default Form
+
+An entry with a default Form's code changes only the keys it sets, and `enabled: false` switches a default Form off:
+
+```yaml
+setono_sylius_terms:
+    forms:
+        checkout_complete:
+            hooks: { app.checkout.complete.terms: 10 } # keeps its type and saved event
+        contact:
+            enabled: false
+```
+
+## Required and optional terms, and position
+
+* **Required terms** must be ticked before the form they are on can be submitted. **Optional terms** may be left
+  unticked. A Terms is required by default, and the flag applies on every Form it is placed on: a Terms that must be
+  required on one Form and optional on another becomes two Terms.
+* **Position** orders the Terms on every Form, lowest first. A Terms saved without a position goes last. Setting a
+  position moves the Terms there and shifts the Terms from there on one place down. Changing the position or the
+  required flag doesn't create a [Terms version](#terms-versions).
+
+## Finding and checking the Terms on a Form in code
+
+Both services work without a request or a Symfony form, so you can use them from a command, an email or an API.
+
+The Form lookup returns the Terms version in force for each enabled Terms placed on a Form in a channel, read in a
+locale, in position order. It skips a Terms that has no version in force at that moment, or no translation in that
+locale:
+
+```php
+/** @var \Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface $formTermsLookup */
+$translations = $formTermsLookup->lookup('checkout_complete', $order->getChannel(), $order->getLocaleCode(), $order->getCheckoutCompletedAt());
+
+foreach ($translations as $translation) {
+    $translation->getVersion()->getTerms()->getCode(); // terms_and_conditions
+    $translation->getVersion()->getNumber();           // 3
+    $translation->getLabel();                          // the label of that version, in the order's locale
+}
+```
+
+The moment defaults to now. The placement (enabled, channels and Forms) is always the current one.
+
+The required terms checker returns the required Terms on a Form that the customer left unticked, given the codes of
+the ticked Terms:
+
+```php
+/** @var \Setono\SyliusTermsPlugin\Checker\RequiredTermsCheckerInterface $requiredTermsChecker */
+$unticked = $requiredTermsChecker->getUntickedRequiredTerms('checkout_complete', $channel, 'en_US', ['terms_and_conditions']);
+```
+
+The `RequiredTermsTicked` constraint wraps the checker for the current channel and locale, so a DTO can carry it. The
+value is the list of the ticked Terms' codes, and each unticked required Terms raises a violation at `[<Terms code>]`:
+
+```php
+use Setono\SyliusTermsPlugin\Validator\Constraints\RequiredTermsTicked;
+
+final class CompleteCheckoutCommand
+{
+    /** @var list<string> */
+    #[RequiredTermsTicked(form: 'checkout_complete')]
+    public array $terms = [];
+}
+```
 
 ## Terms versions
 
@@ -45,7 +144,8 @@ a saved version throws a `LogicException`.
 * Every save that changes the name, label or content in any locale, or adds or removes a translation, creates the
   next version. Creating a Terms creates version 1. This holds for every save, whether it comes from the admin,
   the fixture or your own code.
-* The slug, code, channels, Forms and the enabled flag aren't versioned. Changing only those creates no version.
+* The slug, code, channels, Forms, position and the enabled and required flags aren't versioned. Changing only those
+  creates no version.
 * A version is in force from the moment it is saved until the next version is saved. The plugin reads "now" from
   Symfony Clock.
 

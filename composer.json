@@ -21,6 +21,7 @@
         "sylius/core-bundle": "^2.2",
         "sylius/locale": "^2.2",
         "sylius/resource-bundle": "^1.12",
+        "sylius/shop-bundle": "^2.2",
         "sylius/ui-bundle": "^2.2",
         "symfony/clock": "^6.4 || ^7.4",
         "symfony/config": "^6.4 || ^7.4",

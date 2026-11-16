@@ -11,23 +11,22 @@ use Sylius\Bundle\ResourceBundle\Form\Type\ResourceTranslationsType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormTypeInterface;
 
 final class TermsType extends AbstractResourceType
 {
-    /** @param array<string, class-string<FormTypeInterface>> $forms */
+    /** @var array<string, string> The Form codes by their label */
     private array $forms = [];
 
     /**
-     * @param array<class-string<FormTypeInterface>, array{label: string}> $forms
+     * @param array<string, array{label: string}> $forms
      * @param list<string> $validationGroups
      */
     public function __construct(string $dataClass, array $forms, array $validationGroups = [])
     {
         parent::__construct($dataClass, $validationGroups);
 
-        foreach ($forms as $form => $config) {
-            $this->forms[$config['label']] = $form;
+        foreach ($forms as $code => $form) {
+            $this->forms[$form['label']] = $code;
         }
     }
 

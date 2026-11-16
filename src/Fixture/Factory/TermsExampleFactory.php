@@ -10,7 +10,6 @@ use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Sylius\Bundle\CoreBundle\Fixture\Factory\AbstractExampleFactory;
 use Sylius\Bundle\CoreBundle\Fixture\OptionsResolver\LazyOption;
-use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Formatter\StringInflector;
@@ -41,7 +40,7 @@ class TermsExampleFactory extends AbstractExampleFactory
 
     public function create(array $options = []): TermsInterface
     {
-        /** @var array{code: string, channels: list<ChannelInterface>, enabled: bool, forms: list<class-string>, translations: array<string, array<string, mixed>>} $options */
+        /** @var array{code: string, channels: list<ChannelInterface>, enabled: bool, forms: list<string>, translations: array<string, array<string, mixed>>} $options */
         $options = $this->optionsResolver->resolve($options);
 
         /** @var TermsInterface|null $terms */
@@ -115,7 +114,7 @@ class TermsExampleFactory extends AbstractExampleFactory
             ->setDefault('translations', [])
             ->setAllowedTypes('translations', ['array'])
 
-            ->setDefault('forms', [CompleteType::class])
+            ->setDefault('forms', ['checkout_complete'])
             ->setAllowedTypes('forms', ['array'])
         ;
     }

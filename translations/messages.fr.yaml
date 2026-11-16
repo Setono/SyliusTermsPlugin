@@ -30,3 +30,7 @@ setono_sylius_terms:
       content: Contenu
       content_help: Si le contenu est vide, l'étiquette à côté de la case à cocher n'aura pas de lien
       channels: Canaux
+      term_form:
+        checkout_complete: Commande > Finaliser la commande
+        registration: Compte > Inscription
+        contact: Contact

@@ -11,31 +11,28 @@ use Webmozart\Assert\Assert;
 
 class TermsRepository extends EntityRepository implements TermsRepositoryInterface
 {
-    public function findByFormAndChannelAndLocale(string $form, ChannelInterface $channel, string $locale): array
+    public function findByFormAndChannel(string $form, ChannelInterface $channel): array
     {
-        // See https://dev.mysql.com/doc/refman/8.0/en/string-comparison-functions.html
-        // The manual says: To search for \, specify it as \\\\
-        // That is why below we replace \ with \\\\
-        $form = str_replace('\\', '\\\\\\\\', $form);
-
-        $objs = $this->createQueryBuilder('o')
-            ->addSelect('translation')
-            ->innerJoin('o.translations', 'translation', 'WITH', 'translation.locale = :locale')
+        $termsList = $this->createQueryBuilder('o')
             ->andWhere('o.enabled = true')
             ->andWhere('o.forms IS NOT NULL')
-            ->andWhere('o.forms LIKE :form')
             ->andWhere(':channel MEMBER OF o.channels')
-            ->setParameter('locale', $locale)
-            ->setParameter('form', '%"' . $form . '"%')
             ->setParameter('channel', $channel)
+            ->addOrderBy('o.position', 'ASC')
+            // Upgraded 2.x Terms share position 0 until the upgrade command numbers them
+            ->addOrderBy('o.id', 'ASC')
             ->getQuery()
             ->getResult()
         ;
 
-        Assert::isArray($objs);
-        Assert::allIsInstanceOf($objs, TermsInterface::class);
+        Assert::isArray($termsList);
+        Assert::allIsInstanceOf($termsList, TermsInterface::class);
 
-        return $objs;
+        // The Form codes are matched here rather than in SQL, where they are a JSON list that no portable DQL can search
+        return array_values(array_filter(
+            $termsList,
+            static fn (TermsInterface $terms): bool => in_array($form, $terms->getForms(), true),
+        ));
     }
 
     public function findOneByChannelAndLocaleAndSlug(ChannelInterface $channel, string $locale, string $slug): ?TermsInterface
