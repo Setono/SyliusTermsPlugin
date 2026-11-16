@@ -1,0 +1,12 @@
+{# PROTOTYPE footer 3 "Legal strip": Sylius' placeholders disabled; a separate line at the foot of the footer.
+   Uses sylius_shop.base.footer.content, which exists in every Sylius 2.x. #}
+{% if include('prototype/terms_page/_footer_variant.html.twig')|trim == '3' %}
+    <div class="col-12 order-last mt-4 pt-4 border-top">
+        <nav aria-label="Legal" class="d-flex flex-wrap justify-content-center gap-1 gap-md-3 small">
+            {% for t in prototype_terms %}
+                <a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-75-hover" href="{{ path('prototype_terms_show', {slug: t.slug}|merge(app.request.query.all)) }}">{{ t.name }}</a>
+                {% if not loop.last %}<span class="text-body-tertiary" aria-hidden="true">·</span>{% endif %}
+            {% endfor %}
+        </nav>
+    </div>
+{% endif %}

@@ -1,0 +1,50 @@
+{% import '@SyliusShop/shared/breadcrumbs.html.twig' as breadcrumbs %}
+{# PROTOTYPE variant B "Document with table of contents": sticky "On this page" list built from the h2 headings,
+   hover permalinks on headings. Needs a heading-anchor (+ TOC) CommonMark extension and the sanitiser allowing
+   `id` on headings; the TOC is built by JS here only to keep the prototype cheap. #}
+<div class="container">
+    <div class="mt-4">
+        {{ breadcrumbs.breadcrumbs([
+            { label: 'sylius.ui.home'|trans, path: path('sylius_shop_homepage') },
+            { label: terms.name, active: true },
+        ]) }}
+    </div>
+    <div class="row mb-5">
+        <div class="col-12 col-lg-8 order-lg-2">
+            <header class="mb-4 pb-4 border-bottom">
+                <h1 class="mb-0">{{ terms.name }}</h1>
+            </header>
+            <div class="terms-content" id="terms-content">{{ content }}</div>
+        </div>
+        <aside class="col-12 col-lg-3 order-lg-1 mb-4 terms-print-hide">
+            <div class="position-sticky" style="top: 1.5rem">
+                <div class="fw-semibold small text-uppercase text-body-secondary mb-2">On this page</div>
+                <nav id="terms-toc" class="nav flex-column small border-start"></nav>
+                <div class="small text-body-secondary mt-4">
+                    Version {{ terms.version }}<br>
+                    In force since {{ terms.in_force_since|date('j F Y') }}
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary mt-3" onclick="window.print()">Print</button>
+            </div>
+        </aside>
+    </div>
+</div>
+<style>
+    #terms-toc .nav-link { padding: .25rem .75rem; margin-left: -1px; border-left: 2px solid transparent; color: var(--bs-secondary-color); }
+    #terms-toc .nav-link:hover { color: var(--bs-body-color); border-left-color: var(--bs-border-color); }
+    .terms-content h2 .terms-anchor { margin-left: .5rem; opacity: 0; text-decoration: none; color: var(--bs-tertiary-color); }
+    .terms-content h2:hover .terms-anchor { opacity: 1; }
+</style>
+<script>
+    (() => {
+        const toc = document.getElementById('terms-toc');
+        document.querySelectorAll('#terms-content h2[id]').forEach((h) => {
+            const a = document.createElement('a');
+            a.className = 'nav-link'; a.href = '#' + h.id; a.textContent = h.textContent;
+            toc.appendChild(a);
+            const p = document.createElement('a');
+            p.className = 'terms-anchor'; p.href = '#' + h.id; p.textContent = '#'; p.setAttribute('aria-label', 'Link to this section');
+            h.appendChild(p);
+        });
+    })();
+</script>

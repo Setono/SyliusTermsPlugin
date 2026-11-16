@@ -1,0 +1,19 @@
+{% import '@SyliusShop/shared/breadcrumbs.html.twig' as breadcrumbs %}
+{# PROTOTYPE variant A "Reading column": one centred column, version as a quiet line under the title. Nothing else. #}
+<div class="container">
+    <div class="row justify-content-center mt-4 mb-5">
+        <div class="col-12 col-lg-8 col-xl-7">
+            {{ breadcrumbs.breadcrumbs([
+                { label: 'sylius.ui.home'|trans, path: path('sylius_shop_homepage') },
+                { label: terms.name, active: true },
+            ]) }}
+
+            <header class="mb-5">
+                <h1 class="mb-2">{{ terms.name }}</h1>
+                <div class="text-body-secondary small">{{ version_text }}</div>
+            </header>
+
+            <div class="terms-content">{{ content }}</div>
+        </div>
+    </div>
+</div>

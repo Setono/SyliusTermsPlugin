@@ -1,0 +1,21 @@
+{# PROTOTYPE: the content has no class/style attributes, so all of its styling is scoped to the wrapper.
+   In the plugin this would be a small static CSS file loaded via a #stylesheets hookable (no build). #}
+<style>
+    .terms-content { line-height: 1.7; overflow-wrap: break-word; }
+    .terms-content > :first-child { margin-top: 0; }
+    .terms-content h2 { font-size: 1.375rem; margin: 2.5rem 0 .75rem; scroll-margin-top: 1.5rem; }
+    .terms-content h3 { font-size: 1.125rem; margin: 1.75rem 0 .5rem; }
+    .terms-content p, .terms-content ul, .terms-content ol, .terms-content blockquote, .terms-content table { margin-bottom: 1.25rem; }
+    .terms-content ul, .terms-content ol { padding-left: 1.5rem; }
+    .terms-content li + li { margin-top: .25rem; }
+    .terms-content img { max-width: 100%; height: auto; border-radius: .5rem; }
+    .terms-content table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; font-size: .9375rem; }
+    .terms-content th, .terms-content td { padding: .5rem .75rem; border-bottom: 1px solid var(--bs-border-color); text-align: left; vertical-align: top; }
+    .terms-content thead th { border-bottom-width: 2px; font-weight: 600; white-space: nowrap; }
+    .terms-content blockquote { border-left: 4px solid var(--bs-border-color); padding: .25rem 0 .25rem 1rem; color: var(--bs-secondary-color); }
+    .terms-content blockquote > :last-child { margin-bottom: 0; }
+    .terms-content a { color: var(--bs-link-color); }
+    @media print {
+        header, footer, nav[aria-label="breadcrumbs"], .breadcrumb, .terms-print-hide, #prototype-switcher { display: none !important; }
+    }
+</style>

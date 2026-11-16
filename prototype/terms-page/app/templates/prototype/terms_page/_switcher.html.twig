@@ -1,0 +1,45 @@
+{# PROTOTYPE switcher: ←/→ cycles the page variant, Shift+←/→ cycles the footer variant. Not rendered in prod. #}
+<div id="prototype-switcher" style="position:fixed;left:50%;bottom:3.25rem;transform:translateX(-50%);z-index:2000;background:#111;color:#fff;border-radius:999px;box-shadow:0 6px 24px rgba(0,0,0,.35);padding:.4rem .75rem;font:500 13px/1.2 system-ui,sans-serif;display:flex;gap:1rem;align-items:center;white-space:nowrap;max-width:calc(100vw - 1rem);overflow-x:auto">
+    <span style="opacity:.6">PROTOTYPE</span>
+    <span>
+        Page
+        <button type="button" data-cycle="variant" data-dir="-1" style="background:none;border:0;color:#fff;cursor:pointer">◀</button>
+        <strong data-label="variant"></strong>
+        <button type="button" data-cycle="variant" data-dir="1" style="background:none;border:0;color:#fff;cursor:pointer">▶</button>
+    </span>
+    <span style="opacity:.3">|</span>
+    <span>
+        Footer
+        <button type="button" data-cycle="footer" data-dir="-1" style="background:none;border:0;color:#fff;cursor:pointer">◀</button>
+        <strong data-label="footer"></strong>
+        <button type="button" data-cycle="footer" data-dir="1" style="background:none;border:0;color:#fff;cursor:pointer">▶</button>
+    </span>
+</div>
+<script>
+    (() => {
+        const options = {
+            variant: { def: 'A', keys: ['A', 'B', 'C'], names: { A: 'A · Reading column', B: 'B · Table of contents', C: 'C · Legal hub' } },
+            footer: { def: '1', keys: ['1', '2', '3'], names: { 1: '1 · Alongside placeholders', 2: '2 · Replace placeholders', 3: '3 · Legal strip' } },
+        };
+        const params = new URLSearchParams(location.search);
+        const current = (k) => {
+            const v = (params.get(k) || options[k].def).toUpperCase();
+            return options[k].keys.includes(v) ? v : options[k].def;
+        };
+        const go = (k, dir) => {
+            const keys = options[k].keys;
+            params.set(k, keys[(keys.indexOf(current(k)) + dir + keys.length) % keys.length]);
+            location.search = params.toString();
+        };
+        for (const k of Object.keys(options)) {
+            document.querySelector(`[data-label="${k}"]`).textContent = options[k].names[current(k)];
+        }
+        document.querySelectorAll('#prototype-switcher [data-cycle]').forEach((b) =>
+            b.addEventListener('click', () => go(b.dataset.cycle, Number(b.dataset.dir))));
+        document.addEventListener('keydown', (e) => {
+            if (e.target.closest('input, textarea, select, [contenteditable]')) return;
+            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+            go(e.shiftKey ? 'footer' : 'variant', e.key === 'ArrowLeft' ? -1 : 1);
+        });
+    })();
+</script>

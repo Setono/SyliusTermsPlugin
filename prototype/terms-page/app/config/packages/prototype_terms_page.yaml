@@ -1,0 +1,28 @@
+# PROTOTYPE (throwaway), see config/routes/prototype_terms_page.yaml.
+# Stand-in data: the Terms enabled in the current channel, in position order, with the version in force.
+twig:
+    globals:
+        prototype_terms:
+            - { code: terms_and_conditions, slug: terms-and-conditions, name: 'Terms and conditions', version: 3, in_force_since: '2026-11-16' }
+            - { code: privacy_policy, slug: privacy-policy, name: 'Privacy policy', version: 1, in_force_since: '2026-03-02' }
+            - { code: right_of_withdrawal, slug: right-of-withdrawal, name: 'Right of withdrawal', version: 2, in_force_since: '2026-06-12' }
+
+# App config CAN override Sylius' own hookables (a plugin's prepend() cannot). Each template below
+# switches on ?footer= so every footer variant is reachable from the same page.
+sylius_twig_hooks:
+    hooks:
+        'sylius_shop.base.footer.content.menu.informational_links':
+            terms_and_conditions:
+                template: 'prototype/terms_page/footer/sylius_terms_and_conditions.html.twig'
+            privacy_policy:
+                template: 'prototype/terms_page/footer/sylius_privacy_policy.html.twig'
+            prototype_terms_alongside:
+                template: 'prototype/terms_page/footer/links_alongside.html.twig'
+                priority: 50
+            prototype_terms_replace:
+                template: 'prototype/terms_page/footer/links_replace.html.twig'
+                priority: 150
+        'sylius_shop.base.footer.content':
+            prototype_terms_legal_strip:
+                template: 'prototype/terms_page/footer/legal_strip.html.twig'
+                priority: -100

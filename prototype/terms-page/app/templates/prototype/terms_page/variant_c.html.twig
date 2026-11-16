@@ -1,0 +1,33 @@
+{% import '@SyliusShop/shared/breadcrumbs.html.twig' as breadcrumbs %}
+{# PROTOTYPE variant C "Legal hub": every Terms in the channel listed beside the content, so one Terms page leads to
+   the others. Content in a card; version + print in the card footer. #}
+<div class="container">
+    <div class="mt-4">
+        {{ breadcrumbs.breadcrumbs([
+            { label: 'sylius.ui.home'|trans, path: path('sylius_shop_homepage') },
+            { label: terms.name, active: true },
+        ]) }}
+    </div>
+    <div class="row mb-5 g-4">
+        <aside class="col-12 col-lg-3 terms-print-hide">
+            <nav class="nav nav-pills flex-lg-column flex-nowrap overflow-auto gap-1" aria-label="Legal">
+                {% for t in prototype_terms %}
+                    <a class="nav-link text-nowrap{{ t.slug == terms.slug ? ' active' }}"{{ t.slug == terms.slug ? ' aria-current="page"' }}
+                       href="{{ path('prototype_terms_show', {slug: t.slug}|merge(app.request.query.all)) }}">{{ t.name }}</a>
+                {% endfor %}
+            </nav>
+        </aside>
+        <div class="col-12 col-lg-9">
+            <article class="card">
+                <div class="card-body p-4 p-lg-5">
+                    <h1 class="mb-4">{{ terms.name }}</h1>
+                    <div class="terms-content">{{ content }}</div>
+                </div>
+                <div class="card-footer bg-transparent d-flex flex-wrap align-items-center justify-content-between gap-2 px-4 px-lg-5 py-3 small text-body-secondary">
+                    <span>{{ version_text }}</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary terms-print-hide" onclick="window.print()">Print</button>
+                </div>
+            </article>
+        </div>
+    </div>
+</div>

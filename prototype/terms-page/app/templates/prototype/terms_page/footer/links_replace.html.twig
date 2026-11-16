@@ -1,0 +1,7 @@
+{# PROTOTYPE footer 2 "Replace": Sylius' placeholders are disabled (compiler pass in the plugin), the plugin's links take
+   their slot between "About" (300) and "Contact us" (0). Needs Sylius >= 2.2.7. #}
+{% if include('prototype/terms_page/_footer_variant.html.twig')|trim == '2' %}
+    {% for t in prototype_terms %}
+        <a class="nav-link" href="{{ path('prototype_terms_show', {slug: t.slug}|merge(app.request.query.all)) }}">{{ t.name }}</a>
+    {% endfor %}
+{% endif %}

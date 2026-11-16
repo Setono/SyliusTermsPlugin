@@ -1,0 +1,10 @@
+# PROTOTYPE (throwaway): terms page + footer variants for "What should the terms page and footer links look like
+# in the Sylius 2 shop?" (Setono/SyliusTermsPlugin#96). Not production code.
+prototype_terms_show:
+    path: /{_locale}/terms/{slug}
+    methods: [GET]
+    controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController
+    defaults:
+        template: 'prototype/terms_page/show.html.twig'
+    requirements:
+        _locale: ^[A-Za-z]{2,4}(_([A-Za-z]{4}|[0-9]{3}))?(_([A-Za-z]{2}|[0-9]{3}))?$

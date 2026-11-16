@@ -1,0 +1,25 @@
+{#
+  PROTOTYPE (throwaway): three terms page variants (?variant=A|B|C) x three footer variants (?footer=1|2|3)
+  on /{_locale}/terms/{slug}, for Setono/SyliusTermsPlugin#96. Data is stand-in (twig global prototype_terms).
+#}
+{% extends '@SyliusShop/shared/layout/base.html.twig' %}
+{% import '@SyliusShop/shared/breadcrumbs.html.twig' as breadcrumbs %}
+
+{% set slug = app.request.attributes.get('slug') %}
+{% set terms = prototype_terms|filter(t => t.slug == slug)|first ?: prototype_terms|first %}
+{% set variant = app.request.query.get('variant', 'A')|upper %}
+{% set variant = variant in ['A', 'B', 'C'] ? variant : 'A' %}
+
+{% block title %}{{ terms.name }} | {{ parent() }}{% endblock %}
+
+{% block content %}
+    {% set content %}{% include 'prototype/terms_page/content/' ~ terms.slug ~ '.html.twig' %}{% endset %}
+    {% set version_text = 'Version ' ~ terms.version ~ ', in force since ' ~ terms.in_force_since|date('j F Y') %}
+
+    {% include 'prototype/terms_page/_content_css.html.twig' %}
+    {% include 'prototype/terms_page/variant_' ~ variant|lower ~ '.html.twig' %}
+
+    {% if app.environment != 'prod' %}
+        {% include 'prototype/terms_page/_switcher.html.twig' %}
+    {% endif %}
+{% endblock %}

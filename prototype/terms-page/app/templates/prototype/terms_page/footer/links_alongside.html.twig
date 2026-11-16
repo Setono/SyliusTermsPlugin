@@ -1,0 +1,6 @@
+{# PROTOTYPE footer 1 "Alongside": plugin adds its links, Sylius' href="#" placeholders stay. Needs Sylius >= 2.2.7. #}
+{% if include('prototype/terms_page/_footer_variant.html.twig')|trim == '1' %}
+    {% for t in prototype_terms %}
+        <a class="nav-link" href="{{ path('prototype_terms_show', {slug: t.slug}|merge(app.request.query.all)) }}">{{ t.name }}</a>
+    {% endfor %}
+{% endif %}
