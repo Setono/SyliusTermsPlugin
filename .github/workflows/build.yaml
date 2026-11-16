@@ -69,20 +69,6 @@ jobs:
 
     functional-tests:
         runs-on: "ubuntu-latest"
-        # ubuntu-latest (Ubuntu 26.04) ships no MySQL, so the jobs that need it run the mysql image and tell the
-        # setono/sylius-plugin actions not to start one (start-mysql: false, Setono/sylius-plugin#7)
-        services: &mysql-service
-            mysql:
-                image: "mysql:8.0"
-                env:
-                    MYSQL_ROOT_PASSWORD: "root"
-                ports:
-                    - "3306:3306"
-                options: >-
-                    --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
-                    --health-interval=5s
-                    --health-timeout=5s
-                    --health-retries=20
         strategy:
             fail-fast: false
             matrix:
@@ -90,17 +76,15 @@ jobs:
                 dependencies: ["highest"]
                 symfony: ["~6.4.0", "~7.4.0"]
         steps:
-            -   uses: "setono/sylius-plugin/functional-tests@v2"
+            -   uses: "setono/sylius-plugin/functional-tests@start-mysql-input"
                 with:
                     php-version: "${{ matrix.php-version }}"
                     dependencies: "${{ matrix.dependencies }}"
                     symfony: "${{ matrix.symfony }}"
-                    start-mysql: false
                     testsuite: "functional"
 
     browser-tests:
         runs-on: "ubuntu-latest"
-        services: *mysql-service
         strategy:
             fail-fast: false
             matrix:
@@ -113,14 +97,13 @@ jobs:
             APP_ENV: "test"
             DATABASE_URL: "mysql://root:root@127.0.0.1/sylius?serverVersion=8.0"
         steps:
-            # Without a testsuite the action only sets up the test application: Node, yarn build, schema and fixtures
-            -   uses: "setono/sylius-plugin/functional-tests@v2"
+            # Without a testsuite the action only sets up the test application: MySQL, Node, yarn build, schema and fixtures
+            -   uses: "setono/sylius-plugin/functional-tests@start-mysql-input"
                 with:
                     php-version: "${{ matrix.php-version }}"
                     dependencies: "${{ matrix.dependencies }}"
                     symfony: "${{ matrix.symfony }}"
                     database-url: "${{ env.DATABASE_URL }}"
-                    start-mysql: false
 
             # The asset bridge serves /bundles from the test application's public/ and doesn't follow symlinks out of it,
             # so the bundles' public files are copied there
@@ -136,12 +119,10 @@ jobs:
 
     code-coverage:
         runs-on: "ubuntu-latest"
-        services: *mysql-service
         steps:
-            -   uses: "setono/sylius-plugin/code-coverage@v2"
+            -   uses: "setono/sylius-plugin/code-coverage@start-mysql-input"
                 with:
                     symfony: "~7.4.0"
                     codecov-token: "${{ secrets.CODECOV_TOKEN }}"
-                    start-mysql: false
                     # Browser tests don't count towards coverage (Setono/SyliusPluginSkeleton#110)
                     testsuite: "unit,functional"
