@@ -1,0 +1,120 @@
+# The test baseline, on top of Sylius' default fixtures. Tests find these Terms by code and create every other case inline
+sylius_fixtures:
+    suites:
+        default:
+            fixtures:
+                # The baseline Terms are translated into en_US and de_DE, so fr_FR is the locale they lack. Sylius' order
+                # fixture fails now and then once a channel has more than one locale, so the locales are added after
+                # every other fixture (higher priorities run first). See ChannelLocalesFixture
+                test_channel_locales:
+                    priority: -100
+                    options:
+                        channels:
+                            FASHION_WEB: [de_DE, fr_FR]
+
+                setono_terms:
+                    options:
+                        custom:
+                            terms_and_conditions:
+                                code: terms_and_conditions
+                                forms: [checkout_complete]
+                                channels: [FASHION_WEB]
+                                locales: [en_US, de_DE]
+                                name: Terms and Conditions
+                                slug: terms-and-conditions
+                                label: I accept the [link:terms and conditions]
+                                content: |
+                                    These terms apply to every order placed in this shop.
+
+                                    ## Ordering
+
+                                    An order is binding once you receive the order confirmation by email.
+
+                                    ![The shop's warehouse](/images/terms-wide.png)
+
+                                    ## Prices and payment
+
+                                    All prices include VAT. You can pay by:
+
+                                    | Method        | Fee  | Charged                 |
+                                    |---------------|-----:|-------------------------|
+                                    | Card          | 0.00 | When the order ships    |
+                                    | Bank transfer | 0.00 | Before the order ships  |
+
+                                    ## Returns
+
+                                    You may return an item within 14 days of receiving it.
+                                translations:
+                                    de_DE:
+                                        name: Allgemeine Geschäftsbedingungen
+                                        slug: allgemeine-geschaeftsbedingungen
+                                        label: Ich akzeptiere die [link:Allgemeinen Geschäftsbedingungen]
+                                        content: |
+                                            Diese Bedingungen gelten für jede Bestellung in diesem Shop.
+
+                                            ## Bestellung
+
+                                            Eine Bestellung ist verbindlich, sobald Sie die Bestellbestätigung per E-Mail erhalten.
+
+                                            ![Das Lager des Shops](/images/terms-wide.png)
+
+                                            ## Preise und Zahlung
+
+                                            Alle Preise enthalten die Mehrwertsteuer. Sie können bezahlen mit:
+
+                                            | Methode       | Gebühr | Belastet                     |
+                                            |---------------|-------:|------------------------------|
+                                            | Karte         |   0,00 | Beim Versand der Bestellung  |
+                                            | Überweisung   |   0,00 | Vor dem Versand der Bestellung |
+
+                                            ## Rückgabe
+
+                                            Sie können einen Artikel innerhalb von 14 Tagen nach Erhalt zurückgeben.
+
+                            privacy_policy:
+                                code: privacy_policy
+                                forms: [registration, contact]
+                                channels: [FASHION_WEB]
+                                locales: [en_US, de_DE]
+                                name: Privacy Policy
+                                slug: privacy-policy
+                                label: I have read the [link:privacy policy]
+                                content: |
+                                    This policy explains how we handle your personal data.
+
+                                    ## What we collect
+
+                                    We collect what you give us when you register, order or contact us.
+
+                                    | Data          | Why                     | Kept for  |
+                                    |---------------|-------------------------|-----------|
+                                    | Name, address | To deliver your orders  | 5 years   |
+                                    | Email         | To send order updates   | 3 years   |
+
+                                    ## Your rights
+
+                                    You may ask us for a copy of your data, or ask us to delete it.
+
+                                    ![The shop's warehouse](/images/terms-wide.png)
+                                translations:
+                                    de_DE:
+                                        name: Datenschutzerklärung
+                                        slug: datenschutzerklaerung
+                                        label: Ich habe die [link:Datenschutzerklärung] gelesen
+                                        content: |
+                                            Diese Erklärung beschreibt, wie wir mit Ihren personenbezogenen Daten umgehen.
+
+                                            ## Was wir erheben
+
+                                            Wir erheben, was Sie uns bei der Registrierung, Bestellung oder Kontaktaufnahme mitteilen.
+
+                                            | Daten           | Zweck                              | Aufbewahrt |
+                                            |-----------------|------------------------------------|------------|
+                                            | Name, Anschrift | Um Ihre Bestellungen zu liefern    | 5 Jahre    |
+                                            | E-Mail          | Um Bestellinformationen zu senden  | 3 Jahre    |
+
+                                            ## Ihre Rechte
+
+                                            Sie können eine Kopie Ihrer Daten oder deren Löschung verlangen.
+
+                                            ![Das Lager des Shops](/images/terms-wide.png)

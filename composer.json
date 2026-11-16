@@ -65,7 +65,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Setono\\SyliusTermsPlugin\\Tests\\": "tests/"
+            "Setono\\SyliusTermsPlugin\\Tests\\": "tests/",
+            "Setono\\SyliusTermsPlugin\\Tests\\Application\\": "tests/Application/src/"
         },
         "classmap": [
             "tests/Application/Kernel.php"
