@@ -7,8 +7,12 @@ namespace Setono\SyliusTermsPlugin\Tests\Unit\DependencyInjection;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeChecker;
+use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeCheckerInterface;
 use Setono\SyliusTermsPlugin\Controller\Action\ShowTermsAction;
 use Setono\SyliusTermsPlugin\DependencyInjection\SetonoSyliusTermsExtension;
+use Setono\SyliusTermsPlugin\EventListener\CreateTermsVersionListener;
+use Setono\SyliusTermsPlugin\EventListener\PreventTermsVersionEditListener;
 use Setono\SyliusTermsPlugin\EventSubscriber\AddMenuSubscriber;
 use Setono\SyliusTermsPlugin\Fixture\Factory\TermsExampleFactory;
 use Setono\SyliusTermsPlugin\Fixture\TermsFixture;
@@ -18,10 +22,14 @@ use Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsType;
 use Setono\SyliusTermsPlugin\Model\Terms;
 use Setono\SyliusTermsPlugin\Model\TermsTranslation;
+use Setono\SyliusTermsPlugin\Model\TermsVersion;
+use Setono\SyliusTermsPlugin\Model\TermsVersionTranslation;
 use Setono\SyliusTermsPlugin\Provider\TermsProvider;
 use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
 use Setono\SyliusTermsPlugin\Renderer\LabelRenderer;
 use Setono\SyliusTermsPlugin\Renderer\LabelRendererInterface;
+use Setono\SyliusTermsPlugin\Snapshotter\TermsVersionSnapshotter;
+use Setono\SyliusTermsPlugin\Snapshotter\TermsVersionSnapshotterInterface;
 use Setono\SyliusTermsPlugin\Twig\TermsExtension;
 use Setono\SyliusTermsPlugin\Twig\TermsRuntime;
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
@@ -83,6 +91,10 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         yield 'label renderer' => [LabelRenderer::class];
         yield 'terms extension' => [TermsExtension::class];
         yield 'terms runtime' => [TermsRuntime::class];
+        yield 'versioned text change checker' => [VersionedTextChangeChecker::class];
+        yield 'terms version snapshotter' => [TermsVersionSnapshotter::class];
+        yield 'create terms version listener' => [CreateTermsVersionListener::class];
+        yield 'prevent terms version edit listener' => [PreventTermsVersionEditListener::class];
     }
 
     #[Test]
@@ -92,6 +104,17 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
 
         $this->assertContainerBuilderHasAlias(TermsProviderInterface::class, TermsProvider::class);
         $this->assertContainerBuilderHasAlias(LabelRendererInterface::class, LabelRenderer::class);
+        $this->assertContainerBuilderHasAlias(VersionedTextChangeCheckerInterface::class, VersionedTextChangeChecker::class);
+        $this->assertContainerBuilderHasAlias(TermsVersionSnapshotterInterface::class, TermsVersionSnapshotter::class);
+    }
+
+    #[Test]
+    public function it_creates_terms_versions_and_guards_them_on_flush(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(CreateTermsVersionListener::class, 'doctrine.event_listener', ['event' => 'onFlush']);
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(PreventTermsVersionEditListener::class, 'doctrine.event_listener', ['event' => 'onFlush']);
     }
 
     #[Test]
@@ -130,6 +153,18 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasParameter('setono_sylius_terms.model.terms.class', Terms::class);
         $this->assertContainerBuilderHasParameter('setono_sylius_terms.model.terms_translation.class', TermsTranslation::class);
         $this->assertContainerBuilderHasService('setono_sylius_terms.repository.terms');
+    }
+
+    #[Test]
+    public function it_registers_the_terms_version_resource(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasParameter('setono_sylius_terms.model.terms_version.class', TermsVersion::class);
+        $this->assertContainerBuilderHasParameter('setono_sylius_terms.model.terms_version_translation.class', TermsVersionTranslation::class);
+        $this->assertContainerBuilderHasService('setono_sylius_terms.repository.terms_version');
+        $this->assertContainerBuilderHasService('setono_sylius_terms.factory.terms_version');
+        $this->assertContainerBuilderHasService('setono_sylius_terms.factory.terms_version_translation');
     }
 
     #[Test]
