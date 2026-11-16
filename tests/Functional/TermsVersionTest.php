@@ -21,7 +21,7 @@ use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Clock\ClockInterface;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 final class TermsVersionTest extends KernelTestCase
@@ -35,14 +35,16 @@ final class TermsVersionTest extends KernelTestCase
         'fr_FR' => ['CGV', 'J’accepte les [link:CGV]', 'Contenu'],
     ];
 
-    private ClockInterface $clock;
+    private MockClock $clock;
 
     protected function setUp(): void
     {
         self::bootKernel();
 
         // MySQL's DATETIME has one-second precision, so the mock clock only ever moves in whole seconds
-        $this->clock = self::mockTime('2026-11-16 12:00:00');
+        $clock = self::mockTime('2026-11-16 12:00:00');
+        self::assertInstanceOf(MockClock::class, $clock);
+        $this->clock = $clock;
     }
 
     protected function tearDown(): void
