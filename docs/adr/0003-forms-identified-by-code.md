@@ -1,0 +1,3 @@
+# Forms are identified by a code, not by their form type class
+
+In 3.0 each Form is configured under a short code (`checkout_complete`, `registration`, `contact`) that maps to its form type class and to the Twig hooks that render it, and a Terms stores the codes of the Forms it appears on. In 2.x the form type FQCN was both the config key and the stored value. Sylius 2 then moved the shop registration form to a new class, and every stored reference to the old class silently stopped matching. Form classes move, but stored references shouldn't have to. With a code, a renamed class is a one-line config change instead of a data migration. The cost is one extra name per Form, plus a one-time FQCN-to-code mapping in the 3.0 data upgrade.

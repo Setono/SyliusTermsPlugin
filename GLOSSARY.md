@@ -32,6 +32,10 @@ A Terms that must be ticked before the form it appears on can be submitted.
 **Optional terms**:
 A Terms that may be left unticked. The plugin does not keep the customer's answer.
 
+**Answer**:
+Whether the customer ticked a Terms checkbox when submitting a form. The plugin passes answers on to the integrator but does not store them.
+_Avoid_: Consent, choice
+
 **Acceptance**:
 A customer ticking a Terms checkbox and submitting the form. Acceptance is not stored: for an order, the accepted Terms version is the one in force when checkout completed.
 _Avoid_: Agreement, consent record
