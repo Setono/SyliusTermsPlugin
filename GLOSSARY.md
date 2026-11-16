@@ -20,6 +20,10 @@ _Avoid_: Revision, edition
 The standalone shop page at a Terms' own URL, always showing the Terms version in force.
 _Avoid_: Standalone page, terms URL
 
+**Terms PDF**:
+A PDF of one Terms version in one locale, attached to the order confirmation email for each required Terms the customer accepted at checkout.
+_Avoid_: Terms attachment, terms document
+
 **Form**:
 A shop form a Terms can be shown on, such as the checkout complete form. The integrator configures which forms are available; the admin picks which Terms appear on each.
 _Avoid_: Step, page (when meaning the form)
