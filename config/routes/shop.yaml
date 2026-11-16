@@ -1,0 +1,5 @@
+setono_sylius_terms_shop_show_terms:
+    path: '/%setono_sylius_terms.terms_path%/{slug}'
+    methods: [GET]
+    defaults:
+        _controller: Setono\SyliusTermsPlugin\Controller\Action\ShowTermsAction

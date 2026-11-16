@@ -37,6 +37,9 @@ The `Label` field is the text shown on the complete order page. Notice you can u
 
 ## Installation
 
+The plugin requires PHP 8.2 or later, Symfony 6.4 or 7.4 and Sylius 2.2 or later. For Sylius 1, use the `2.x` versions of the plugin.
+When upgrading from 2.x, read [UPGRADE.md](UPGRADE.md).
+
 ### Step 1: Download the plugin
 
 ```bash
@@ -71,10 +74,10 @@ return [
 # config/routes/setono_sylius_terms.yaml
 
 setono_sylius_terms:
-    resource: "@SetonoSyliusTermsPlugin/Resources/config/routes.yaml"
+    resource: "@SetonoSyliusTermsPlugin/config/routes.yaml"
 ```
 
-There's also a version for non-localized stores: `@SetonoSyliusTermsPlugin/Resources/config/routes_no_locale.yaml`
+There's also a version for non-localized stores: `@SetonoSyliusTermsPlugin/config/routes_no_locale.yaml`
 
 ### Step 4: Update your database schema
 

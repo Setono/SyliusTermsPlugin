@@ -10,7 +10,7 @@ use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use function Symfony\Component\String\u;
 
 final class SetonoSyliusTermsExtension extends AbstractResourceExtension implements PrependExtensionInterface
@@ -18,12 +18,10 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
     public function load(array $configs, ContainerBuilder $container): void
     {
         /**
-         * @psalm-suppress PossiblyNullArgument
-         *
          * @var array{forms: array<class-string, array{label: string|null}>, routing: array{terms: string}, resources: array} $config
          */
         $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
 
         foreach ($config['forms'] as $form => $formConfig) {
             $reflectionClass = new ReflectionClass($form);
@@ -34,7 +32,7 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
         $container->setParameter('setono_sylius_terms.forms', $config['forms']);
         $container->setParameter('setono_sylius_terms.terms_path', $config['routing']['terms']);
 
-        $loader->load('services.xml');
+        $loader->load('services.php');
 
         $this->registerResources(
             'setono_sylius_terms',
@@ -85,18 +83,6 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
                             'delete' => [
                                 'type' => 'delete',
                             ],
-                        ],
-                    ],
-                ],
-            ],
-        ]);
-
-        $container->prependExtensionConfig('sylius_ui', [
-            'events' => [
-                'setono_sylius_terms.admin.terms.create.javascripts' => [
-                    'blocks' => [
-                        'javascripts' => [
-                            'template' => '@SetonoSyliusTermsPlugin/admin/terms/_javascripts.html.twig',
                         ],
                     ],
                 ],

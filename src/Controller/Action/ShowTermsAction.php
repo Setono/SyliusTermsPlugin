@@ -12,13 +12,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 
-final class ShowTermsAction
+final readonly class ShowTermsAction
 {
     public function __construct(
-        private readonly TermsRepositoryInterface $termsRepository,
-        private readonly ChannelContextInterface $channelContext,
-        private readonly LocaleContextInterface $localeContext,
-        private readonly Environment $twig,
+        private TermsRepositoryInterface $termsRepository,
+        private ChannelContextInterface $channelContext,
+        private LocaleContextInterface $localeContext,
+        private Environment $twig,
     ) {
     }
 

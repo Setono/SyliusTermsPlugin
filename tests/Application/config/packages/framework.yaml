@@ -1,9 +1,24 @@
 framework:
     secret: '%env(APP_SECRET)%'
-    ide: phpstorm
-    form:
-        enabled: true
-        legacy_error_messages: false
+    ide: 'phpstorm'
+    form: true
     csrf_protection: true
     session:
         handler_id: ~
+
+when@dev:
+    framework:
+        profiler: { only_exceptions: false }
+
+when@test:
+    framework:
+        test: ~
+        session:
+            storage_factory_id: session.storage.factory.mock_file
+
+        mailer:
+            dsn: '%env(MAILER_DSN)%'
+        cache:
+            pools:
+                test.mailer_pool:
+                    adapter: cache.adapter.filesystem

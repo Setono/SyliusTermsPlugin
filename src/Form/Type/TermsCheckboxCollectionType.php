@@ -34,16 +34,18 @@ final class TermsCheckboxCollectionType extends AbstractType
                 $groups = $parent->getConfig()->getOption('validation_groups');
 
                 if (is_array($groups)) {
-		            $validationGroups[] = $groups;
+                    $validationGroups[] = $groups;
                 }
 
                 $parent = $parent->getParent();
             }
 
-            $validationGroups = array_filter(array_merge(...$validationGroups), static fn (mixed $group): bool => is_string($group));
+            $validationGroups = array_filter(array_merge(...$validationGroups), is_string(...));
 
-            /** @var TermsInterface $terms */
-            foreach ($options['terms'] as $terms) {
+            /** @var list<TermsInterface> $termsList */
+            $termsList = $options['terms'];
+
+            foreach ($termsList as $terms) {
                 $form->add((string) $terms->getCode(), CheckboxType::class, [
                     'label' => $this->labelRenderer->render($terms),
                     'label_html' => true,

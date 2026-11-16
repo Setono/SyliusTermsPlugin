@@ -8,12 +8,12 @@ use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Locale\Context\LocaleContextInterface;
 
-final class TermsProvider implements TermsProviderInterface
+final readonly class TermsProvider implements TermsProviderInterface
 {
     public function __construct(
-        private readonly TermsRepositoryInterface $termsRepository,
-        private readonly ChannelContextInterface $channelContext,
-        private readonly LocaleContextInterface $localeContext,
+        private TermsRepositoryInterface $termsRepository,
+        private ChannelContextInterface $channelContext,
+        private LocaleContextInterface $localeContext,
     ) {
     }
 

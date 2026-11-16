@@ -1,0 +1,27 @@
+parameters:
+    level: max
+
+    paths:
+        - src
+        - tests
+
+    excludePaths:
+        - tests/Application/*
+
+    bootstrapFiles:
+        - tests/Application/config/bootstrap.php
+
+    # Symfony Configuration
+    symfony:
+        consoleApplicationLoader: tests/PHPStan/console_application.php
+
+    # Doctrine Configuration
+    doctrine:
+        repositoryClass: Doctrine\ORM\EntityRepository
+
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
+
+    ignoreErrors:
+        - { identifier: missingType.generics }
+        - { identifier: missingType.iterableValue }

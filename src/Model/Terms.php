@@ -132,9 +132,7 @@ class Terms implements TermsInterface
 
     public function addForm(string $form): void
     {
-        if (null === $this->forms) {
-            $this->forms = [];
-        }
+        $this->forms ??= [];
 
         if (in_array($form, $this->forms, true)) {
             return;
