@@ -3,4 +3,4 @@ setono_sylius_terms_shop:
 
 setono_sylius_terms_admin:
     resource: "@SetonoSyliusTermsPlugin/config/routes/admin.yaml"
-    prefix: /admin
+    prefix: '/%sylius_admin.path_name%'

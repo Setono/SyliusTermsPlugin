@@ -23,7 +23,7 @@ final class LabelRendererTest extends TestCase
     public function it_renders(string $label, string $slug, ?string $content, string $expected): void
     {
         $urlGenerator = $this->prophesize(UrlGeneratorInterface::class);
-        $urlGenerator->generate('setono_sylius_terms_shop_show_terms', ['slug' => $slug])->willReturn('https://example.com/terms/' . $slug);
+        $urlGenerator->generate('setono_sylius_terms_shop_terms_show', ['slug' => $slug])->willReturn('https://example.com/terms/' . $slug);
 
         $terms = $this->prophesize(TermsInterface::class);
         $terms->getLabel()->willReturn($label);
