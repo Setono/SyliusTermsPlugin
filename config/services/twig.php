@@ -10,11 +10,11 @@ use Setono\SyliusTermsPlugin\Twig\TermsRuntime;
 return static function (ContainerConfigurator $container): void {
     $services = $container->services();
 
-    $services->set('setono_sylius_terms.twig.terms_extension', TermsExtension::class)
+    $services->set(TermsExtension::class)
         ->tag('twig.extension')
     ;
 
-    $services->set('setono_sylius_terms.twig.terms_runtime', TermsRuntime::class)
+    $services->set(TermsRuntime::class)
         ->args([
             service('sylius.context.channel'),
             service('sylius.context.locale'),

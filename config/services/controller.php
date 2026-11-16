@@ -9,7 +9,7 @@ use Setono\SyliusTermsPlugin\Controller\Action\ShowTermsAction;
 return static function (ContainerConfigurator $container): void {
     $services = $container->services();
 
-    $services->set('setono_sylius_terms.controller.action.show_terms', ShowTermsAction::class)
+    $services->set(ShowTermsAction::class)
         ->public()
         ->args([
             service('setono_sylius_terms.repository.terms'),
