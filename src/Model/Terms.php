@@ -27,7 +27,11 @@ class Terms implements TermsInterface
     /** @var Collection<array-key, ChannelInterface> */
     protected Collection $channels;
 
-    /** @var list<class-string>|null */
+    protected bool $required = true;
+
+    protected ?int $position = null;
+
+    /** @var list<string>|null */
     protected ?array $forms = [];
 
     /** @var Collection<array-key, TermsVersionInterface> */
@@ -94,6 +98,28 @@ class Terms implements TermsInterface
     public function setContent(?string $content): void
     {
         $this->getTranslation()->setContent($content);
+    }
+
+    public function isRequired(): bool
+    {
+        return $this->required;
+    }
+
+    public function setRequired(bool $required): void
+    {
+        $this->required = $required;
+    }
+
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(?int $position): void
+    {
+        // Gedmo's sortable listener appends a new Terms whose position is null, but keeps a null position on an
+        // update, which the NOT NULL column then rejects. -1 means "last" to Gedmo in both cases
+        $this->position = $position ?? -1;
     }
 
     public function getChannels(): Collection

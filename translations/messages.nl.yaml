@@ -30,3 +30,7 @@ setono_sylius_terms:
             content: Content
             content_help: Als de content leeg is, zal het etiket naast het selectievakje geen link bevatten
             channels: Kanalen
+            term_form:
+                checkout_complete: Afrekenen > Bestelling afronden
+                registration: Account > Registreren
+                contact: Contact

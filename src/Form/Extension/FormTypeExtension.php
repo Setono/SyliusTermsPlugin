@@ -11,36 +11,40 @@ use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormTypeInterface;
 
 final class FormTypeExtension extends AbstractTypeExtension
 {
     /**
-     * Holds a list of form types where terms are allowed to be added
+     * The codes of the Forms, by their form type class
      *
-     * @var list<class-string<FormTypeInterface>>
+     * @var array<class-string, string>
      */
-    private readonly array $forms;
+    private readonly array $formCodes;
 
     /**
-     * @param array<class-string<FormTypeInterface>, array{label: string}> $forms
+     * @param array<string, array{type: class-string}> $forms
      */
     public function __construct(
         private readonly TermsProviderInterface $termsProvider,
         array $forms,
     ) {
-        $this->forms = array_keys($forms);
+        $formCodes = [];
+        foreach ($forms as $code => $form) {
+            $formCodes[$form['type']] ??= $code;
+        }
+
+        $this->formCodes = $formCodes;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (PreSetDataEvent $event): void {
-            $formTypeClass = $event->getForm()->getConfig()->getType()->getInnerType();
-            if (!in_array($formTypeClass::class, $this->forms, true)) {
+            $formCode = $this->formCodes[$event->getForm()->getConfig()->getType()->getInnerType()::class] ?? null;
+            if (null === $formCode) {
                 return;
             }
 
-            $terms = $this->termsProvider->getTerms($formTypeClass::class);
+            $terms = $this->termsProvider->getTerms($formCode);
             if ([] === $terms) {
                 return;
             }

@@ -32,4 +32,6 @@ setono_sylius_terms:
             channels: Channels
             forms: Forms
             term_form:
-                complete: Checkout > Complete order
+                checkout_complete: Checkout > Complete order
+                registration: Account > Register
+                contact: Contact

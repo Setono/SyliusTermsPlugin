@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface;
 use Setono\SyliusTermsPlugin\Provider\TermsProvider;
 use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
 
@@ -12,7 +13,7 @@ return static function (ContainerConfigurator $container): void {
 
     $services->set(TermsProvider::class)
         ->args([
-            service('setono_sylius_terms.repository.terms'),
+            service(FormTermsLookupInterface::class),
             service('sylius.context.channel'),
             service('sylius.context.locale'),
         ])

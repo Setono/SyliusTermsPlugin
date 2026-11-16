@@ -15,8 +15,6 @@ use Setono\SyliusTermsPlugin\Model\TermsVersionTranslation;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslationInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsVersionRepositoryInterface;
-use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
-use Sylius\Bundle\CoreBundle\Form\Type\ContactType;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
@@ -101,8 +99,10 @@ final class TermsVersionTest extends KernelTestCase
 
         $terms = $this->reloadTerms($termsId);
         $terms->addChannel($this->getChannel('FASHION_WEB'));
-        $terms->setForms([CompleteType::class, ContactType::class]);
+        $terms->setForms(['checkout_complete', 'contact']);
         $terms->setEnabled(false);
+        $terms->setRequired(false);
+        $terms->setPosition(0);
         $this->flush();
 
         self::assertCount(1, $this->reloadVersions($termsId));

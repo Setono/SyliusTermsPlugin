@@ -30,3 +30,7 @@ setono_sylius_terms:
             content: Indhold
             content_help: Hvis indholdet er tomt vil teksten ved siden af afkrydsningsfeltet ikke have et link
             channels: Kanaler
+            term_form:
+                checkout_complete: Kassen > Gennemfør ordre
+                registration: Konto > Opret konto
+                contact: Kontakt

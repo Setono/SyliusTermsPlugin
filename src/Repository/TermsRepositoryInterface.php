@@ -7,16 +7,17 @@ namespace Setono\SyliusTermsPlugin\Repository;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Symfony\Component\Form\FormTypeInterface;
 
 interface TermsRepositoryInterface extends RepositoryInterface
 {
     /**
-     * @param class-string<FormTypeInterface> $form
+     * Returns the enabled Terms placed on the Form in the channel, in position order
      *
-     * @return array<array-key, TermsInterface>
+     * @param string $form a Form code
+     *
+     * @return list<TermsInterface>
      */
-    public function findByFormAndChannelAndLocale(string $form, ChannelInterface $channel, string $locale): array;
+    public function findByFormAndChannel(string $form, ChannelInterface $channel): array;
 
     public function findOneByChannelAndLocaleAndSlug(ChannelInterface $channel, string $locale, string $slug): ?TermsInterface;
 

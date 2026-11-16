@@ -12,6 +12,19 @@
 
         <field name="code" type="string" column="code" unique="true"/>
         <field name="enabled" type="boolean"/>
+
+        <!-- The database default fills existing rows with true when an app adds the column, see docs/adr/0008 -->
+        <field name="required" type="boolean">
+            <options>
+                <option name="default">1</option>
+            </options>
+        </field>
+
+        <field name="position" type="integer">
+            <gedmo:sortable-position/>
+        </field>
+
+        <!-- The codes of the Forms the Terms is placed on -->
         <field name="forms" type="json" nullable="true"/>
 
         <field name="createdAt" column="created_at" type="datetime">
