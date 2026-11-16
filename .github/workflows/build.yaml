@@ -68,7 +68,8 @@ jobs:
                     testsuite: "unit"
 
     functional-tests:
-        runs-on: "ubuntu-latest"
+        # ubuntu-latest (26.04) ships no MySQL, which the setono/sylius-plugin actions start (Setono/sylius-plugin#7)
+        runs-on: "ubuntu-24.04"
         strategy:
             fail-fast: false
             matrix:
@@ -84,7 +85,8 @@ jobs:
                     testsuite: "functional"
 
     browser-tests:
-        runs-on: "ubuntu-latest"
+        # ubuntu-latest (26.04) ships no MySQL, which the setono/sylius-plugin actions start (Setono/sylius-plugin#7)
+        runs-on: "ubuntu-24.04"
         strategy:
             fail-fast: false
             matrix:
@@ -118,7 +120,8 @@ jobs:
                 run: "vendor/bin/phpunit --testsuite=browser"
 
     code-coverage:
-        runs-on: "ubuntu-latest"
+        # ubuntu-latest (26.04) ships no MySQL, which the setono/sylius-plugin actions start (Setono/sylius-plugin#7)
+        runs-on: "ubuntu-24.04"
         steps:
             -   uses: "setono/sylius-plugin/code-coverage@v2"
                 with:
