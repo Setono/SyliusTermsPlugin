@@ -224,4 +224,17 @@ final class ConfigurationTest extends TestCase
             'routing',
         );
     }
+
+    #[Test]
+    public function an_empty_terms_path_is_invalid(): void
+    {
+        $this->assertConfigurationIsInvalid(
+            [['routing' => ['terms' => '']]],
+            'The path "setono_sylius_terms.routing.terms" cannot contain an empty value',
+        );
+        $this->assertConfigurationIsInvalid(
+            [['routing' => ['terms' => null]]],
+            'The path "setono_sylius_terms.routing.terms" cannot contain an empty value',
+        );
+    }
 }

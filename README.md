@@ -210,12 +210,30 @@ return [
 
 ```yaml
 # config/routes/setono_sylius_terms.yaml
-
 setono_sylius_terms:
     resource: "@SetonoSyliusTermsPlugin/config/routes.yaml"
 ```
 
-There's also a version for non-localized stores: `@SetonoSyliusTermsPlugin/config/routes_no_locale.yaml`
+If your store's URLs have no locale prefix, import the non-localised version instead:
+
+```yaml
+# config/routes/setono_sylius_terms.yaml
+setono_sylius_terms:
+    resource: "@SetonoSyliusTermsPlugin/config/routes_no_locale.yaml"
+```
+
+Both mount the admin pages under `/%sylius_admin.path_name%` and the Terms page at `/{_locale}/terms/{slug}` and
+`/terms/{slug}` respectively. To use your own prefixes, import `@SetonoSyliusTermsPlugin/config/routes/shop.yaml` and
+`@SetonoSyliusTermsPlugin/config/routes/admin.yaml` separately.
+
+The `terms` part of the Terms page path is configurable:
+
+```yaml
+# config/packages/setono_sylius_terms.yaml
+setono_sylius_terms:
+    routing:
+        terms: vilkaar # the Terms page is now at /{_locale}/vilkaar/{slug}
+```
 
 ### Step 4: Update your database schema
 

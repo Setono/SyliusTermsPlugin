@@ -53,6 +53,20 @@ The plugin follows the Sylius 2 plugin skeleton. `src/Resources/{config,translat
 
 Paths to plugin files drop `Resources/`. Template paths (`@SetonoSyliusTermsPlugin/...`) and overrides in `templates/bundles/SetonoSyliusTermsPlugin/` are unchanged.
 
+### Routing
+
+- Route imports drop `Resources/`. Import `@SetonoSyliusTermsPlugin/config/routes.yaml`, or `@SetonoSyliusTermsPlugin/config/routes_no_locale.yaml` for non-localised stores:
+
+    ```yaml
+    # config/routes/setono_sylius_terms.yaml
+    setono_sylius_terms:
+        resource: "@SetonoSyliusTermsPlugin/config/routes.yaml" # was @SetonoSyliusTermsPlugin/Resources/config/routes.yaml
+    ```
+
+- The admin routes mount under `/%sylius_admin.path_name%` instead of a literal `/admin`, so they stay inside the admin firewall and access rule when the admin path is changed.
+- The route `setono_sylius_terms_shop_show_terms` is renamed to `setono_sylius_terms_shop_terms_show`, with no alias. Prefer `terms_path(code)` over generating the URL by name.
+- The Terms page path and the `routing.terms` option are unchanged.
+
 ### Removed classes, services, templates, files and translation keys
 
 | Removed | Replacement |

@@ -1,4 +1,4 @@
-setono_sylius_terms_shop_show_terms:
+setono_sylius_terms_shop_terms_show:
     path: '/%setono_sylius_terms.terms_path%/{slug}'
     methods: [GET]
     defaults:
