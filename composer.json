@@ -35,8 +35,11 @@
     },
     "require-dev": {
         "api-platform/symfony": "^4.3.3",
+        "dama/doctrine-test-bundle": "^8.6",
         "gedmo/doctrine-extensions": "^3.22.2",
         "payum/core": "^1.7.5",
+        "playwright-php/playwright": "^1.6",
+        "playwright-php/playwright-symfony": "^0.12",
         "setono/sylius-plugin": "^2.0",
         "sylius/grid-bundle": "^1.15",
         "sylius/sylius": "~2.2.12",
@@ -77,7 +80,8 @@
         "analyse": "phpstan analyse",
         "check-style": "ecs check",
         "fix-style": "ecs check --fix",
-        "phpunit": "phpunit --testsuite unit,functional",
+        "phpunit": "phpunit",
+        "phpunit:browser": "phpunit --testsuite browser",
         "phpunit:functional": "phpunit --testsuite functional",
         "phpunit:unit": "phpunit --testsuite unit"
     }

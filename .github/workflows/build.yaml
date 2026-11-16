@@ -66,3 +66,63 @@ jobs:
                     dependencies: "${{ matrix.dependencies }}"
                     symfony: "${{ matrix.symfony }}"
                     testsuite: "unit"
+
+    functional-tests:
+        runs-on: "ubuntu-latest"
+        strategy:
+            fail-fast: false
+            matrix:
+                php-version: ["8.2", "8.3", "8.4", "8.5"]
+                dependencies: ["highest"]
+                symfony: ["~6.4.0", "~7.4.0"]
+        steps:
+            -   uses: "setono/sylius-plugin/functional-tests@v2"
+                with:
+                    php-version: "${{ matrix.php-version }}"
+                    dependencies: "${{ matrix.dependencies }}"
+                    symfony: "${{ matrix.symfony }}"
+                    testsuite: "functional"
+
+    browser-tests:
+        runs-on: "ubuntu-latest"
+        strategy:
+            fail-fast: false
+            matrix:
+                # Browser behaviour varies with Symfony, UX and Twig, not with PHP. 8.4 is the newest PHP installed locally,
+                # so failures can be reproduced
+                php-version: ["8.4"]
+                dependencies: ["highest"]
+                symfony: ["~6.4.0", "~7.4.0"]
+        env:
+            APP_ENV: "test"
+            DATABASE_URL: "mysql://root:root@127.0.0.1/sylius?serverVersion=8.0"
+        steps:
+            # Without a testsuite the action only sets up the test application: MySQL, Node, yarn build, schema and fixtures
+            -   uses: "setono/sylius-plugin/functional-tests@v2"
+                with:
+                    php-version: "${{ matrix.php-version }}"
+                    dependencies: "${{ matrix.dependencies }}"
+                    symfony: "${{ matrix.symfony }}"
+                    database-url: "${{ env.DATABASE_URL }}"
+
+            # The asset bridge serves /bundles from the test application's public/ and doesn't follow symlinks out of it,
+            # so the bundles' public files are copied there
+            -   name: "Install bundle assets"
+                working-directory: "tests/Application"
+                run: "bin/console assets:install public"
+
+            -   name: "Install Chromium"
+                run: "vendor/bin/playwright-install --with-deps chromium"
+
+            -   name: "Run browser tests"
+                run: "vendor/bin/phpunit --testsuite=browser"
+
+    code-coverage:
+        runs-on: "ubuntu-latest"
+        steps:
+            -   uses: "setono/sylius-plugin/code-coverage@v2"
+                with:
+                    symfony: "~7.4.0"
+                    codecov-token: "${{ secrets.CODECOV_TOKEN }}"
+                    # Browser tests don't count towards coverage (Setono/SyliusPluginSkeleton#110)
+                    testsuite: "unit,functional"

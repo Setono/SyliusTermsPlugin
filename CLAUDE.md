@@ -14,9 +14,12 @@ The plugin follows the [Setono/SyliusPluginSkeleton](https://github.com/Setono/S
 composer analyse                             # PHPStan (level max)
 composer check-style                         # ECS check (sylius-labs/coding-standard)
 composer fix-style                           # ECS auto-fix
-composer phpunit                             # unit and functional suites
+composer phpunit                             # all three suites: unit, functional and browser
 composer phpunit:unit                        # unit suite only (no kernel, no database)
 composer phpunit:functional                  # functional suite (boots tests/Application, needs MySQL)
+composer phpunit:browser                     # browser suite (Chromium through playwright-symfony, needs MySQL)
+PLAYWRIGHT_HEADLESS=false composer phpunit:browser  # watch the browser while the suite runs
+vendor/bin/playwright-install chromium       # once per machine, before the first browser run
 vendor/bin/rector process --dry-run          # check code modernization
 vendor/bin/composer-dependency-analyser      # check dependency usage
 ./tests/Application/bin/console <command>    # test application console, run from the repository root
@@ -41,7 +44,16 @@ yarn install && yarn build
 symfony server:start                                            # https://127.0.0.1:8000/admin
 ```
 
-- The test app and the functional tests require MySQL. Point `DATABASE_URL` at it in `tests/Application/.env.local`.
+- The test app and the functional and browser tests require MySQL. Point `DATABASE_URL` at it in `tests/Application/.env.local`.
+- The functional and browser suites run against the `test` environment's database, with the schema and the default fixtures loaded, as CI does. Set it up once, and again after mapping changes:
+
+    ```bash
+    APP_ENV=test ./tests/Application/bin/console doctrine:database:create --if-not-exists
+    APP_ENV=test ./tests/Application/bin/console doctrine:schema:create
+    APP_ENV=test ./tests/Application/bin/console sylius:fixtures:load --no-interaction
+    ```
+
+- The browser suite also needs the built assets (`yarn build`) and the bundles' public files in `tests/Application/public/bundles`. Install them with `./tests/Application/bin/console assets:install tests/Application/public` and run it again after changing files in `public/`: it copies, and `--symlink` doesn't work, because playwright-symfony's asset bridge won't serve files that resolve outside the test app's `public/`.
 - On PHP 8.4+, a plain `composer update` resolves some `symfony/*` packages to 8.x, and every Doctrine command then fails with "Symfony LazyGhost is not available" ([Setono/SyliusPluginSkeleton#112](https://github.com/Setono/SyliusPluginSkeleton/issues/112)). CI doesn't hit this because it pins Symfony through `SYMFONY_REQUIRE`. Until the skeleton lands a fix, pin them locally: `composer update $(for p in error-handler mime twig-bridge type-info var-dumper var-exporter web-link; do printf -- '--with symfony/%s:~7.4.0 ' $p; done)`.
 - Before running `symfony server:start`, run `symfony server:status` first — the test app server may already be up from a previous step. Starting a second instance fails noisily.
 - `symfony server:status` is **per-project**: it inspects the cwd to figure out which app to ask about. Always run `cd tests/Application && symfony server:status` before deciding whether to start a new server.
@@ -56,6 +68,9 @@ symfony server:start                                            # https://127.0.
 - All tools skip `tests/Application/`
 - `declare(strict_types=1);` required in all PHP files
 - CI uses the `setono/sylius-plugin/*@v2` composite GitHub Actions
+- Code coverage counts the unit and functional suites, not the browser suite. Aim for as close to 100% as possible: every change covers all the lines it adds or modifies (Codecov's patch target is 100%), and the project's coverage may never drop below its base commit (`target: auto`). The release-readiness slice (#121) sweeps the code no slice touched. Check locally with `vendor/bin/phpunit --testsuite unit,functional --coverage-text` (needs pcov or Xdebug)
+- Mutation testing (Infection) is postponed to the release-readiness slice (#121): there is no `infection.json5` and no CI job until then, and slices don't chase mutation scores
+- A failing browser test fails the build like any other job. A flaky one gets fixed or deleted, never retried or marked `continue-on-error`
 
 ## Conventions
 
@@ -79,7 +94,14 @@ symfony server:start                                            # https://127.0.
 
 - Use Prophecy for all test doubles (`ProphecyTrait` and `$this->prophesize()`). Don't mix with PHPUnit's native `createMock()` / `createStub()`.
 - **Constraint validators**: extend `Symfony\Component\Validator\Test\ConstraintValidatorTestCase`. Implement `createValidator(): ConstraintValidatorInterface`, then assert with `$this->buildViolation(...)->atPath(...)->setParameter(...)->assertRaised()` and `$this->assertNoViolation()`.
-- Keep kernel-free logic under `tests/Unit/` and anything that boots the app (and therefore needs MySQL) under `tests/Functional/`.
+- Three PHPUnit suites:
+  - `unit` (`tests/Unit/`, mirrors `src/`): no kernel, no database.
+  - `functional` (`tests/Functional/`): boots `tests/Application` against MySQL with `WebTestCase` / `KernelTestCase`, and UX's `InteractsWithLiveComponents` for Live re-renders. Call `restore_exception_handler()` in `tearDown()`.
+  - `browser` (`tests/Browser/`): tests extend `Playwright\Symfony\Test\PlaywrightTestCase` and drive Chromium. Pages are handled by the test's own kernel, with no web server, so they see the data the test creates.
+- `dama/doctrine-test-bundle` runs every test in a transaction that is rolled back afterwards. Find the baseline Terms by code, and create every other case inline with the plugin's factories. No Foundry.
+- Elements a test needs get a hook through `{{ sylius_test_html_attribute('name', value) }}`, never a raw `data-test-*` attribute.
+- Tests never touch the network. Time comes from Symfony Clock, and tests control it with `ClockSensitiveTrait` / `MockClock`.
+- playwright-symfony breaks BC in minors, so its constraint pins the minor (`^0.12`). Read its CHANGELOG before moving it.
 
 ### UI verification
 
