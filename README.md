@@ -15,6 +15,7 @@ This can be used to make sure the customer has accepted the terms and conditions
 * [Finding and checking the Terms on a Form in code](#finding-and-checking-the-terms-on-a-form-in-code)
 * [Content](#content)
 * [Terms versions](#terms-versions)
+* [Fixtures](#fixtures)
 * [Installation](#installation)
 
 ## Screenshots
@@ -266,6 +267,49 @@ in that locale. There is no fallback to another locale.
 * **Mid-checkout race.** If an admin saves a new version between a customer loading checkout complete and submitting
   it, the order is inferred to have accepted the new version. Forms carry no version check.
 * **Deleting a Terms deletes its versions.** To retire a Terms and keep its history, disable it instead.
+
+## Fixtures
+
+The plugin ships the `setono_terms` fixture, but no fixture suite. Add Terms to your own suite:
+
+```yaml
+# config/packages/sylius_fixtures.yaml
+sylius_fixtures:
+    suites:
+        default:
+            fixtures:
+                setono_terms:
+                    options:
+                        custom:
+                            terms_and_conditions:
+                                code: terms_and_conditions
+                                forms: [checkout_complete]     # Form codes. Default: [checkout_complete]
+                                channels: [FASHION_WEB]        # channel codes. Default: three random channels
+                                locales: [en_US, de_DE]        # Default: every locale
+                                required: true                 # Default: true
+                                enabled: true                  # Default: true
+                                position: 0                    # Default: last
+                                name: Terms and Conditions
+                                slug: terms-and-conditions     # Default: made from the name
+                                label: I accept the [link:terms and conditions]
+                                content: |
+                                    ## Ordering
+
+                                    An order is binding once you receive the order confirmation.
+                                translations:
+                                    de_DE:
+                                        name: Allgemeine Geschäftsbedingungen
+                                        slug: allgemeine-geschaeftsbedingungen
+                                        label: Ich akzeptiere die [link:Allgemeinen Geschäftsbedingungen]
+```
+
+* `name`, `slug`, `label` and `content` apply to every locale in `locales`. `translations` overrides them per locale,
+  and a locale in `translations` that isn't in `locales` is added.
+* A Form code that isn't configured fails the fixture load.
+* Left out, the code, name, label and content are faked. The faked label holds a Link placeholder, and the faked
+  content is Markdown with two `##` sections.
+* Loading the fixture saves the Terms like any other save, so each Terms gets version 1, in force from the moment it
+  is loaded. A Terms with the same code is updated instead, which creates its next version if its text changed.
 
 ## Installation
 

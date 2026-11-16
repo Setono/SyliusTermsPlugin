@@ -45,7 +45,7 @@ symfony server:start                                            # https://127.0.
 ```
 
 - The test app and the functional and browser tests require MySQL. Point `DATABASE_URL` at it in `tests/Application/.env.local`.
-- The functional and browser suites run against the `test` environment's database, with the schema and the default fixtures loaded, as CI does. Set it up once, and again after mapping changes:
+- The functional and browser suites run against the `test` environment's database, with the schema and the default fixtures loaded, as CI does. Set it up once, and again after mapping changes or changes to the test app's fixture suite:
 
     ```bash
     APP_ENV=test ./tests/Application/bin/console doctrine:database:create --if-not-exists
@@ -98,7 +98,7 @@ symfony server:start                                            # https://127.0.
   - `unit` (`tests/Unit/`, mirrors `src/`): no kernel, no database.
   - `functional` (`tests/Functional/`): boots `tests/Application` against MySQL with `WebTestCase` / `KernelTestCase`, and UX's `InteractsWithLiveComponents` for Live re-renders. Call `restore_exception_handler()` in `tearDown()`.
   - `browser` (`tests/Browser/`): tests extend `Playwright\Symfony\Test\PlaywrightTestCase` and drive Chromium. Pages are handled by the test's own kernel, with no web server, so they see the data the test creates.
-- `dama/doctrine-test-bundle` runs every test in a transaction that is rolled back afterwards. Find the baseline Terms by code, and create every other case inline with the plugin's factories. No Foundry.
+- `dama/doctrine-test-bundle` runs every test in a transaction that is rolled back afterwards. Find the baseline Terms (`terms_and_conditions`, `privacy_policy`, defined in `tests/Application/config/packages/sylius_fixtures.yaml`) by code, and create every other case inline with the plugin's factories. No Foundry.
 - Elements a test needs get a hook through `{{ sylius_test_html_attribute('name', value) }}`, never a raw `data-test-*` attribute.
 - Tests never touch the network. Time comes from Symfony Clock, and tests control it with `ClockSensitiveTrait` / `MockClock`.
 - playwright-symfony breaks BC in minors, so its constraint pins the minor (`^0.12`). Read its CHANGELOG before moving it.

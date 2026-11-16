@@ -14,6 +14,10 @@ final class TermsFixture extends AbstractResourceFixture
         return 'setono_terms';
     }
 
+    /**
+     * Options left out here get their defaults from TermsExampleFactory. forms, channels and locales are variable nodes,
+     * because an array node defaults to an empty list, which would override those defaults
+     */
     protected function configureResourceNode(ArrayNodeDefinition $resourceNode): void
     {
         $resourceNode
@@ -23,10 +27,13 @@ final class TermsFixture extends AbstractResourceFixture
                 ->scalarNode('slug')->cannotBeEmpty()->end()
                 ->scalarNode('label')->cannotBeEmpty()->end()
                 ->scalarNode('content')->cannotBeEmpty()->end()
-                ->booleanNode('enabled')->defaultTrue()->end()
+                ->booleanNode('enabled')->end()
+                ->booleanNode('required')->end()
+                ->integerNode('position')->end()
                 ->variableNode('forms')->end()
-                ->variableNode('translations')->cannotBeEmpty()->defaultValue([])->end()
-                ->variableNode('channels')->cannotBeEmpty()->defaultValue([])->end()
+                ->variableNode('channels')->end()
+                ->variableNode('locales')->end()
+                ->variableNode('translations')->end()
         ;
     }
 }

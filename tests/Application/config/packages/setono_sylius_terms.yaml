@@ -1,2 +1,0 @@
-imports:
-    - { resource: "@SetonoSyliusTermsPlugin/config/app/fixtures.yaml" }

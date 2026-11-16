@@ -16,6 +16,7 @@ return static function (ContainerConfigurator $container): void {
             service('setono_sylius_terms.repository.terms'),
             service('sylius.repository.locale'),
             service('sylius.repository.channel'),
+            param('setono_sylius_terms.forms'),
         ])
     ;
 

@@ -51,6 +51,14 @@ setono_sylius_terms:
 
 Markdown headings in rendered Content now carry `id` attributes, such as `id="content-payment"` for `## Payment`. See the README's Content section to loosen or tighten the sanitizer.
 
+#### The `setono_terms` fixture
+
+- `forms` takes Form codes, such as `[checkout_complete]`, instead of form type classes. A code that isn't configured fails the fixture load.
+- `required` (default true), `position` (default last) and `locales` (default every locale) are new options.
+- Content is Markdown (see above), and the faked content is Markdown with two `##` sections. The faked label holds a Link placeholder.
+- A locale in `translations` now inherits the Terms' `name`, `slug`, `label` and `content` for the keys it leaves out. In 2.x they were faked.
+- Left out, `channels` now defaults to three random channels, as the example factory always did. In 2.x the fixture passed an empty list, so the Terms got no channels.
+
 ### Plugin file layout
 
 The plugin follows the Sylius 2 plugin skeleton. `src/Resources/{config,translations,views,public}` moved to the repository root:
@@ -100,5 +108,6 @@ Paths to plugin files drop `Resources/`. Template paths (`@SetonoSyliusTermsPlug
 | `setono_sylius_terms.twig.terms_runtime` | `Setono\SyliusTermsPlugin\Twig\TermsRuntime` |
 | `TermsRepositoryInterface::findByFormAndChannelAndLocale()`, which took a form type class | `TermsRepositoryInterface::findByFormAndChannel()`, which takes a Form code, or the Form lookup, `Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface` |
 | The translation key `setono_sylius_terms.form.terms.term_form.complete` | `setono_sylius_terms.form.terms.term_form.checkout_complete` |
+| `src/Resources/config/app/fixtures.yaml`, the demo suite with the EULA Terms, the `EU_WEB` and `UA_WEB` channels and UAH | Nothing. The plugin ships no fixture suite. If you imported it, copy what you need into your own suite (see the README's Fixtures section). |
 
 Every service the plugin registers now uses its FQCN as its id; fetch or decorate it by that id, or by its interface where it has one. The ids Sylius generates for the resource (`setono_sylius_terms.factory.terms`, `setono_sylius_terms.repository.terms`, `setono_sylius_terms.manager.terms`) are unchanged.
