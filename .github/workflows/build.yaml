@@ -76,7 +76,7 @@ jobs:
                 dependencies: ["highest"]
                 symfony: ["~6.4.0", "~7.4.0"]
         steps:
-            -   uses: "setono/sylius-plugin/functional-tests@start-mysql-input"
+            -   uses: "setono/sylius-plugin/functional-tests@v2"
                 with:
                     php-version: "${{ matrix.php-version }}"
                     dependencies: "${{ matrix.dependencies }}"
@@ -98,7 +98,7 @@ jobs:
             DATABASE_URL: "mysql://root:root@127.0.0.1/sylius?serverVersion=8.0"
         steps:
             # Without a testsuite the action only sets up the test application: MySQL, Node, yarn build, schema and fixtures
-            -   uses: "setono/sylius-plugin/functional-tests@start-mysql-input"
+            -   uses: "setono/sylius-plugin/functional-tests@v2"
                 with:
                     php-version: "${{ matrix.php-version }}"
                     dependencies: "${{ matrix.dependencies }}"
@@ -120,7 +120,7 @@ jobs:
     code-coverage:
         runs-on: "ubuntu-latest"
         steps:
-            -   uses: "setono/sylius-plugin/code-coverage@start-mysql-input"
+            -   uses: "setono/sylius-plugin/code-coverage@v2"
                 with:
                     symfony: "~7.4.0"
                     codecov-token: "${{ secrets.CODECOV_TOKEN }}"
