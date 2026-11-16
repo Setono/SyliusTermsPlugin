@@ -23,6 +23,7 @@ use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\Forms;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\Validator\Validation;
 
 final class TermsTypeTest extends TestCase
@@ -57,7 +58,7 @@ final class TermsTypeTest extends TestCase
         self::assertSame(['%code%' => 'legacy_form'], $choices['legacy_form']->labelTranslationParameters);
 
         $checked = [];
-        foreach ($form->createView()['forms'] as $checkbox) {
+        foreach (self::getChild($form->createView(), 'forms')->children as $checkbox) {
             $value = $checkbox->vars['value'];
             self::assertIsString($value);
 
@@ -112,7 +113,7 @@ final class TermsTypeTest extends TestCase
     #[Test]
     public function required_is_ticked_for_new_terms(): void
     {
-        self::assertTrue($this->createForm(new Terms())->createView()['required']->vars['checked']);
+        self::assertTrue(self::getChild($this->createForm(new Terms())->createView(), 'required')->vars['checked']);
     }
 
     #[Test]
@@ -163,17 +164,29 @@ final class TermsTypeTest extends TestCase
      */
     private function getFormsChoices(FormInterface $form): array
     {
-        $choiceViews = $form->createView()['forms']->vars['choices'];
+        $choiceViews = self::getChild($form->createView(), 'forms')->vars['choices'];
         self::assertIsArray($choiceViews);
 
         $choices = [];
         foreach ($choiceViews as $choice) {
             self::assertInstanceOf(ChoiceView::class, $choice);
+            self::assertIsString($choice->value);
 
             $choices[$choice->value] = $choice;
         }
 
         return $choices;
+    }
+
+    /**
+     * Reads the child from FormView::$children, which Symfony 6.4 types more precisely than FormView's array access
+     */
+    private static function getChild(FormView $view, string $name): FormView
+    {
+        $child = $view->children[$name] ?? null;
+        self::assertInstanceOf(FormView::class, $child);
+
+        return $child;
     }
 
     private function createForm(TermsInterface $terms): FormInterface

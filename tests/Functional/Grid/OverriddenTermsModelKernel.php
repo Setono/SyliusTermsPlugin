@@ -23,7 +23,7 @@ final class OverriddenTermsModelKernel extends BaseKernel
 
     public function getCacheDir(): string
     {
-        return sprintf('%s/var/cache/%s_overridden_terms_model', $this->getProjectDir(), $this->environment);
+        return sprintf('%s/var/cache/%s_overridden_terms_model', $this->getProjectDir(), $this->getEnvironment());
     }
 
     /**

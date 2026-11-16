@@ -16,6 +16,7 @@ use Sylius\TwigHooks\Hookable\HookableComponent;
 use Sylius\TwigHooks\Registry\HookablesRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -74,7 +75,7 @@ final class TermsAdminPagesTest extends WebTestCase
         self::assertSelectorTextContains('h1.page-title', 'Terms');
 
         $rows = $crawler->filter('table tbody tr');
-        self::assertSame(['terms_and_conditions', 'privacy_policy', 'german_only'], $rows->filter('td:nth-child(2) code')->each(static fn ($code): string => trim($code->text())));
+        self::assertSame(['terms_and_conditions', 'privacy_policy', 'german_only'], $rows->filter('td:nth-child(2) code')->each(static fn (Crawler $code): string => trim($code->text())));
 
         self::assertStringContainsString('Terms and Conditions', $rows->eq(0)->text());
         self::assertStringContainsString('Checkout > Complete order', $rows->eq(0)->text());
@@ -93,7 +94,7 @@ final class TermsAdminPagesTest extends WebTestCase
         $crawler = $client->request('GET', '/admin/terms/new');
 
         self::assertResponseIsSuccessful();
-        self::assertSame(['General', 'Placement', 'Translations'], $crawler->filter('form .card-title')->each(static fn ($title): string => trim($title->text())));
+        self::assertSame(['General', 'Placement', 'Translations'], $crawler->filter('form .card-title')->each(static fn (Crawler $title): string => trim($title->text())));
         self::assertSelectorTextContains('h1.page-title', 'New terms');
 
         self::assertCount(1, $crawler->filter('input[data-test-required][checked]'), 'Required is ticked for a new Terms');
@@ -163,6 +164,8 @@ final class TermsAdminPagesTest extends WebTestCase
         ], $client);
 
         $component
+            // The admin's Live Component route is /admin/{_locale}/_components/…
+            ->setRouteLocale('en_US')
             ->set('setono_sylius_terms_terms.translations.en_US.name', 'Privacy & Cookies')
             ->call('generateTermsSlug', ['localeCode' => 'en_US'])
         ;
