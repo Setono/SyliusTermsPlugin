@@ -11,6 +11,9 @@ use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Sylius\Bundle\FixturesBundle\Fixture\FixtureInterface;
 use Sylius\Bundle\FixturesBundle\Suite\SuiteRegistryInterface;
 use Sylius\Component\Channel\Model\ChannelInterface;
+use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
+use Sylius\Component\Core\Model\ChannelInterface as CoreChannelInterface;
+use Sylius\Component\Locale\Model\LocaleInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
@@ -75,6 +78,14 @@ final class BaselineFixtureTest extends KernelTestCase
             self::assertSame('2026-11-16 12:00:00', $versions[0]->getInForceFrom()?->format('Y-m-d H:i:s'), $code);
             self::assertEqualsCanonicalizing(['en_US', 'de_DE'], $versions[0]->getTranslations()->getKeys(), $code);
         }
+
+        // FASHION_WEB serves fr_FR, the locale the baseline lacks
+        $channelRepository = self::getContainer()->get('sylius.repository.channel');
+        self::assertInstanceOf(ChannelRepositoryInterface::class, $channelRepository);
+        $fashionWeb = $channelRepository->findOneByCode('FASHION_WEB');
+        self::assertInstanceOf(CoreChannelInterface::class, $fashionWeb);
+        self::assertSame('en_US', $fashionWeb->getDefaultLocale()?->getCode());
+        self::assertEqualsCanonicalizing(['en_US', 'de_DE', 'fr_FR'], $fashionWeb->getLocales()->map(static fn (LocaleInterface $locale): ?string => $locale->getCode())->getValues());
 
         $projectDir = self::getContainer()->getParameter('kernel.project_dir');
         self::assertIsString($projectDir);

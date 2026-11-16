@@ -94,6 +94,7 @@ symfony server:start                                            # https://127.0.
 
 - Use Prophecy for all test doubles (`ProphecyTrait` and `$this->prophesize()`). Don't mix with PHPUnit's native `createMock()` / `createStub()`.
 - **Constraint validators**: extend `Symfony\Component\Validator\Test\ConstraintValidatorTestCase`. Implement `createValidator(): ConstraintValidatorInterface`, then assert with `$this->buildViolation(...)->atPath(...)->setParameter(...)->assertRaised()` and `$this->assertNoViolation()`.
+- Test-app code (such as fixtures only the test app uses) lives in `tests/Application/src/` under the `Setono\SyliusTermsPlugin\Tests\Application\` namespace, registered in `tests/Application/config/services.yaml`. PHPStan and ECS skip it.
 - Three PHPUnit suites:
   - `unit` (`tests/Unit/`, mirrors `src/`): no kernel, no database.
   - `functional` (`tests/Functional/`): boots `tests/Application` against MySQL with `WebTestCase` / `KernelTestCase`, and UX's `InteractsWithLiveComponents` for Live re-renders. Call `restore_exception_handler()` in `tearDown()`.

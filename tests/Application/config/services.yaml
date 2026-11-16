@@ -2,3 +2,11 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en_US
+
+services:
+    Setono\SyliusTermsPlugin\Tests\Application\Fixture\ChannelLocalesFixture:
+        arguments:
+            - '@sylius.repository.channel'
+            - '@sylius.repository.locale'
+            - '@sylius.manager.channel'
+        tags: ['sylius_fixtures.fixture']
