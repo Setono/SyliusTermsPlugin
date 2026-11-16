@@ -1,0 +1,3 @@
+# Acceptance is inferred from timestamps, not stored
+
+In 3.0 the plugin keeps a history of Terms versions but does not store each customer's acceptance. For an order, the accepted Terms version is the one in force when checkout completed; a required Terms can't be skipped, so a completed order implies acceptance. Optional terms answers are not kept either: the plugin only dispatches an event carrying them, and integrators who need a record store it themselves. We chose this over a stored acceptance record to keep 3.0's scope and schema small. If disputes or compliance work later need hard proof per order, an acceptance record can be added on top of the versions without changing them.
