@@ -11,8 +11,10 @@
     "require": {
         "php": ">=8.2",
         "doctrine/collections": "^2.2",
+        "doctrine/orm": "^2.18 || ^3.5",
         "fakerphp/faker": "^1.23",
         "knplabs/knp-menu": "^3.5",
+        "psr/clock": "^1.0",
         "sylius/channel": "^2.2",
         "sylius/channel-bundle": "^2.2",
         "sylius/core": "^2.2",
@@ -20,6 +22,7 @@
         "sylius/locale": "^2.2",
         "sylius/resource-bundle": "^1.12",
         "sylius/ui-bundle": "^2.2",
+        "symfony/clock": "^6.4 || ^7.4",
         "symfony/config": "^6.4 || ^7.4",
         "symfony/dependency-injection": "^6.4 || ^7.4",
         "symfony/event-dispatcher": "^6.4 || ^7.4",

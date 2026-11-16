@@ -10,6 +10,7 @@ Will add a checkbox to the selects form(s) where the customer has to accept the 
 This can be used to make sure the customer has accepted the terms and conditions before placing an order.
 
 * [Screenshots](#screenshots)
+* [Terms versions](#terms-versions)
 * [Installation](#installation)
 
 ## Screenshots
@@ -34,6 +35,43 @@ but you can add more in the `setono_sylius_terms.forms` configuration option.
 The `Label` field is the text shown on the complete order page. Notice you can use a placeholder (`[link:Link text]`) to tell where the link should be.
 
 ![Screenshot showing admin terms translation update page](docs/images/admin-terms-update-translation.png)
+
+## Terms versions
+
+Every Terms keeps a history of versions. A version is a numbered snapshot of the Terms' name, label and content in
+every locale, for example "Version 3, in force since 16 November 2026". Versions can't be edited: a flush that changes
+a saved version throws a `LogicException`.
+
+* Every save that changes the name, label or content in any locale, or adds or removes a translation, creates the
+  next version. Creating a Terms creates version 1. This holds for every save, whether it comes from the admin,
+  the fixture or your own code.
+* The slug, code, channels, Forms and the enabled flag aren't versioned. Changing only those creates no version.
+* A version is in force from the moment it is saved until the next version is saved. The plugin reads "now" from
+  Symfony Clock.
+
+To find out which version of a Terms was in force at a given moment in a given locale, for example what a customer
+accepted when their checkout completed, ask the Terms version repository:
+
+```php
+/** @var \Setono\SyliusTermsPlugin\Repository\TermsVersionRepositoryInterface $termsVersionRepository */
+$termsVersionRepository = $container->get('setono_sylius_terms.repository.terms_version');
+
+$translation = $termsVersionRepository->findOneInForce($terms, $order->getCheckoutCompletedAt(), $order->getLocaleCode());
+
+$translation?->getVersion()->getNumber(); // 3
+$translation?->getContent();              // the content in the order's locale, as entered
+```
+
+It returns `null` when the moment is before the Terms' first version, or when the version in force has no translation
+in that locale. There is no fallback to another locale.
+
+### Limitations
+
+* **Placement isn't versioned.** The lookup can name a version for an order whose checkout never showed that Terms,
+  for example a Terms added to checkout after the order. Callers judge relevance from the current placement.
+* **Mid-checkout race.** If an admin saves a new version between a customer loading checkout complete and submitting
+  it, the order is inferred to have accepted the new version. Forms carry no version check.
+* **Deleting a Terms deletes its versions.** To retire a Terms and keep its history, disable it instead.
 
 ## Installation
 

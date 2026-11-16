@@ -30,9 +30,13 @@ class Terms implements TermsInterface
     /** @var list<class-string>|null */
     protected ?array $forms = [];
 
+    /** @var Collection<array-key, TermsVersionInterface> */
+    protected Collection $versions;
+
     public function __construct()
     {
         $this->channels = new ArrayCollection();
+        $this->versions = new ArrayCollection();
 
         $this->initializeTranslationsCollection();
     }
@@ -150,6 +154,30 @@ class Terms implements TermsInterface
         $forms = array_values(array_filter($this->forms, static fn (string $f) => $f !== $form));
 
         $this->forms = [] === $forms ? null : $forms;
+    }
+
+    public function getVersions(): Collection
+    {
+        return $this->versions;
+    }
+
+    public function addVersion(TermsVersionInterface $version): void
+    {
+        $version->setTerms($this);
+        $this->versions->add($version);
+    }
+
+    public function getLatestVersion(): ?TermsVersionInterface
+    {
+        $latestVersion = null;
+
+        foreach ($this->versions as $version) {
+            if (null === $latestVersion || $version->getNumber() > $latestVersion->getNumber()) {
+                $latestVersion = $version;
+            }
+        }
+
+        return $latestVersion;
     }
 
     public function getTranslation(?string $locale = null): TermsTranslationInterface
