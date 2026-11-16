@@ -14,5 +14,5 @@ When an app switches it on, the order confirmation email carries one PDF per req
 - Which Terms are attached follows their current placement (ADR 0002), so an admin resend after a placement change can differ from the first email.
 - A PDF depends only on its Terms version, locale and channel, so it is cached and shared by every order that accepted that version.
 - PDFs are generated while the email is sent, which by default is inside the checkout request. A failure is logged and the email goes out without that PDF; it never breaks checkout.
-- The plugin's PDF context lets dompdf fetch remote images over http and https, so images in Content appear in the PDF. Relative URLs only resolve when the channel has a hostname.
+- Images in Content appear in the PDF because the plugin downloads them itself, with a timeout, and inlines them as `data:` URIs. The PDF engine never fetches anything. We don't leave this to dompdf, because dompdf draws a broken-image box when a download fails, without raising an error, and the broken PDF would be cached for every later order. A PDF with an image that failed to download is attached but not cached. Relative image URLs only resolve when the channel has a hostname.
 - The feature can only be installed where `sylius/pdf-generation-bundle` can: Symfony 6.4 or 7.4 and later.
