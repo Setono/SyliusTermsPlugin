@@ -1,0 +1,169 @@
+/*
+ * The Terms page of setono/sylius-terms-plugin. Only Terms pages load it, through the hookable
+ * setono_sylius_terms.shop.terms.show#stylesheets. Rendered Content has no class or style attributes, so its styling
+ * is scoped to the content wrapper, .setono-terms-content
+ */
+
+.setono-terms-content {
+    line-height: 1.7;
+    overflow-wrap: break-word;
+}
+
+.setono-terms-content > :first-child {
+    margin-top: 0;
+}
+
+.setono-terms-content h1,
+.setono-terms-content h2,
+.setono-terms-content h3,
+.setono-terms-content h4,
+.setono-terms-content h5,
+.setono-terms-content h6 {
+    /* Keeps a heading clear of the top edge when a table of contents entry jumps to it */
+    scroll-margin-top: 1.5rem;
+}
+
+.setono-terms-content h1 {
+    font-size: 1.75rem;
+    margin: 2.5rem 0 1rem;
+}
+
+.setono-terms-content h2 {
+    font-size: 1.375rem;
+    margin: 2.5rem 0 .75rem;
+}
+
+.setono-terms-content h3 {
+    font-size: 1.125rem;
+    margin: 1.75rem 0 .5rem;
+}
+
+.setono-terms-content h4,
+.setono-terms-content h5,
+.setono-terms-content h6 {
+    font-size: 1rem;
+    margin: 1.5rem 0 .5rem;
+}
+
+/* The # permalink after each ## heading shows while the heading is hovered or the permalink has focus */
+.setono-terms-content h2 > a[title="Permalink"] {
+    margin-left: .5rem;
+    color: var(--bs-tertiary-color);
+    text-decoration: none;
+    opacity: 0;
+}
+
+.setono-terms-content h2:hover > a[title="Permalink"],
+.setono-terms-content h2 > a[title="Permalink"]:focus {
+    opacity: 1;
+}
+
+.setono-terms-content p,
+.setono-terms-content ul,
+.setono-terms-content ol,
+.setono-terms-content blockquote,
+.setono-terms-content pre,
+.setono-terms-content table {
+    margin-bottom: 1.25rem;
+}
+
+.setono-terms-content ul,
+.setono-terms-content ol {
+    padding-left: 1.5rem;
+}
+
+.setono-terms-content li + li {
+    margin-top: .25rem;
+}
+
+.setono-terms-content li > ul,
+.setono-terms-content li > ol {
+    margin-top: .25rem;
+    margin-bottom: 0;
+}
+
+.setono-terms-content blockquote {
+    padding: .25rem 0 .25rem 1rem;
+    border-left: 4px solid var(--bs-border-color);
+    color: var(--bs-secondary-color);
+}
+
+.setono-terms-content blockquote > :last-child {
+    margin-bottom: 0;
+}
+
+.setono-terms-content pre {
+    padding: 1rem;
+    overflow-x: auto;
+    background-color: var(--bs-tertiary-bg);
+}
+
+/* Images stay within the column */
+.setono-terms-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* A wide table scrolls inside its own box instead of widening the page */
+.setono-terms-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+}
+
+.setono-terms-content th,
+.setono-terms-content td {
+    padding: .5rem .75rem;
+    border-bottom: 1px solid var(--bs-border-color);
+    vertical-align: top;
+}
+
+/* A column aligned in the Markdown keeps its align attribute */
+.setono-terms-content th:not([align]),
+.setono-terms-content td:not([align]) {
+    text-align: start;
+}
+
+.setono-terms-content thead th {
+    border-bottom-width: 2px;
+    font-weight: 600;
+}
+
+.setono-terms-toc summary {
+    cursor: pointer;
+}
+
+.setono-terms-toc .nav-link {
+    padding: .25rem .75rem;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    color: var(--bs-secondary-color);
+}
+
+.setono-terms-toc .nav-link:hover,
+.setono-terms-toc .nav-link:focus {
+    border-left-color: var(--bs-border-color);
+    color: var(--bs-body-color);
+}
+
+/* From lg up the sidebar is a column of its own, and stays in view while the content scrolls */
+@media (min-width: 992px) {
+    .setono-terms-sidebar-sticky {
+        position: sticky;
+        top: 1.5rem;
+    }
+}
+
+@media print {
+    /*
+     * Prints the Terms page's own container, without the breadcrumbs and the sidebar. The shop's header and footer are
+     * the container's siblings, before and after it, so they are left out whatever markup the theme gives them
+     */
+    :has(~ .setono-terms-page),
+    .setono-terms-page ~ *,
+    .setono-terms-header,
+    .setono-terms-sidebar {
+        display: none !important;
+    }
+}

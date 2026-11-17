@@ -1,0 +1,6 @@
+{# The print stylesheet prints this container only, so Sylius' header and footer, which are its siblings, are left out #}
+<div class="container mt-4 mb-5 setono-terms-page" {{ sylius_test_html_attribute('terms-page') }}>
+    <div class="row">
+        {% hook 'content' %}
+    </div>
+</div>

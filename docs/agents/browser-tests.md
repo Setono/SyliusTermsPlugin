@@ -15,12 +15,17 @@ The PHP process serves the page's requests only while it is inside a Playwright 
     ```
 
 - After a submit, wait for its result, such as `expect($page->locator('[data-test-sylius-flash-message-type="success"]'))->toBeVisible()`.
+- Bootstrap scrolls smoothly to an anchor. After clicking a link to `#id`, wait until the target has arrived, such as `$page->waitForFunction('() => Math.abs(document.getElementById("content-delivery").getBoundingClientRect().top - 24) < 2')`.
 
 ## Data
 
 Create the data inline (see CLAUDE.md's Tests section), then clear the entity manager before the page reads it: the page then loads the Terms through Doctrine, which sets the locale their translations are read in. A Terms still in the identity map has none, and the page fails with "No locale has been set".
 
 For checkout complete, create a cart with `CreatesCartTrait::createCartReadyToComplete()` and log in as `getShopUser()` on the `shop` firewall. The cart context finds a logged-in customer's cart only if it wasn't created by a guest, which is why the trait sets the customer with `setCustomerWithAuthorization()`. Without that, checkout redirects to the empty cart.
+
+## Assets
+
+The asset bridge serves only the path prefixes in `tests/Application/config/packages/playwright.yaml`. Any other file, such as one in a new folder of the test app's `public/`, is a 404 that fails no test on its own, so assert that an image has loaded (`naturalWidth > 0`) before measuring it.
 
 ## Locating
 
@@ -29,4 +34,4 @@ For checkout complete, create a cart with `CreatesCartTrait::createCartReadyToCo
 
 ## Screenshots
 
-`$page->screenshot($path)` writes from the Playwright server, which resolves a relative path against its own working directory. Pass an absolute path, such as one in the scratchpad. `['fullPage' => true]` cuts the fixed admin sidebar short. For a whole page, enlarge the viewport with `setViewportSize()` instead.
+Don't name a test method `screenshot()`, which `PlaywrightTestCase` already has. `$page->screenshot($path)` writes from the Playwright server, which resolves a relative path against its own working directory. Pass an absolute path, such as one in the scratchpad. `['fullPage' => true]` cuts the fixed admin sidebar short. For a whole page, enlarge the viewport with `setViewportSize()` instead.

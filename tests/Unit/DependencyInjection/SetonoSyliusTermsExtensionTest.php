@@ -28,6 +28,8 @@ use Setono\SyliusTermsPlugin\Generator\SlugGeneratorInterface;
 use Setono\SyliusTermsPlugin\Grid\TermsGrid;
 use Setono\SyliusTermsPlugin\Lookup\FormTermsLookup;
 use Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface;
+use Setono\SyliusTermsPlugin\Lookup\TermsPageLookup;
+use Setono\SyliusTermsPlugin\Lookup\TermsPageLookupInterface;
 use Setono\SyliusTermsPlugin\Model\Terms;
 use Setono\SyliusTermsPlugin\Model\TermsTranslation;
 use Setono\SyliusTermsPlugin\Model\TermsVersion;
@@ -118,6 +120,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         yield 'create terms version listener' => [CreateTermsVersionListener::class];
         yield 'prevent terms version edit listener' => [PreventTermsVersionEditListener::class];
         yield 'form terms lookup' => [FormTermsLookup::class];
+        yield 'terms page lookup' => [TermsPageLookup::class];
         yield 'required terms checker' => [RequiredTermsChecker::class];
         yield 'required terms ticked validator' => [RequiredTermsTickedValidator::class];
         yield 'content converter' => [ContentConverter::class];
@@ -138,6 +141,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias(VersionedTextChangeCheckerInterface::class, VersionedTextChangeChecker::class);
         $this->assertContainerBuilderHasAlias(TermsVersionSnapshotterInterface::class, TermsVersionSnapshotter::class);
         $this->assertContainerBuilderHasAlias(FormTermsLookupInterface::class, FormTermsLookup::class);
+        $this->assertContainerBuilderHasAlias(TermsPageLookupInterface::class, TermsPageLookup::class);
         $this->assertContainerBuilderHasAlias(RequiredTermsCheckerInterface::class, RequiredTermsChecker::class);
         $this->assertContainerBuilderHasAlias(ContentRendererInterface::class, ContentRenderer::class);
         $this->assertContainerBuilderHasAlias(SlugGeneratorInterface::class, SlugGenerator::class);
@@ -379,7 +383,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         self::assertSame(
             ['sylius_shop.checkout.complete.content.form', 'sylius_shop.account.register.content.form', 'sylius_shop.contact.contact_request.content.form'],
             array_keys($this->getFormHooks()),
-            'Besides the admin hooks, only the hooks of the default Forms are prepended',
+            'Besides the admin and Terms page hooks, only the hooks of the default Forms are prepended',
         );
 
         self::assertSame([
@@ -437,6 +441,61 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
     }
 
     #[Test]
+    public function it_prepends_the_terms_page_hooks(): void
+    {
+        $this->load();
+
+        $config = $this->container->getExtensionConfig('sylius_twig_hooks');
+        self::assertCount(1, $config);
+
+        /** @var array<string, mixed> $hooks */
+        $hooks = $config[0]['hooks'];
+
+        $termsPageHooks = array_filter(
+            $hooks,
+            static fn (string $hook): bool => str_starts_with($hook, SetonoSyliusTermsExtension::TERMS_PAGE_HOOK),
+            \ARRAY_FILTER_USE_KEY,
+        );
+
+        $template = static fn (string $path): string => '@SetonoSyliusTermsPlugin/shop/terms/show/' . $path . '.html.twig';
+
+        self::assertSame([
+            'setono_sylius_terms.shop.terms.show#stylesheets' => [
+                'terms_page' => ['template' => $template('stylesheets'), 'priority' => -100],
+            ],
+            'setono_sylius_terms.shop.terms.show' => [
+                'content' => ['template' => $template('content'), 'priority' => 0],
+            ],
+            'setono_sylius_terms.shop.terms.show.content' => [
+                'header' => ['template' => $template('content/header'), 'priority' => 200],
+                'sidebar' => ['template' => $template('content/sidebar'), 'priority' => 100],
+                'main' => ['template' => $template('content/main'), 'priority' => 0],
+            ],
+            'setono_sylius_terms.shop.terms.show.content.header' => [
+                'breadcrumbs' => ['template' => $template('content/header/breadcrumbs'), 'priority' => 0],
+            ],
+            'setono_sylius_terms.shop.terms.show.content.sidebar' => [
+                'table_of_contents' => ['template' => $template('content/sidebar/table_of_contents'), 'priority' => 100],
+                'version' => ['template' => $template('content/sidebar/version'), 'priority' => 0],
+            ],
+            'setono_sylius_terms.shop.terms.show.content.main' => [
+                'name' => ['template' => $template('content/main/name'), 'priority' => 100],
+                'content' => ['template' => $template('content/main/content'), 'priority' => 0],
+            ],
+        ], $termsPageHooks);
+
+        foreach ($termsPageHooks as $hookables) {
+            self::assertIsArray($hookables);
+
+            foreach ($hookables as $hookable) {
+                self::assertIsArray($hookable);
+                self::assertIsString($hookable['template']);
+                self::assertFileExists(str_replace('@SetonoSyliusTermsPlugin', dirname(__DIR__, 3) . '/templates', $hookable['template']));
+            }
+        }
+    }
+
+    #[Test]
     public function it_prepends_a_hookable_for_each_default_form_at_priority_50(): void
     {
         $this->load();
@@ -487,7 +546,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
     }
 
     /**
-     * The prepended hooks outside the admin Terms pages
+     * The prepended hooks outside the plugin's own pages
      *
      * @return array<string, mixed>
      */
@@ -501,7 +560,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
 
         return array_filter(
             $hooks,
-            static fn (string $hook): bool => !str_starts_with($hook, 'setono_sylius_terms.admin.terms.'),
+            static fn (string $hook): bool => !str_starts_with($hook, 'setono_sylius_terms.'),
             \ARRAY_FILTER_USE_KEY,
         );
     }

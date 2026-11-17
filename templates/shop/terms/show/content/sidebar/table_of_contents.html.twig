@@ -1,0 +1,23 @@
+{#
+    The ## headings of the Content, when it has at least two. The list renders twice, so no JavaScript is needed:
+    below lg as a collapsed <details> above the content, and from lg up as a list that is always open
+#}
+{% set outline = hookable_metadata.context.rendered_content.outline %}
+
+{% if outline|length >= 2 %}
+    {% set links %}
+        {% for heading in outline %}
+            <li class="nav-item"><a class="nav-link" href="#{{ heading.id }}">{{ heading.text }}</a></li>
+        {% endfor %}
+    {% endset %}
+
+    <details class="d-lg-none mb-4 setono-terms-toc" {{ sylius_test_html_attribute('terms-toc-collapsed') }}>
+        <summary class="fw-semibold">{{ 'setono_sylius_terms.ui.on_this_page'|trans }}</summary>
+        <ul class="nav flex-column small border-start mt-2">{{ links }}</ul>
+    </details>
+
+    <nav class="d-none d-lg-block mb-4 setono-terms-toc" aria-labelledby="setono-terms-toc-heading" {{ sylius_test_html_attribute('terms-toc') }}>
+        <div class="fw-semibold small text-uppercase text-body-secondary mb-2" id="setono-terms-toc-heading">{{ 'setono_sylius_terms.ui.on_this_page'|trans }}</div>
+        <ul class="nav flex-column small border-start">{{ links }}</ul>
+    </nav>
+{% endif %}

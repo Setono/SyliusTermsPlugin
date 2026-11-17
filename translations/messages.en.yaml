@@ -14,6 +14,10 @@ setono_sylius_terms:
         enabled: Enabled
         placement: Placement
         delete_terms_warning: Deleting the terms also deletes all their versions. To keep the version history, disable the terms instead.
+
+        on_this_page: On this page
+        version: Version %number%
+        in_force_since: In force since %date%
         
     menu:
         admin:

@@ -1,0 +1,8 @@
+{% import '@SyliusShop/shared/breadcrumbs.html.twig' as breadcrumbs %}
+
+{% set translation = hookable_metadata.context.translation %}
+
+{{ breadcrumbs.breadcrumbs([
+    { label: 'sylius.ui.home'|trans, path: path('sylius_shop_homepage'), test_attribute: 'breadcrumb-home' },
+    { label: translation.name, active: true, test_attribute: 'breadcrumb-terms' },
+]) }}

@@ -1,0 +1,6 @@
+{% set version = hookable_metadata.context.version %}
+
+<p class="small text-body-secondary" {{ sylius_test_html_attribute('terms-version') }}>
+    {{ 'setono_sylius_terms.ui.version'|trans({'%number%': version.number}) }}<br>
+    {{ 'setono_sylius_terms.ui.in_force_since'|trans({'%date%': version.inForceFrom|format_date('long', locale: sylius.localeCode)}) }}
+</p>

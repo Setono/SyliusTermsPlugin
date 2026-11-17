@@ -16,6 +16,7 @@ The customer has to tick the required terms before the form can be submitted, fo
 * [Finding and checking the Terms on a Form in code](#finding-and-checking-the-terms-on-a-form-in-code)
 * [Content](#content)
 * [Terms versions](#terms-versions)
+* [Terms pages](#terms-pages)
 * [Terms in the order confirmation email](#terms-in-the-order-confirmation-email)
 * [Fixtures](#fixtures)
 * [Installation](#installation)
@@ -27,6 +28,10 @@ The customer has to tick the required terms before the form can be submitted, fo
 Before the customer can place the order, they have to tick the required terms
 
 ![Screenshot showing shop checkout complete page](docs/images/shop-checkout-complete.png)
+
+Each Terms has its own page, with a table of contents and the Terms version in force (see [Terms pages](#terms-pages))
+
+![Screenshot showing the shop Terms page](docs/images/shop-terms-page.png)
 
 ### Admin
 
@@ -373,6 +378,119 @@ in that locale. There is no fallback to another locale.
 * **Mid-checkout race.** If an admin saves a new version between a customer loading checkout complete and submitting
   it, the order is inferred to have accepted the new version. Forms carry no version check.
 * **Deleting a Terms deletes its versions.** To retire a Terms and keep its history, disable it instead.
+
+## Terms pages
+
+Every Terms has its own page in the shop, at `/{_locale}/terms/{slug}`, such as `/en_US/terms/terms-and-conditions`.
+The slug is set per locale, and the `terms` part of the path is the `routing.terms` option (see
+[Step 3: Import routing](#step-3-import-routing)). These addresses stay the same as long as the slug does, so link to
+them from your footer, your emails or anywhere else the customer should be able to read the terms.
+
+The page shows the Terms version in force: its name, its Content, and its number and the date it has been in force
+since, such as "Version 3, In force since November 16, 2026", with the date in the customer's locale. When the Content
+has at least two `##` headings, a table of contents lists them. From the `lg` breakpoint up, it sits in a sidebar left
+of the content that stays in view while the customer scrolls. Below that, it is a collapsed "On this page" above the
+content. The page needs no JavaScript, and printing it prints the name and the content only.
+
+The page is not found when the Terms is disabled, isn't in the current channel, has no translation in the current
+locale or has no version in force. There are no pages for past versions.
+
+### Linking to a Terms page
+
+Two Twig functions take a Terms code and use the current channel and locale:
+
+```twig
+{# The path of the Terms page, such as /en_US/terms/terms-and-conditions #}
+<a href="{{ terms_path('terms_and_conditions') }}">Read our terms</a>
+
+{# <a href="/en_US/terms/terms-and-conditions" class="nav-link">Terms and Conditions</a> #}
+{{ terms_link('terms_and_conditions', {class: 'nav-link'}) }}
+```
+
+`terms_link()` takes the `<a>`'s HTML attributes, escapes them, and uses the name of the Terms version in force as the
+link text. Both functions return nothing, `null` and an empty string, in exactly the cases where the Terms page is not
+found, so a link never leads to a missing page. Guard your own markup with `{% if terms_path('…') %}`.
+
+To change the markup of `terms_link()`, override `@SetonoSyliusTermsPlugin/shop/terms/link.html.twig` in
+`templates/bundles/SetonoSyliusTermsPlugin/shop/terms/link.html.twig`. It gets `path`, `terms`, `translation` (the
+Terms version in force) and `attributes`.
+
+### Adding the links to Sylius' footer
+
+The plugin adds nothing to the footer, which belongs to your app. If your shop keeps Sylius' default footer, point its
+placeholder Terms and Conditions and Privacy Policy links at your Terms pages:
+
+```yaml
+# config/packages/sylius_twig_hooks.yaml
+sylius_twig_hooks:
+    hooks:
+        'sylius_shop.base.footer.content.menu.informational_links':
+            terms_and_conditions:
+                template: 'shop/footer/terms_and_conditions.html.twig'
+            privacy_policy:
+                template: 'shop/footer/privacy_policy.html.twig'
+```
+
+```twig
+{# templates/shop/footer/terms_and_conditions.html.twig #}
+{{ terms_link('terms_and_conditions', {class: 'nav-link'}) }}
+```
+
+```twig
+{# templates/shop/footer/privacy_policy.html.twig #}
+{{ terms_link('privacy_policy', {class: 'nav-link'}) }}
+```
+
+Use the codes of your own Terms. A link whose Terms has no page in the channel and locale renders nothing.
+
+### Changing the page
+
+The page renders through Twig hooks. Each hookable's template is under `@SetonoSyliusTermsPlugin/shop/terms/show/`, at
+the path of its hook and name, such as `shop/terms/show/content/main/name.html.twig`:
+
+| Hook | Hookables, by priority |
+|------|------------------------|
+| `setono_sylius_terms.shop.terms.show` | `content` |
+| `setono_sylius_terms.shop.terms.show.content` | `header` (200), `sidebar` (100), `main` (0) |
+| `setono_sylius_terms.shop.terms.show.content.header` | `breadcrumbs` |
+| `setono_sylius_terms.shop.terms.show.content.sidebar` | `table_of_contents` (100), `version` (0) |
+| `setono_sylius_terms.shop.terms.show.content.main` | `name` (100), `content` (0) |
+
+Every hookable gets `terms`, `version` (the Terms version in force), `translation` (the version's name and Content in
+the current locale) and `rendered_content` (the `RenderedContent`, see [Rendering Content in code](#rendering-content-in-code))
+in `hookable_metadata.context`.
+
+The page's hook prefix is `setono_sylius_terms.shop.terms.show`, so the layout's hooks with that prefix, such as
+`setono_sylius_terms.shop.terms.show#stylesheets`, apply to Terms pages only. The plugin's `terms_page` hookable there
+links the stylesheet that styles the Content, `bundles/setonosyliustermsplugin/shop/terms-page.css`, which
+`assets:install` copies to your `public/` directory along with the other bundles' assets. Rendered Content has no
+`class` or `style` attributes, so the stylesheet styles it by element, scoped to the content wrapper. To style it
+yourself, switch the hookable off with `enabled: false` and add your own.
+
+#### Changing the page of one Terms
+
+The page renders the hook of the Terms' code, `setono_sylius_terms.shop.terms.show.<code>`, before the generic hook,
+and Twig hooks merges the two. On that one page, a hookable in the code's hook adds to the generic hookables, overrides
+the generic hookable of the same name, or, with `enabled: false`, hides it. The nested hooks follow the same pattern:
+
+```yaml
+# config/packages/sylius_twig_hooks.yaml
+sylius_twig_hooks:
+    hooks:
+        # A notice between the name and the content, on the page of terms_and_conditions only
+        'setono_sylius_terms.shop.terms.show.terms_and_conditions.content.main':
+            notice:
+                template: 'shop/terms/notice.html.twig'
+                priority: 50
+
+        # No version in the sidebar, on the page of privacy_policy only
+        'setono_sylius_terms.shop.terms.show.privacy_policy.content.sidebar':
+            version:
+                enabled: false
+```
+
+Don't give a Terms the code `content`: its hook would be the generic `setono_sylius_terms.shop.terms.show.content`, and
+its page would render the header, sidebar and main twice.
 
 ## Terms in the order confirmation email
 

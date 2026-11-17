@@ -20,6 +20,9 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
     /** The name of the hookable that renders the Terms checkboxes in each hook of a Form */
     public const FORM_HOOKABLE = 'setono_sylius_terms_checkboxes';
 
+    /** The Terms page's hook. The page merges it with the hook of the Terms' code, <this hook>.<code>, whose hookables win */
+    public const TERMS_PAGE_HOOK = 'setono_sylius_terms.shop.terms.show';
+
     /** The admin Terms routes set this as their hook_prefix, see config/routes/admin.yaml */
     private const ADMIN_HOOK_PREFIX = 'setono_sylius_terms.admin.terms';
 
@@ -75,7 +78,7 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
         $config = $this->getConfigForPrepend($container);
 
         $container->prependExtensionConfig('sylius_twig_hooks', [
-            'hooks' => self::getAdminHooks() + self::getFormHooks($config['forms']),
+            'hooks' => self::getAdminHooks() + self::getTermsPageHooks() + self::getFormHooks($config['forms']),
         ]);
 
         if ($config['order_confirmation_email']['pdf']) {
@@ -226,29 +229,67 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
                 ],
             ];
 
-            $hooks[sprintf('%s.%s.content.form.general', $prefix, $page)] = self::getFieldHookables('general', ['code', 'enabled', 'required', 'position']);
-            $hooks[sprintf('%s.%s.content.form.placement', $prefix, $page)] = self::getFieldHookables('placement', ['forms', 'channels']);
-            $hooks[sprintf('%s.%s.content.form.translations', $prefix, $page)] = self::getFieldHookables('translations', ['name', 'slug', 'label', 'content']);
+            $hooks[sprintf('%s.%s.content.form.general', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/general', ['code', 'enabled', 'required', 'position']);
+            $hooks[sprintf('%s.%s.content.form.placement', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/placement', ['forms', 'channels']);
+            $hooks[sprintf('%s.%s.content.form.translations', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/translations', ['name', 'slug', 'label', 'content']);
         }
 
         return $hooks;
     }
 
     /**
-     * One hookable per field, in the given order, spaced by 100 so apps can put their own hookables in between
+     * The hookables of the Terms page: content → header (breadcrumbs), sidebar (table of contents, version) and main
+     * (name, content), plus its stylesheet, which the page's prefixes load into the head
      *
-     * @param list<string> $fields
+     * @return array<string, array<string, array{template: string, priority: int}>>
+     */
+    private static function getTermsPageHooks(): array
+    {
+        $hooks = [
+            self::TERMS_PAGE_HOOK . '#stylesheets' => [
+                'terms_page' => [
+                    'template' => '@SetonoSyliusTermsPlugin/shop/terms/show/stylesheets.html.twig',
+                    // After Sylius' own stylesheets, at 0
+                    'priority' => -100,
+                ],
+            ],
+        ];
+
+        // The hookables of each hook below the page's hook, in order. Their templates mirror the hook names
+        $tree = [
+            '' => ['content'],
+            '.content' => ['header', 'sidebar', 'main'],
+            '.content.header' => ['breadcrumbs'],
+            '.content.sidebar' => ['table_of_contents', 'version'],
+            '.content.main' => ['name', 'content'],
+        ];
+
+        foreach ($tree as $suffix => $names) {
+            $hooks[self::TERMS_PAGE_HOOK . $suffix] = self::getHookables(
+                '@SetonoSyliusTermsPlugin/shop/terms/show' . str_replace('.', '/', $suffix),
+                $names,
+            );
+        }
+
+        return $hooks;
+    }
+
+    /**
+     * One hookable per name, in the given order, spaced by 100 so apps can put their own hookables in between. Each
+     * renders the template named after it in the directory
+     *
+     * @param list<string> $names
      *
      * @return array<string, array{template: string, priority: int}>
      */
-    private static function getFieldHookables(string $card, array $fields): array
+    private static function getHookables(string $templateDirectory, array $names): array
     {
         $hookables = [];
-        $priority = (count($fields) - 1) * 100;
+        $priority = (count($names) - 1) * 100;
 
-        foreach ($fields as $field) {
-            $hookables[$field] = [
-                'template' => sprintf('@SetonoSyliusTermsPlugin/admin/terms/form/%s/%s.html.twig', $card, $field),
+        foreach ($names as $name) {
+            $hookables[$name] = [
+                'template' => sprintf('%s/%s.html.twig', $templateDirectory, $name),
                 'priority' => $priority,
             ];
 

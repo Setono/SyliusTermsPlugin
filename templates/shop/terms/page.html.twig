@@ -1,0 +1,21 @@
+{#
+    The Terms page. Everything on it renders through the hooks below: the code-specific hook comes first, so its
+    hookables add to, override or (with enabled: false) switch off the generic hookables of the same name, on the page
+    of that one Terms.
+
+    Variables, passed on to every hookable as its context:
+    - terms: the TermsInterface
+    - version: the TermsVersionInterface in force
+    - translation: the version's TermsVersionTranslationInterface in the current locale, with the name and the Content
+    - rendered_content: the RenderedContent of the Content, with the sanitised html and the outline of its ## headings
+#}
+{% extends '@SyliusShop/shared/layout/base.html.twig' %}
+
+{% set hook = 'setono_sylius_terms.shop.terms.show' %}
+{% set prefixes = [hook] %}
+
+{% block title %}{{ translation.name }} | {{ parent() }}{% endblock %}
+
+{% block content %}
+    {% hook [hook ~ '.' ~ terms.code, hook] with { terms, version, translation, rendered_content } %}
+{% endblock %}

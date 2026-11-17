@@ -1,2 +1,11 @@
-{# @var terms \Setono\SyliusTermsPlugin\Model\TermsInterface #}
-<a href="{{ path('setono_sylius_terms_shop_terms_show', {'slug': terms.slug}) }}">{{ terms.name }}</a>
+{#
+    The link terms_link() renders to a Terms page. Override it in templates/bundles/SetonoSyliusTermsPlugin/shop/terms/link.html.twig
+    to change the markup.
+
+    Variables:
+    - path: the path of the Terms page
+    - terms: the TermsInterface
+    - translation: the TermsVersionTranslationInterface in force, in the current locale. Its name is the link text
+    - attributes: the HTML attributes passed to terms_link(), such as {class: 'nav-link'}
+#}
+<a href="{{ path }}"{% for name, value in attributes %} {{ name|e('html_attr') }}="{{ value }}"{% endfor %}>{{ translation.name }}</a>

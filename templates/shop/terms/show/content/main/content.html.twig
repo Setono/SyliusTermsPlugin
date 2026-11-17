@@ -1,0 +1,7 @@
+{#
+    The Content, rendered and sanitised by the ContentRendererInterface, so it is printed as it is. To print Content in
+    your own templates, use the terms_content filter, never |raw
+#}
+<div class="setono-terms-content" {{ sylius_test_html_attribute('terms-content') }}>
+    {{ hookable_metadata.context.rendered_content.html|raw }}
+</div>
