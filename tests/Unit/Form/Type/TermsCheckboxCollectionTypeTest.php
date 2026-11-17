@@ -67,13 +67,15 @@ final class TermsCheckboxCollectionTypeTest extends TestCase
     #[Test]
     public function required_terms_render_required_and_optional_terms_do_not(): void
     {
-        $view = $this->createForm([
+        $form = $this->createForm([
             self::createTranslation('terms_and_conditions', required: true),
             self::createTranslation('newsletter', required: false),
-        ])->createView();
+        ]);
 
-        self::assertTrue($view['terms_and_conditions']->vars['required']);
-        self::assertFalse($view['newsletter']->vars['required']);
+        // The view's required variable is read from the form. The forms are asserted instead of their views, whose
+        // variables Symfony 6.4 leaves untyped. The browser suite checks the rendered attribute
+        self::assertTrue($form->get('terms_and_conditions')->isRequired());
+        self::assertFalse($form->get('newsletter')->isRequired());
     }
 
     #[Test]
