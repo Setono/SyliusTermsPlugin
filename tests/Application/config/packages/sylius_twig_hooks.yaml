@@ -1,0 +1,21 @@
+# The README's footer recipe: Sylius' placeholder Terms and Conditions and Privacy Policy links point at the Terms pages
+sylius_twig_hooks:
+    hooks:
+        'sylius_shop.base.footer.content.menu.informational_links':
+            terms_and_conditions:
+                template: 'shop/footer/terms_and_conditions.html.twig'
+            privacy_policy:
+                template: 'shop/footer/privacy_policy.html.twig'
+
+when@test:
+    sylius_twig_hooks:
+        hooks:
+            # Per-code hooks for the Terms page of the Terms with the code hooked_terms, which tests create inline. One
+            # adds a notice between the name and the content, the other hides the generic version hookable
+            'setono_sylius_terms.shop.terms.show.hooked_terms.content.main':
+                notice:
+                    template: 'shop/terms/notice.html.twig'
+                    priority: 50
+            'setono_sylius_terms.shop.terms.show.hooked_terms.content.sidebar':
+                version:
+                    enabled: false

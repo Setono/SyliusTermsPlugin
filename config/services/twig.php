@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Setono\SyliusTermsPlugin\Generator\SlugGeneratorInterface;
+use Setono\SyliusTermsPlugin\Lookup\TermsPageLookupInterface;
 use Setono\SyliusTermsPlugin\Renderer\ContentRendererInterface;
 use Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent;
 use Setono\SyliusTermsPlugin\Twig\ContentRuntime;
@@ -20,9 +21,10 @@ return static function (ContainerConfigurator $container): void {
 
     $services->set(TermsRuntime::class)
         ->args([
+            service(TermsPageLookupInterface::class),
             service('sylius.context.channel'),
             service('sylius.context.locale'),
-            service('setono_sylius_terms.repository.terms'),
+            service('router'),
         ])
         ->tag('twig.runtime')
     ;

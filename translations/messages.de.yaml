@@ -15,6 +15,10 @@ setono_sylius_terms:
     placement: Platzierung
     delete_terms_warning: Beim Löschen der Konditionen werden auch alle ihre Versionen gelöscht. Um den Versionsverlauf zu behalten, deaktivieren Sie die Konditionen stattdessen.
 
+    on_this_page: Auf dieser Seite
+    version: Version %number%
+    in_force_since: In Kraft seit dem %date%
+
   menu:
     admin:
       main:

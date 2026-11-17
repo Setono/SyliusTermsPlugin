@@ -76,6 +76,11 @@ Markdown headings in rendered Content now carry `id` attributes, such as `id="co
 it on. To use it, run `composer require sylius/pdf-generation-bundle dompdf/dompdf symfony/http-client` and register
 `SyliusPdfGenerationBundle`. See the README's "Terms in the order confirmation email" section.
 
+#### The Terms page and `terms_link()` show the Terms version in force
+
+- The Terms page shows the name and Content of the Terms version in force, with its number and the date it has been in force since. It is not found when the Terms has no version in force, as well as when the Terms is disabled, isn't in the channel or has no translation in the locale. `terms_link()` and the new `terms_path()` return nothing in exactly those cases, and the link text is the name of the version in force. Terms upgraded from 2.x have no version until `setono:sylius-terms:upgrade-from-2x` gives them version 1, so until then their pages are not found and `terms_link()` renders nothing.
+- `terms_link()`'s second argument is now HTML attributes, such as `{class: 'nav-link'}`, not a template name, see "Removed classes, services, templates, files and translation keys" below.
+
 ### Plugin file layout
 
 The plugin follows the Sylius 2 plugin skeleton. `src/Resources/{config,translations,views,public}` moved to the repository root:
@@ -109,6 +114,8 @@ Paths to plugin files drop `Resources/`. Template paths (`@SetonoSyliusTermsPlug
 - Admin hooks live under `setono_sylius_terms.admin.terms`, such as `setono_sylius_terms.admin.terms.update.content.form.translations` (see the README's Admin section). The Sylius 1 template events and the jQuery slug scripts are gone: the slug wand next to each slug is a Live Component action, and a slug left blank is made from the name on save.
 - `templates/bundles` overrides of `admin/terms/_form.html.twig` or `admin/grid/field/channels.html.twig` no longer apply.
 - Overridden templates that print content with `|raw` must switch to the `terms_content` filter, which renders and sanitises it: `{{ terms.content|terms_content }}`.
+- The Terms page templates are rebuilt on Twig hooks. `shop/terms/show.html.twig` and `shop/terms/show/_breadcrumb.html.twig` are gone: the page is `shop/terms/page.html.twig`, which renders the hooks under `setono_sylius_terms.shop.terms.show`, with their templates under `shop/terms/show/`. Port overrides of the old templates to hookables (see the README's "Terms pages" section). An override of `shop/terms/show.html.twig` left in `templates/bundles` is ignored.
+- The per-code template override `shop/terms/show/{code}.html.twig` is gone. Use the hook `setono_sylius_terms.shop.terms.show.<code>` instead: its hookables add to, override or, with `enabled: false`, hide the generic hookables of the same name on that Terms' page only.
 - Terms checkboxes render through Twig hooks on each configured Form, so 2.x's manual override of the checkout complete form (`{{ form_row(form.terms) }}` in `templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig`) is no longer needed. Sylius 2 doesn't read that template, so delete it. See the README's "Terms checkboxes" section.
 
 ### Grid
@@ -153,6 +160,7 @@ On Sylius ≥ 2.3, a same-named YAML grid replaces the plugin's grid wholesale.
 | The validation-group collector, the `PRE_SET_DATA` listener in `TermsCheckboxCollectionType` that gave each checkbox an `IsTrue` constraint in its parents' groups | The `terms` field's own validation group, `setono_sylius_terms_checkboxes`, with the `RequiredTermsTicked` constraint |
 | `TermsCheckboxCollectionType`'s `error_message` option | The `setono_sylius_terms.terms_checkbox.required` key in the `validators` translation domain, which `RequiredTermsTicked` uses |
 | `TermsCheckboxCollectionType`'s `terms` option, a list of `TermsInterface` | The same option, a list of `TermsVersionTranslationInterface` as the Form lookup returns them, and the new required `form` option, the Form code |
+| `terms_link(code, template)`, whose second argument was the name of the template to render | `terms_link(code, attributes = {})`, whose second argument is the `<a>`'s HTML attributes, escaped. To change the markup, override `@SetonoSyliusTermsPlugin/shop/terms/link.html.twig`, which gets `path`, `terms`, `translation` (the Terms version in force) and `attributes`. `terms_path(code)` is new and returns the Terms page's path, or `null` |
 | `LabelRendererInterface::render(TermsInterface $terms)` | `LabelRendererInterface::render(TermsVersionTranslationInterface $translation)`, which renders the Label of a Terms version |
 
 `TermsRepositoryInterface` has a new method, `createListQueryBuilder()`, which feeds the admin grid. A repository that implements the interface without extending `TermsRepository` must add it.

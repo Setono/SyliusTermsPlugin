@@ -1,0 +1,6 @@
+{# Before the main column, so it sits above the content below lg, and on the left from lg up #}
+<aside class="col-12 col-lg-3 mb-4 setono-terms-sidebar" {{ sylius_test_html_attribute('terms-sidebar') }}>
+    <div class="setono-terms-sidebar-sticky">
+        {% hook 'sidebar' %}
+    </div>
+</aside>

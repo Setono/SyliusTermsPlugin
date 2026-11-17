@@ -15,6 +15,10 @@ setono_sylius_terms:
         placement: Plaatsing
         delete_terms_warning: Als je de voorwaarden verwijdert, worden ook al hun versies verwijderd. Schakel de voorwaarden in plaats daarvan uit om de versiegeschiedenis te bewaren.
 
+        on_this_page: Op deze pagina
+        version: Versie %number%
+        in_force_since: Van kracht sinds %date%
+
     menu:
         admin:
             main:

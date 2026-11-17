@@ -15,6 +15,10 @@ setono_sylius_terms:
     placement: Emplacement
     delete_terms_warning: Supprimer les conditions supprime aussi toutes leurs versions. Pour conserver l'historique des versions, désactivez plutôt les conditions.
 
+    on_this_page: Sur cette page
+    version: Version %number%
+    in_force_since: En vigueur depuis le %date%
+
   menu:
     admin:
       main:

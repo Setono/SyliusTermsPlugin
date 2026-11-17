@@ -14,6 +14,10 @@ setono_sylius_terms:
         enabled: Aktiveret
         placement: Placering
         delete_terms_warning: Når betingelserne slettes, slettes alle deres versioner også. Deaktiver betingelserne i stedet, hvis versionshistorikken skal bevares.
+
+        on_this_page: På denne side
+        version: Version %number%
+        in_force_since: Gældende fra %date%
         
     menu:
         admin:

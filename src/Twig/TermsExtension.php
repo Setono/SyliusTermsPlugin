@@ -26,6 +26,7 @@ final class TermsExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
+            new TwigFunction('terms_path', [TermsRuntime::class, 'path']),
             new TwigFunction('terms_link', [TermsRuntime::class, 'link'], ['needs_environment' => true, 'is_safe' => ['html']]),
         ];
     }

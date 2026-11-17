@@ -1,5 +1,6 @@
 when@test:
     playwright:
         assets:
-            # The bundle's defaults plus /bundles, where assets:install puts the plugin's public/ files
-            prefixes: ['/assets', '/build', '/_framework/ux', '/bundles']
+            # The bundle's defaults plus /bundles, where assets:install puts the plugin's public/ files, and /images,
+            # which holds the image in the baseline Terms' content
+            prefixes: ['/assets', '/build', '/_framework/ux', '/bundles', '/images']
