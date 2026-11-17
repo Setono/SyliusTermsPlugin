@@ -38,8 +38,6 @@ use Setono\SyliusTermsPlugin\Pdf\TermsPdfGenerator;
 use Setono\SyliusTermsPlugin\Pdf\TermsPdfGeneratorInterface;
 use Setono\SyliusTermsPlugin\Pdf\UrlAbsolutiser;
 use Setono\SyliusTermsPlugin\Pdf\UrlAbsolutiserInterface;
-use Setono\SyliusTermsPlugin\Provider\TermsProvider;
-use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
 use Setono\SyliusTermsPlugin\Renderer\ContentRenderer;
 use Setono\SyliusTermsPlugin\Renderer\ContentRendererInterface;
 use Setono\SyliusTermsPlugin\Renderer\LabelRenderer;
@@ -112,7 +110,6 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         yield 'terms translation type' => [TermsTranslationType::class];
         yield 'terms checkbox collection type' => [TermsCheckboxCollectionType::class];
         yield 'form type extension' => [FormTypeExtension::class];
-        yield 'terms provider' => [TermsProvider::class];
         yield 'label renderer' => [LabelRenderer::class];
         yield 'terms extension' => [TermsExtension::class];
         yield 'terms runtime' => [TermsRuntime::class];
@@ -137,7 +134,6 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
     {
         $this->load();
 
-        $this->assertContainerBuilderHasAlias(TermsProviderInterface::class, TermsProvider::class);
         $this->assertContainerBuilderHasAlias(LabelRendererInterface::class, LabelRenderer::class);
         $this->assertContainerBuilderHasAlias(VersionedTextChangeCheckerInterface::class, VersionedTextChangeChecker::class);
         $this->assertContainerBuilderHasAlias(TermsVersionSnapshotterInterface::class, TermsVersionSnapshotter::class);
@@ -380,9 +376,11 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         /** @var array<string, array<string, array<string, mixed>>> $hooks */
         $hooks = $config[0]['hooks'];
 
-        foreach (array_keys($hooks) as $hook) {
-            self::assertStringStartsWith('setono_sylius_terms.admin.terms.', $hook);
-        }
+        self::assertSame(
+            ['sylius_shop.checkout.complete.content.form', 'sylius_shop.account.register.content.form', 'sylius_shop.contact.contact_request.content.form'],
+            array_keys($this->getFormHooks()),
+            'Besides the admin hooks, only the hooks of the default Forms are prepended',
+        );
 
         self::assertSame([
             'template' => '@SyliusAdmin/shared/crud/common/content/header/title_block/title.html.twig',
@@ -436,5 +434,88 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
                 'content' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/content.html.twig', 'priority' => 0],
             ], $hooks[$prefix . '.content.form.translations']);
         }
+    }
+
+    #[Test]
+    public function it_prepends_a_hookable_for_each_default_form_at_priority_50(): void
+    {
+        $this->load();
+
+        self::assertSame([
+            'sylius_shop.checkout.complete.content.form' => self::getFormHookable(50),
+            'sylius_shop.account.register.content.form' => self::getFormHookable(50),
+            'sylius_shop.contact.contact_request.content.form' => self::getFormHookable(50),
+        ], $this->getFormHooks());
+    }
+
+    #[Test]
+    public function it_prepends_one_hookable_per_hook_of_each_enabled_form_at_its_priority_all_rendering_the_shared_template(): void
+    {
+        $config = ['forms' => [
+            'checkout_complete' => ['hooks' => ['app.checkout.complete.terms' => 10, 'app.checkout.complete.sidebar' => -5]],
+            'contact' => ['enabled' => false],
+            'newsletter' => ['type' => 'App\Form\Type\NewsletterType', 'hooks' => ['app.newsletter.form' => 50]],
+            // Renders form.terms by hand
+            'manual' => ['type' => 'App\Form\Type\ManualType', 'hooks' => []],
+        ]];
+
+        // prepend() reads the forms from the extension's config, so it is set there as well as passed to load()
+        $this->container->loadFromExtension('setono_sylius_terms', $config);
+        $this->load($config);
+
+        self::assertSame([
+            'app.checkout.complete.terms' => self::getFormHookable(10),
+            'app.checkout.complete.sidebar' => self::getFormHookable(-5),
+            'sylius_shop.account.register.content.form' => self::getFormHookable(50),
+            'app.newsletter.form' => self::getFormHookable(50),
+        ], $this->getFormHooks());
+    }
+
+    #[Test]
+    public function the_form_type_extension_adds_the_terms_the_form_lookup_finds_in_the_current_channel_and_locale(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(FormTypeExtension::class, 'form.type_extension');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormTypeExtension::class, 0, new Reference(FormTermsLookupInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormTypeExtension::class, 1, new Reference('sylius.context.channel'));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormTypeExtension::class, 2, new Reference('sylius.context.locale'));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormTypeExtension::class, 3, '%setono_sylius_terms.forms%');
+
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(TermsCheckboxCollectionType::class, 'form.type');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsCheckboxCollectionType::class, 0, new Reference(LabelRendererInterface::class));
+    }
+
+    /**
+     * The prepended hooks outside the admin Terms pages
+     *
+     * @return array<string, mixed>
+     */
+    private function getFormHooks(): array
+    {
+        $config = $this->container->getExtensionConfig('sylius_twig_hooks');
+        self::assertCount(1, $config);
+
+        /** @var array<string, mixed> $hooks */
+        $hooks = $config[0]['hooks'];
+
+        return array_filter(
+            $hooks,
+            static fn (string $hook): bool => !str_starts_with($hook, 'setono_sylius_terms.admin.terms.'),
+            \ARRAY_FILTER_USE_KEY,
+        );
+    }
+
+    /**
+     * @return array<string, array{template: string, priority: int}>
+     */
+    private static function getFormHookable(int $priority): array
+    {
+        return [
+            'setono_sylius_terms_checkboxes' => [
+                'template' => '@SetonoSyliusTermsPlugin/shop/form/terms.html.twig',
+                'priority' => $priority,
+            ],
+        ];
     }
 }

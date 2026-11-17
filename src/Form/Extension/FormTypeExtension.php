@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\Form\Extension;
 
 use Setono\SyliusTermsPlugin\Form\Type\TermsCheckboxCollectionType;
-use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
+use Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface;
+use Sylius\Component\Channel\Context\ChannelContextInterface;
+use Sylius\Component\Locale\Context\LocaleContextInterface;
 use Symfony\Component\Form\AbstractTypeExtension;
-use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvents;
 
+/**
+ * Adds the terms field to the form types of the configured Forms, with the Terms the Form lookup finds in the current
+ * channel and locale, now
+ */
 final class FormTypeExtension extends AbstractTypeExtension
 {
     /**
@@ -25,7 +29,9 @@ final class FormTypeExtension extends AbstractTypeExtension
      * @param array<string, array{type: class-string}> $forms
      */
     public function __construct(
-        private readonly TermsProviderInterface $termsProvider,
+        private readonly FormTermsLookupInterface $formTermsLookup,
+        private readonly ChannelContextInterface $channelContext,
+        private readonly LocaleContextInterface $localeContext,
         array $forms,
     ) {
         $formCodes = [];
@@ -38,21 +44,27 @@ final class FormTypeExtension extends AbstractTypeExtension
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (PreSetDataEvent $event): void {
-            $formCode = $this->formCodes[$event->getForm()->getConfig()->getType()->getInnerType()::class] ?? null;
-            if (null === $formCode) {
-                return;
-            }
+        // The type of the form being built, which may extend FormType through other types
+        $formCode = $this->formCodes[$builder->getType()->getInnerType()::class] ?? null;
+        if (null === $formCode) {
+            return;
+        }
 
-            $terms = $this->termsProvider->getTerms($formCode);
-            if ([] === $terms) {
-                return;
-            }
+        $terms = $this->formTermsLookup->lookup(
+            $formCode,
+            $this->channelContext->getChannel(),
+            $this->localeContext->getLocaleCode(),
+        );
 
-            $event->getForm()->add('terms', TermsCheckboxCollectionType::class, [
-                'terms' => $terms,
-            ]);
-        });
+        // A Form with no Terms renders nothing
+        if ([] === $terms) {
+            return;
+        }
+
+        $builder->add('terms', TermsCheckboxCollectionType::class, [
+            'form' => $formCode,
+            'terms' => $terms,
+        ]);
     }
 
     public static function getExtendedTypes(): iterable

@@ -5,13 +5,13 @@
 [![Build Status][ico-github-actions]][link-github-actions]
 [![Code Coverage][ico-code-coverage]][link-code-coverage]
 
-Will add a checkbox to the selects form(s) where the customer has to accept the terms and conditions before continuing.
-
-This can be used to make sure the customer has accepted the terms and conditions before placing an order.
+Adds terms checkboxes to shop forms, such as checkout complete, registration and contact, and a shop page per Terms.
+The customer has to tick the required terms before the form can be submitted, for example before placing an order.
 
 * [Screenshots](#screenshots)
 * [Admin](#admin)
 * [Forms](#forms)
+* [Terms checkboxes](#terms-checkboxes)
 * [Required and optional terms, and position](#required-and-optional-terms-and-position)
 * [Finding and checking the Terms on a Form in code](#finding-and-checking-the-terms-on-a-form-in-code)
 * [Content](#content)
@@ -24,7 +24,7 @@ This can be used to make sure the customer has accepted the terms and conditions
 
 ### Shop
 
-Before the customer can place order, he/she has to check the required terms
+Before the customer can place the order, they have to tick the required terms
 
 ![Screenshot showing shop checkout complete page](docs/images/shop-checkout-complete.png)
 
@@ -121,7 +121,7 @@ setono_sylius_terms:
             saved_event: app.newsletter.post_subscribe     # optional: the event dispatched once the form's data is saved
 ```
 
-* Set `hooks: []` to render the checkboxes yourself with `{{ form_row(form.terms) }}`.
+* Set `hooks: []` to render the checkboxes yourself (see [Rendering the checkboxes by hand](#rendering-the-checkboxes-by-hand)).
 * Without a `label`, the admin shows the translation key `setono_sylius_terms.form.terms.term_form.<code>`.
 
 ### Changing or switching off a default Form
@@ -137,6 +137,46 @@ setono_sylius_terms:
             enabled: false
 ```
 
+## Terms checkboxes
+
+When a Form's form type is built in the shop, the plugin adds a `terms` field to it, with one checkbox per Terms the
+[Form lookup](#finding-and-checking-the-terms-on-a-form-in-code) finds for the Form in the current channel and locale,
+now. A Form with no Terms there gets no `terms` field and renders nothing. The checkboxes are in position order, and
+each is named by its Terms' code, such as `sylius_checkout_complete[terms][terms_and_conditions]`.
+
+Each checkbox shows the Label of the Terms version in force. The Label is plain text: HTML in it is escaped and shows as
+text. Its Link placeholder (`[link:Link text]`) becomes a link to the Terms page, and a Label without one links as a
+whole. When the Terms has no content, nothing links, and a Link placeholder shows just its link text.
+
+### How the checkboxes reach a Form
+
+You don't need to change any template. For each hook of each Form, the plugin adds the hookable
+`setono_sylius_terms_checkboxes` at the hook's priority. All of them render
+`@SetonoSyliusTermsPlugin/shop/form/terms.html.twig`, which renders the checkboxes of the form in the hook's context
+(`hookable_metadata.context.form`), if it has a `terms` field. Change or switch off a hookable in your own config:
+
+```yaml
+# config/packages/sylius_twig_hooks.yaml
+sylius_twig_hooks:
+    hooks:
+        'sylius_shop.contact.contact_request.content.form':
+            setono_sylius_terms_checkboxes:
+                template: 'shop/contact/terms.html.twig' # your own template, or enabled: false to switch it off
+```
+
+To move the checkboxes to another hook, change the Form's `hooks` (see [Forms](#forms)) rather than the hookable.
+
+### Rendering the checkboxes by hand
+
+A Form with `hooks: []` gets no hookable. Render its `terms` field in your own template, and keep the guard, since the
+field is missing when the Form has no Terms:
+
+```twig
+{% if form.terms is defined %}
+    {{ form_row(form.terms) }}
+{% endif %}
+```
+
 ## Required and optional terms, and position
 
 * **Required terms** must be ticked before the form they are on can be submitted. **Optional terms** may be left
@@ -145,6 +185,20 @@ setono_sylius_terms:
 * **Position** orders the Terms on every Form, lowest first. A Terms saved without a position goes last. Setting a
   position moves the Terms there and shifts the Terms from there on one place down. Changing the position or the
   required flag doesn't create a [Terms version](#terms-versions).
+
+### How required terms show and are enforced
+
+* A required Terms' checkbox renders with Symfony's `required: true`, which adds the HTML `required` attribute and the
+  shop theme's `required` class. An optional Terms' checkbox has neither. The plugin adds no marker of its own, so
+  write it into the Label if your customers should see which Terms are optional, for example "(optional)".
+* Sylius' shop forms are `novalidate`, so the browser doesn't stop the submit: the server enforces required terms. A
+  required Terms left unticked fails the form, with the error on its checkbox ("You must accept the terms to
+  continue."). Checkout complete places no order until it is ticked.
+* The `terms` field validates in its own validation group, `setono_sylius_terms_checkboxes`, with the
+  `RequiredTermsTicked` constraint. Symfony resolves a field's own groups before its form's, so required terms are
+  enforced whatever validation groups the Form uses, or none, as on the contact form.
+* The check reads the Terms on the Form at submit time. If an admin saves a new version in between, the customer
+  accepts the new version (see [Limitations](#limitations)).
 
 ## Finding and checking the Terms on a Form in code
 
@@ -533,46 +587,8 @@ $ php bin/console doctrine:migrations:diff
 $ php bin/console doctrine:migrations:migrate
 ```
 
-### Step 5: Override checkout complete form
-
-Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig):
-
-* If you haven't your own `templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig` yet:
-
-    ```bash
-    $ cp vendor/sylius/sylius/src/Sylius/Bundle/ShopBundle/Resources/views/Checkout/Complete/_form.html.twig \
-    templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig
-    ```
-
-* If you already have it:
-
-    Add terms field (exactly this conditional way):
-
-    ```twig
-    {# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
-    {% if form.terms is defined %}
-        {{ form_row(form.terms) }}
-    {% endif %}
-    ```
-
-    So the final template will look like this:
-
-    ```twig
-    {# templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig #}
-    {{ form_row(form.notes, {'attr': {'rows': 3}}) }}
-    {% if form.terms is defined %}
-        {{ form_row(form.terms) }}
-    {% endif %}
-    ```
-
-# Troubleshooting
-
-* If you see `Neither the property "terms" nor one of the methods "terms()", "getterms()"/"isterms()"/"hasterms()" or "__call()" exist and have public access in class "Symfony\Component\Form\FormView".`
-
-    Then see https://github.com/Setono/SyliusTermsPlugin/issues/13
-    and double-check you added terms field at template like described
-    at `Override checkout complete form` section.
-    
+The Terms checkboxes render on checkout complete, registration and contact without any template change (see
+[Terms checkboxes](#terms-checkboxes)).
 
 [ico-version]: https://poser.pugx.org/setono/sylius-terms-plugin/v/stable
 [ico-license]: https://poser.pugx.org/setono/sylius-terms-plugin/license
