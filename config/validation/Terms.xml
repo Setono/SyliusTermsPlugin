@@ -21,6 +21,12 @@
                 <option name="pattern">/^[\w-]*$/</option>
                 <option name="groups">setono_sylius_terms</option>
             </constraint>
+            <!-- The Terms page hook of a Terms coded content would be the page's own content hook, so its page would render twice -->
+            <constraint name="NotIdenticalTo">
+                <option name="value">content</option>
+                <option name="message">setono_sylius_terms.terms.code.reserved</option>
+                <option name="groups">setono_sylius_terms</option>
+            </constraint>
         </property>
     </class>
 </constraint-mapping>

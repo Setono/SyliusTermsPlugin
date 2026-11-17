@@ -112,6 +112,24 @@ final class TermsAdminTest extends PlaywrightTestCase
     }
 
     #[Test]
+    public function the_code_content_is_rejected_with_the_reason(): void
+    {
+        $page = $this->open('/admin/terms/new');
+
+        $page->locator('[data-test-code]')->fill('content');
+        $page->locator('[data-test-name="en_US"]')->fill('Content');
+        $page->locator('[data-test-label="en_US"]')->fill('I accept the [link:content]');
+        self::changeAndWaitForRerender($page, 'document.querySelector(\'[data-test-label="en_US"]\').blur()');
+
+        $page->getByRole('button', ['name' => 'Create', 'exact' => true])->click();
+        $page->waitForLoadState('networkidle');
+
+        expect($page->locator('[data-test-code] ~ .invalid-feedback'))->toHaveText('The code "content" is reserved for the hooks of the Terms page. Choose another code.');
+        self::assertNull(self::getTermsRepository()->findOneBy(['code' => 'content']));
+        self::assertSame([], $page->pageErrors(), 'The Terms form threw JavaScript errors');
+    }
+
+    #[Test]
     public function a_stale_form_code_shows_flagged_and_unticking_it_removes_it(): void
     {
         $terms = self::createTerms('newsletter_terms', forms: ['checkout_complete', 'newsletter']);

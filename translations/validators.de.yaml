@@ -3,6 +3,7 @@ setono_sylius_terms:
         code:
             regex: Der Code für die Konditionen darf lediglich aus Buchstaben, Zahlen, Bindestrichen und Unterstrichen bestehen.
             unique: Der Code wird bereits verwendet.
+            reserved: 'Der Code "content" ist für die Hooks der Konditionsseite reserviert. Wählen Sie einen anderen Code.'
         slug:
             unique: Der Slug wird bereits verwendet.
     terms_checkbox:

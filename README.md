@@ -489,8 +489,8 @@ sylius_twig_hooks:
                 enabled: false
 ```
 
-Don't give a Terms the code `content`: its hook would be the generic `setono_sylius_terms.shop.terms.show.content`, and
-its page would render the header, sidebar and main twice.
+The code `content` is reserved, and saving a Terms with it fails validation: its hook would be the generic
+`setono_sylius_terms.shop.terms.show.content`, and its page would render the header, sidebar and main twice.
 
 ## Terms in the order confirmation email
 
