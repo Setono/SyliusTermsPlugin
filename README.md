@@ -669,6 +669,17 @@ return [
 ];
 ```
 
+The Terms page and the Terms PDF format dates with `format_date` from `twig/intl-extra`, which the plugin requires. The
+plugin doesn't register its Twig extension, because Twig fails when an extension is registered twice, and Sylius' own
+shop and admin templates need it as well. So a Sylius app already registers it, as Sylius-Standard does in
+`config/packages/twig.yaml`. If yours doesn't, register it there:
+
+```yaml
+# config/packages/twig.yaml
+services:
+    Twig\Extra\Intl\IntlExtension: ~
+```
+
 ### Step 3: Import routing
 
 ```yaml

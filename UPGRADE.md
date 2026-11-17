@@ -12,6 +12,7 @@
 - The plugin requires `sylius/shop-bundle: ^2.2`. Apps that install `sylius/sylius` already have it.
 - `league/commonmark` (`^2.10.2`) and `symfony/html-sanitizer` (`^6.4.50 || ^7.4.23`) are new requirements, and the plugin enables `framework.html_sanitizer`. The floors are the oldest releases without known security advisories.
 - The plugin requires `sylius/grid-bundle: ^1.16`, and `symfony/ux-live-component` and `symfony/ux-twig-component` (`^2.25`). Apps that install `sylius/sylius` already have them.
+- `twig/intl-extra` (`^3.26`, the oldest release without a known security advisory) is a new requirement, for the `format_date` filter on the Terms page and in the Terms PDF. Apps that install `sylius/sylius` already have it. The plugin doesn't register `Twig\Extra\Intl\IntlExtension`: Sylius' own templates need it too, so a Sylius app already registers it, as Sylius-Standard does (see the README's Installation section).
 - The plugin no longer has to be registered before `SyliusGridBundle` in `config/bundles.php`.
 
 ### Default value and behaviour changes
