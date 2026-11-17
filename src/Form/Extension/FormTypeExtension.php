@@ -34,9 +34,11 @@ final class FormTypeExtension extends AbstractTypeExtension
         private readonly LocaleContextInterface $localeContext,
         array $forms,
     ) {
+        // A form being built has only its type to find its Form by, so the configuration rejects two enabled Forms with
+        // the same type, and each type maps to one code
         $formCodes = [];
         foreach ($forms as $code => $form) {
-            $formCodes[$form['type']] ??= $code;
+            $formCodes[$form['type']] = $code;
         }
 
         $this->formCodes = $formCodes;

@@ -199,6 +199,43 @@ final class ConfigurationTest extends TestCase
     }
 
     #[Test]
+    public function two_enabled_forms_with_one_form_type_are_invalid(): void
+    {
+        $this->assertConfigurationIsInvalid(
+            [['forms' => ['newsletter' => self::NEWSLETTER, 'footer_newsletter' => ['type' => self::NEWSLETTER['type']]]]],
+            'The Forms "newsletter" and "footer_newsletter" have the same form type, "App\Form\Type\NewsletterType".',
+        );
+    }
+
+    #[Test]
+    public function an_app_form_with_the_form_type_of_an_enabled_default_form_is_invalid(): void
+    {
+        $this->assertConfigurationIsInvalid(
+            [['forms' => ['contact_us' => ['type' => ContactType::class]]]],
+            sprintf('The Forms "contact" and "contact_us" have the same form type, "%s".', ContactType::class),
+        );
+    }
+
+    #[Test]
+    public function an_app_form_may_reuse_the_form_type_of_a_disabled_default_form(): void
+    {
+        $this->assertProcessedConfigurationEquals(
+            [['forms' => ['contact' => ['enabled' => false], 'contact_us' => ['type' => ContactType::class]]]],
+            ['forms' => [
+                'checkout_complete' => self::CHECKOUT_COMPLETE,
+                'registration' => self::REGISTRATION,
+                'contact_us' => [
+                    'type' => ContactType::class,
+                    'label' => 'setono_sylius_terms.form.terms.term_form.contact_us',
+                    'hooks' => [],
+                    'saved_event' => null,
+                ],
+            ]],
+            'forms',
+        );
+    }
+
+    #[Test]
     public function hooks_that_are_not_a_map_of_priorities_are_invalid(): void
     {
         $this->assertConfigurationIsInvalid(

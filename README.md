@@ -128,6 +128,9 @@ setono_sylius_terms:
 
 * Set `hooks: []` to render the checkboxes yourself (see [Rendering the checkboxes by hand](#rendering-the-checkboxes-by-hand)).
 * Without a `label`, the admin shows the translation key `setono_sylius_terms.form.terms.term_form.<code>`.
+* Each Form needs its own form type, because the plugin finds a Form by the type of the form being built. Two enabled
+  Forms with the same type fail the container build. To reuse a default Form's type under your own code, switch the
+  default off.
 
 ### Changing or switching off a default Form
 
