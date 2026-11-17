@@ -1,0 +1,78 @@
+{#
+    The Terms PDF of one Terms version, in one locale. It holds no order data, so one PDF serves every order that
+    accepted the version.
+
+    Variables:
+    - version: the TermsVersionInterface
+    - translation: the version's TermsVersionTranslationInterface in the locale
+    - locale_code: the locale the PDF is in. The request's locale isn't used, so pass this one to every trans and format_date
+    - channel: the ChannelInterface. Relative URLs are made absolute against its hostname after this template renders
+
+    Images are downloaded and inlined after this template renders, so the PDF engine never fetches anything. dompdf
+    bundles DejaVu Sans, which covers far more characters than its core fonts.
+
+    The PDFs are cached. After overriding this template, clear the cache: bin/console cache:pool:clear setono_sylius_terms.pdf
+#}
+<!DOCTYPE html>
+<html lang="{{ locale_code|replace({'_': '-'}) }}">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ translation.name }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        body {
+            font-family: "DejaVu Sans", sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #222;
+        }
+
+        h1 {
+            font-size: 18pt;
+            margin: 0 0 4pt;
+        }
+
+        .version {
+            color: #555;
+            margin: 0 0 18pt;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 4pt;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        /* The # permalinks that the content renderer puts after each ## heading for the Terms page */
+        a[title="Permalink"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ translation.name }}</h1>
+
+    <p class="version">
+        {{- 'setono_sylius_terms.pdf.version_line'|trans({
+            '%number%': version.number,
+            '%date%': version.inForceFrom|format_date('long', locale: locale_code),
+        }, 'messages', locale_code) -}}
+    </p>
+
+    {{ translation.content|terms_content }}
+</body>
+</html>

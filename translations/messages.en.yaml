@@ -48,3 +48,6 @@ setono_sylius_terms:
                 checkout_complete: Checkout > Complete order
                 registration: Account > Register
                 contact: Contact
+
+    pdf:
+        version_line: Version %number%, in force since %date%

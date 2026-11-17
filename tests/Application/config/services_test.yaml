@@ -1,0 +1,13 @@
+services:
+    Setono\SyliusTermsPlugin\Tests\Application\HttpClient\MockResponseFactory: ~
+
+    # Records the HTML each Terms PDF is rendered from, then renders it with the real adapter
+    Setono\SyliusTermsPlugin\Tests\Application\Pdf\RecordingHtmlToPdfRenderer:
+        decorates: sylius_pdf_generation.renderer.html
+        arguments:
+            - '@.inner'
+
+    # Nothing uses the generator until the order confirmation email does, so the container would remove it
+    Setono\SyliusTermsPlugin\Pdf\TermsPdfGeneratorInterface:
+        alias: Setono\SyliusTermsPlugin\Pdf\TermsPdfGenerator
+        public: true

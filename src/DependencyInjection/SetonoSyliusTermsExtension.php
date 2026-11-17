@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\DependencyInjection;
 
+use Setono\SyliusTermsPlugin\Pdf\TermsPdfGenerator;
 use Setono\SyliusTermsPlugin\Sanitizer\HeadingIdAttributeSanitizer;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
+use Sylius\PdfGenerationBundle\SyliusPdfGenerationBundle;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Symfony\Component\HttpClient\HttpClient;
 
 final class SetonoSyliusTermsExtension extends AbstractResourceExtension implements PrependExtensionInterface
 {
@@ -20,7 +23,7 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
     public function load(array $configs, ContainerBuilder $container): void
     {
         /**
-         * @var array{forms: array<string, array{type: class-string, label: string, hooks: array<string, int>, saved_event: string|null}>, routing: array{terms: string}, resources: array} $config
+         * @var array{forms: array<string, array{type: class-string, label: string, hooks: array<string, int>, saved_event: string|null}>, routing: array{terms: string}, order_confirmation_email: array{pdf: bool}, resources: array} $config
          */
         $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
@@ -30,6 +33,10 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
         $container->setParameter('setono_sylius_terms.terms_path', $config['routing']['terms']);
 
         $loader->load('services.php');
+
+        if ($config['order_confirmation_email']['pdf']) {
+            $loader->load('services/conditional/pdf.php');
+        }
 
         $this->registerResources(
             'setono_sylius_terms',
@@ -63,6 +70,53 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
         ]);
 
         $container->prependExtensionConfig('sylius_twig_hooks', ['hooks' => self::getAdminHooks()]);
+
+        if ($this->isPdfEnabled($container)) {
+            self::prependPdf($container);
+        }
+    }
+
+    private function isPdfEnabled(ContainerBuilder $container): bool
+    {
+        /** @var list<array<string, mixed>> $configs */
+        $configs = $container->getParameterBag()->resolveValue($container->getExtensionConfig($this->getAlias()));
+
+        /** @var array{order_confirmation_email: array{pdf: bool}} $config */
+        $config = $this->processConfiguration(new Configuration(), $configs);
+
+        return $config['order_confirmation_email']['pdf'];
+    }
+
+    /**
+     * Fails the container build unless the PDF tooling the plugin only suggests is installed, then renders the Terms
+     * PDFs with dompdf and caches them in their own pool. Apps change the context's adapter and the pool's adapter in
+     * their own config
+     */
+    private static function prependPdf(ContainerBuilder $container): void
+    {
+        /** @var array<string, class-string> $bundles */
+        $bundles = $container->getParameter('kernel.bundles');
+
+        if (!in_array(SyliusPdfGenerationBundle::class, $bundles, true) || !class_exists(HttpClient::class)) {
+            throw new \LogicException(sprintf(
+                'The Terms PDFs (setono_sylius_terms.order_confirmation_email.pdf) need sylius/pdf-generation-bundle, dompdf/dompdf and symfony/http-client. Run "composer require sylius/pdf-generation-bundle dompdf/dompdf symfony/http-client" and register %s in config/bundles.php.',
+                SyliusPdfGenerationBundle::class,
+            ));
+        }
+
+        $container->prependExtensionConfig('sylius_pdf_generation', [
+            'contexts' => [
+                TermsPdfGenerator::CONTEXT => ['adapter' => 'dompdf'],
+            ],
+        ]);
+
+        $container->prependExtensionConfig('framework', [
+            'cache' => [
+                'pools' => [
+                    TermsPdfGenerator::CACHE_POOL => ['adapter' => 'cache.app'],
+                ],
+            ],
+        ]);
     }
 
     /**

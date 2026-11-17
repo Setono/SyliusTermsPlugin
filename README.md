@@ -16,6 +16,7 @@ This can be used to make sure the customer has accepted the terms and conditions
 * [Finding and checking the Terms on a Form in code](#finding-and-checking-the-terms-on-a-form-in-code)
 * [Content](#content)
 * [Terms versions](#terms-versions)
+* [Terms in the order confirmation email](#terms-in-the-order-confirmation-email)
 * [Fixtures](#fixtures)
 * [Installation](#installation)
 
@@ -318,6 +319,115 @@ in that locale. There is no fallback to another locale.
 * **Mid-checkout race.** If an admin saves a new version between a customer loading checkout complete and submitting
   it, the order is inferred to have accepted the new version. Forms carry no version check.
 * **Deleting a Terms deletes its versions.** To retire a Terms and keep its history, disable it instead.
+
+## Terms in the order confirmation email
+
+When you switch it on, the plugin renders a Terms PDF of a Terms version in a locale: the version's name, a line such
+as "Version 3, in force since 16 November 2026" in that locale, and the Content. A PDF holds no order data, so one PDF
+serves every order that accepted the version. Its file name is the version's name, slugified, plus the version number,
+such as `handelsbetingelser-v3.pdf`.
+
+> [!NOTE]
+> On `3.x` the PDFs are generated, but not attached to the order confirmation email yet.
+
+### Switching it on
+
+The feature is off by default, and its PDF tooling is suggested, not required. Install it and register
+`SyliusPdfGenerationBundle`:
+
+```bash
+composer require sylius/pdf-generation-bundle dompdf/dompdf symfony/http-client
+```
+
+```php
+# config/bundles.php
+return [
+    // ...
+    Sylius\PdfGenerationBundle\SyliusPdfGenerationBundle::class => ['all' => true],
+];
+```
+
+```yaml
+# config/packages/setono_sylius_terms.yaml
+setono_sylius_terms:
+    order_confirmation_email:
+        pdf: true
+```
+
+With the switch on and the bundle or the HTTP client missing, the container build fails with the `composer require`
+command above. The feature installs only where `sylius/pdf-generation-bundle` can: Symfony 6.4, or 7.4 and later.
+
+### Setting the channel hostname
+
+Relative link and image URLs in the Content, such as `/en_US/contact`, are made absolute against the channel's
+hostname, which you set on the channel in the admin. Without a hostname they stay relative, so links don't work in the
+PDF and relative images don't show. Sylius' own email links need the hostname too, since Sylius 2.2.12 / 2.3.2.
+
+The URLs use `https` only when `SYLIUS_UNSECURED_URLS` is `false`, as Sylius' own email links do. Sylius defaults it to
+`yes`, which gives `http`.
+
+### Images
+
+The PDF engine downloads nothing. Before rendering, the plugin downloads each `http` and `https` image itself, with
+Symfony's HTTP client, and inlines it as a `data:` URI. An image is downloaded only if it answers within 5 seconds with
+an `image/*` response of at most 5 MB.
+
+An image that can't be downloaded is replaced by its alt text, and an error naming the image URL is logged. The PDF is
+still returned, because the text is intact, but it isn't cached, so the next one tries the image again.
+
+### Changing the PDF engine
+
+The PDFs render in the `setono_sylius_terms` context of `sylius/pdf-generation-bundle`, which the plugin sets to the
+`dompdf` adapter. To render them with Gotenberg or wkhtmltopdf instead, install the adapter's package and switch the
+context in your own config:
+
+```yaml
+# config/packages/sylius_pdf_generation.yaml
+sylius_pdf_generation:
+    contexts:
+        setono_sylius_terms:
+            adapter: gotenberg # or knp_snappy
+```
+
+### Overriding the PDF template
+
+The PDF is rendered from `@SetonoSyliusTermsPlugin/pdf/terms.html.twig`, on A4 paper in the DejaVu Sans font, which
+dompdf bundles and which covers far more characters than its core fonts. To change it, for example for Letter paper,
+copy the template to `templates/bundles/SetonoSyliusTermsPlugin/pdf/terms.html.twig` and change `@page { size: A4; }`
+to `@page { size: letter; }`. The template gets the `version`, its `translation` in the locale, the `locale_code` and
+the `channel`. Pass `locale_code` to every `trans` and `format_date`, since the PDF isn't in the request's locale.
+
+The PDFs are cached (see below), so clear the cache after changing the template:
+
+```bash
+bin/console cache:pool:clear setono_sylius_terms.pdf
+```
+
+### Caching
+
+The PDF bytes go in the `setono_sylius_terms.pdf` cache pool, keyed by Terms version, locale and channel. The channel
+is part of the key because of the absolute URLs. Only the first PDF of a version in a locale and channel is rendered.
+The pool uses `cache.app`. To point it at another adapter:
+
+```yaml
+# config/packages/cache.yaml
+framework:
+    cache:
+        pools:
+            setono_sylius_terms.pdf:
+                adapter: cache.adapter.redis
+```
+
+### Generating a Terms PDF in code
+
+```php
+/** @var \Setono\SyliusTermsPlugin\Pdf\TermsPdfGeneratorInterface $termsPdfGenerator */
+$pdf = $termsPdfGenerator->generate($translation->getVersion(), $order->getLocaleCode(), $order->getChannel());
+
+$pdf->content;  // the PDF bytes
+$pdf->fileName; // handelsbetingelser-v3.pdf
+$pdf->complete; // false when an image couldn't be downloaded
+```
 
 ## Fixtures
 

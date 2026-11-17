@@ -61,6 +61,12 @@ Markdown headings in rendered Content now carry `id` attributes, such as `id="co
 - A locale in `translations` now inherits the Terms' `name`, `slug`, `label` and `content` for the keys it leaves out. In 2.x they were faked.
 - Left out, `channels` now defaults to three random channels, as the example factory always did. In 2.x the fixture passed an empty list, so the Terms got no channels.
 
+#### Terms PDFs for the order confirmation email are a new opt-in
+
+`setono_sylius_terms.order_confirmation_email.pdf` is new and `false` by default, so nothing changes until you switch
+it on. To use it, run `composer require sylius/pdf-generation-bundle dompdf/dompdf symfony/http-client` and register
+`SyliusPdfGenerationBundle`. See the README's "Terms in the order confirmation email" section.
+
 ### Plugin file layout
 
 The plugin follows the Sylius 2 plugin skeleton. `src/Resources/{config,translations,views,public}` moved to the repository root:
