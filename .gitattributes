@@ -2,6 +2,7 @@
 /.gitattributes                     export-ignore
 /.github                            export-ignore
 /.gitignore                         export-ignore
+/.symfony-lsp.json                  export-ignore
 /CHANGELOG.md                       export-ignore
 /CLAUDE.md                          export-ignore
 /GLOSSARY.md                        export-ignore
