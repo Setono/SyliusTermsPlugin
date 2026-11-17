@@ -98,7 +98,7 @@ symfony server:start                                            # https://127.0.
 - Three PHPUnit suites:
   - `unit` (`tests/Unit/`, mirrors `src/`): no kernel, no database.
   - `functional` (`tests/Functional/`): boots `tests/Application` against MySQL with `WebTestCase` / `KernelTestCase`, and UX's `InteractsWithLiveComponents` for Live re-renders. Call `restore_exception_handler()` in `tearDown()`.
-  - `browser` (`tests/Browser/`): tests extend `Playwright\Symfony\Test\PlaywrightTestCase` and drive Chromium. Pages are handled by the test's own kernel, with no web server, so they see the data the test creates.
+  - `browser` (`tests/Browser/`): tests extend `Playwright\Symfony\Test\PlaywrightTestCase` and drive Chromium. Pages are handled by the test's own kernel, with no web server, so they see the data the test creates. Read `docs/agents/browser-tests.md` before writing or debugging one.
 - `dama/doctrine-test-bundle` runs every test in a transaction that is rolled back afterwards. Find the baseline Terms (`terms_and_conditions`, `privacy_policy`, defined in `tests/Application/config/packages/sylius_fixtures.yaml`) by code, and create every other case inline with the plugin's factories. No Foundry.
 - Elements a test needs get a hook through `{{ sylius_test_html_attribute('name', value) }}`, never a raw `data-test-*` attribute.
 - Tests never touch the network. Time comes from Symfony Clock, and tests control it with `ClockSensitiveTrait` / `MockClock`.
@@ -106,7 +106,7 @@ symfony server:start                                            # https://127.0.
 
 ### UI verification
 
-- When you build or change a feature with a UI surface (admin form, grid, page), verify it via the Playwright MCP — boot the test app (see "Booting the test app locally"), navigate to the affected page, and confirm the rendered output before reporting the task as complete. Don't rely on PHPUnit/PHPStan/ECS alone for UI work.
+- When you build or change a feature with a UI surface (admin form, grid, page), cover it in the browser suite, and look at a screenshot of each page it changes before reporting the task as complete (see `docs/agents/browser-tests.md`). Twig hook wiring fails silently, so only the rendered page shows that it works.
 
 ### UPGRADE.md and README.md
 

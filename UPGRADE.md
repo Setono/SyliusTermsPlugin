@@ -11,6 +11,8 @@
 - Not yet supported: Symfony 8, Symfony UX 3.
 - The plugin requires `sylius/shop-bundle: ^2.2`. Apps that install `sylius/sylius` already have it.
 - `league/commonmark` (`^2.10.2`) and `symfony/html-sanitizer` (`^6.4.50 || ^7.4.23`) are new requirements, and the plugin enables `framework.html_sanitizer`. The floors are the oldest releases without known security advisories.
+- The plugin requires `sylius/grid-bundle: ^1.16`, and `symfony/ux-live-component` and `symfony/ux-twig-component` (`^2.25`). Apps that install `sylius/sylius` already have them.
+- The plugin no longer has to be registered before `SyliusGridBundle` in `config/bundles.php`.
 
 ### Default value and behaviour changes
 
@@ -88,7 +90,27 @@ Paths to plugin files drop `Resources/`. Template paths (`@SetonoSyliusTermsPlug
 
 ### Template paths
 
+- The admin and shop templates are rebuilt around Twig hooks. Port template overrides to the matching hook.
+- Admin hooks live under `setono_sylius_terms.admin.terms`, such as `setono_sylius_terms.admin.terms.update.content.form.translations` (see the README's Admin section). The Sylius 1 template events and the jQuery slug scripts are gone: the slug wand next to each slug is a Live Component action, and a slug left blank is made from the name on save.
+- `templates/bundles` overrides of `admin/terms/_form.html.twig` or `admin/grid/field/channels.html.twig` no longer apply.
 - Overridden templates that print content with `|raw` must switch to the `terms_content` filter, which renders and sanitises it: `{{ terms.content|terms_content }}`.
+
+### Grid
+
+The `setono_sylius_terms_terms` grid is now a PHP grid, `Setono\SyliusTermsPlugin\Grid\TermsGrid`, instead of grid config the plugin prepended. Apps that changed it with YAML must use an `#[AsGridMutator]` instead:
+
+```php
+#[AsGridMutator(grid: 'setono_sylius_terms_terms')]
+final class TermsGridMutator implements GridMutatorInterface
+{
+    public function __invoke(GridBuilderInterface $gridBuilder): void
+    {
+        $gridBuilder->removeField('channels');
+    }
+}
+```
+
+On Sylius ≥ 2.3, a same-named YAML grid replaces the plugin's grid wholesale.
 
 ### Removed classes, services, templates, files and translation keys
 
@@ -106,8 +128,13 @@ Paths to plugin files drop `Resources/`. Template paths (`@SetonoSyliusTermsPlug
 | `setono_sylius_terms.renderer.label` | `Setono\SyliusTermsPlugin\Renderer\LabelRenderer`, aliased as `Setono\SyliusTermsPlugin\Renderer\LabelRendererInterface` |
 | `setono_sylius_terms.twig.terms_extension` | `Setono\SyliusTermsPlugin\Twig\TermsExtension` |
 | `setono_sylius_terms.twig.terms_runtime` | `Setono\SyliusTermsPlugin\Twig\TermsRuntime` |
+| `src/Resources/public/slugger.js`, `slugify-terms-name.js` and `admin/terms/_javascripts.html.twig` | The wand button next to each slug, and a slug left blank is made from the name on save. |
+| `admin/terms/_form.html.twig` | The hooks under `setono_sylius_terms.admin.terms.{create,update}.content.form` |
+| `admin/grid/field/channels.html.twig` | Core's `@SyliusAdmin/shared/grid/field/channels.html.twig` |
 | `TermsRepositoryInterface::findByFormAndChannelAndLocale()`, which took a form type class | `TermsRepositoryInterface::findByFormAndChannel()`, which takes a Form code, or the Form lookup, `Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface` |
 | The translation key `setono_sylius_terms.form.terms.term_form.complete` | `setono_sylius_terms.form.terms.term_form.checkout_complete` |
 | `src/Resources/config/app/fixtures.yaml`, the demo suite with the EULA Terms, the `EU_WEB` and `UA_WEB` channels and UAH | Nothing. The plugin ships no fixture suite. If you imported it, copy what you need into your own suite (see the README's Fixtures section). |
+
+`TermsRepositoryInterface` has a new method, `createListQueryBuilder()`, which feeds the admin grid. A repository that implements the interface without extending `TermsRepository` must add it.
 
 Every service the plugin registers now uses its FQCN as its id; fetch or decorate it by that id, or by its interface where it has one. The ids Sylius generates for the resource (`setono_sylius_terms.factory.terms`, `setono_sylius_terms.repository.terms`, `setono_sylius_terms.manager.terms`) are unchanged.

@@ -14,6 +14,9 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
 final class SetonoSyliusTermsExtension extends AbstractResourceExtension implements PrependExtensionInterface
 {
+    /** The admin Terms routes set this as their hook_prefix, see config/routes/admin.yaml */
+    private const ADMIN_HOOK_PREFIX = 'setono_sylius_terms.admin.terms';
+
     public function load(array $configs, ContainerBuilder $container): void
     {
         /**
@@ -59,49 +62,106 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
             ],
         ]);
 
-        $container->prependExtensionConfig('sylius_grid', [
-            'grids' => [
-                'setono_sylius_terms_terms' => [
-                    'driver' => [
-                        'name' => 'doctrine/orm',
-                        'options' => [
-                            'class' => '%setono_sylius_terms.model.terms.class%',
-                        ],
+        $container->prependExtensionConfig('sylius_twig_hooks', ['hooks' => self::getAdminHooks()]);
+    }
+
+    /**
+     * The hookables of the admin Terms pages. The index, create and update pages are core's shared CRUD pages, so only
+     * what differs from core's sylius_admin.common hooks is set here
+     *
+     * @return array<string, array<string, array<string, mixed>>>
+     */
+    private static function getAdminHooks(): array
+    {
+        $prefix = self::ADMIN_HOOK_PREFIX;
+
+        $hooks = [
+            $prefix . '.index.content.header.title_block' => [
+                'title' => [
+                    'template' => '@SyliusAdmin/shared/crud/common/content/header/title_block/title.html.twig',
+                    'configuration' => [
+                        'icon' => 'tabler:circle-check',
+                        'subheader' => 'setono_sylius_terms.ui.manage_terms',
                     ],
-                    'fields' => [
-                        'code' => [
-                            'type' => 'string',
-                            'label' => 'setono_sylius_terms.ui.code',
-                        ],
-                        'name' => [
-                            'type' => 'string',
-                            'label' => 'setono_sylius_terms.ui.name',
-                        ],
-                        'channels' => [
-                            'type' => 'twig',
-                            'label' => 'setono_sylius_terms.ui.channels',
-                            'options' => [
-                                'template' => '@SetonoSyliusTermsPlugin/admin/grid/field/channels.html.twig',
-                            ],
-                        ],
-                    ],
-                    'actions' => [
-                        'main' => [
-                            'create' => [
-                                'type' => 'create',
-                            ],
-                        ],
-                        'item' => [
-                            'update' => [
-                                'type' => 'update',
-                            ],
-                            'delete' => [
-                                'type' => 'delete',
-                            ],
-                        ],
-                    ],
+                    'priority' => 100,
                 ],
             ],
-        ]);
+        ];
+
+        foreach (['create' => 'setono_sylius_terms.ui.new_terms', 'update' => 'setono_sylius_terms.ui.edit_terms'] as $page => $header) {
+            $hooks[sprintf('%s.%s.content.header.title_block', $prefix, $page)] = [
+                'title' => [
+                    'template' => sprintf('@SyliusAdmin/shared/crud/%s/content/header/title_block/title.html.twig', $page),
+                    'configuration' => [
+                        'header' => $header,
+                    ],
+                    'priority' => 100,
+                ],
+            ];
+
+            $hooks[sprintf('%s.%s.content', $prefix, $page)] = [
+                'form' => [
+                    'component' => 'setono_sylius_terms:admin:terms:form',
+                    'props' => [
+                        'resource' => '@=_context.resource',
+                        'form' => '@=_context.form',
+                        'template' => '@SetonoSyliusTermsPlugin/admin/terms/form.html.twig',
+                    ],
+                    'configuration' => [
+                        'render_rest' => false,
+                    ],
+                    'priority' => 0,
+                ],
+            ];
+
+            $hooks[sprintf('%s.%s.content.form', $prefix, $page)] = [
+                'general' => [
+                    'template' => '@SetonoSyliusTermsPlugin/admin/terms/form/general.html.twig',
+                    'priority' => 200,
+                ],
+                'placement' => [
+                    'template' => '@SetonoSyliusTermsPlugin/admin/terms/form/placement.html.twig',
+                    'priority' => 100,
+                ],
+                'translations' => [
+                    'template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations.html.twig',
+                    'priority' => 0,
+                ],
+                // Core's generic form sections, which the three cards above replace
+                'sections' => [
+                    'enabled' => false,
+                ],
+            ];
+
+            $hooks[sprintf('%s.%s.content.form.general', $prefix, $page)] = self::getFieldHookables('general', ['code', 'enabled', 'required', 'position']);
+            $hooks[sprintf('%s.%s.content.form.placement', $prefix, $page)] = self::getFieldHookables('placement', ['forms', 'channels']);
+            $hooks[sprintf('%s.%s.content.form.translations', $prefix, $page)] = self::getFieldHookables('translations', ['name', 'slug', 'label', 'content']);
+        }
+
+        return $hooks;
+    }
+
+    /**
+     * One hookable per field, in the given order, spaced by 100 so apps can put their own hookables in between
+     *
+     * @param list<string> $fields
+     *
+     * @return array<string, array{template: string, priority: int}>
+     */
+    private static function getFieldHookables(string $card, array $fields): array
+    {
+        $hookables = [];
+        $priority = (count($fields) - 1) * 100;
+
+        foreach ($fields as $field) {
+            $hookables[$field] = [
+                'template' => sprintf('@SetonoSyliusTermsPlugin/admin/terms/form/%s/%s.html.twig', $card, $field),
+                'priority' => $priority,
+            ];
+
+            $priority -= 100;
+        }
+
+        return $hookables;
     }
 }

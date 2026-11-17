@@ -1,0 +1,11 @@
+{# Core's delete action (@SyliusAdmin/shared/grid/action/delete.html.twig), with a confirmation that mentions the Terms' versions #}
+{% set path = path(grid.requestConfiguration.getRouteName('delete'), {'id': data.id}) %}
+
+{% component 'sylius_admin:delete_modal' with {id: data.id, path: path, label: action.label, icon: action.icon} %}
+    {% block header %}
+        <div class="py-3">
+            <h1 class="modal-title">{{ 'sylius.ui.are_your_sure_you_want_to_perform_this_action'|trans }}</h1>
+            <p class="mt-2 mb-0" {{ sylius_test_html_attribute('delete-terms-warning') }}>{{ 'setono_sylius_terms.ui.delete_terms_warning'|trans }}</p>
+        </div>
+    {% endblock %}
+{% endcomponent %}

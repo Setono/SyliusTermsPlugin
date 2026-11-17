@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Repository;
 
+use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\QueryBuilder;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Component\Channel\Model\ChannelInterface;
@@ -11,6 +13,15 @@ use Webmozart\Assert\Assert;
 
 class TermsRepository extends EntityRepository implements TermsRepositoryInterface
 {
+    public function createListQueryBuilder(string $locale): QueryBuilder
+    {
+        return $this->createQueryBuilder('o')
+            ->addSelect('translation')
+            ->leftJoin('o.translations', 'translation', Join::WITH, 'translation.locale = :locale')
+            ->setParameter('locale', $locale)
+        ;
+    }
+
     public function findByFormAndChannel(string $form, ChannelInterface $channel): array
     {
         $termsList = $this->createQueryBuilder('o')

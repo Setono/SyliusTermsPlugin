@@ -8,6 +8,12 @@ setono_sylius_terms:
     code: Code
     name: Nom
     channels: Canaux
+    position: Position
+    forms: Formulaires
+    required: Obligatoire
+    enabled: Activé
+    placement: Emplacement
+    delete_terms_warning: Supprimer les conditions supprime aussi toutes leurs versions. Pour conserver l'historique des versions, désactivez plutôt les conditions.
 
   menu:
     admin:
@@ -30,6 +36,14 @@ setono_sylius_terms:
       content: Contenu
       content_help: Si le contenu est vide, l'étiquette à côté de la case à cocher n'aura pas de lien
       channels: Canaux
+      forms: Formulaires
+      slug_help: Laissez vide pour le générer à partir du nom. Modifier le slug modifie l'adresse de la page des conditions, et l'ancienne adresse ne fonctionne plus.
+      generate_slug: Générer le slug à partir du nom
+      required: Obligatoire
+      required_help: Les clients doivent cocher les conditions obligatoires avant de pouvoir envoyer le formulaire. Les conditions facultatives peuvent rester non cochées.
+      position: Position
+      position_help: Ordonne les conditions sur chaque formulaire, la plus basse en premier. Laissez vide pour placer les conditions en dernier.
+      unconfigured_form: "%code% (non configuré)"
       term_form:
         checkout_complete: Commande > Finaliser la commande
         registration: Compte > Inscription

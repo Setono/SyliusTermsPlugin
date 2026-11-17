@@ -1,0 +1,14 @@
+{# The configured Forms' labels by code are in options.vars.labels. A code that isn't configured shows flagged #}
+{% set labels = options.vars.labels|default({}) %}
+
+<div>
+    {% for code in data %}
+        <div>
+            {% if labels[code] is defined %}
+                {{ labels[code]|trans }}
+            {% else %}
+                <span class="text-warning">{{ 'setono_sylius_terms.form.terms.unconfigured_form'|trans({'%code%': code}) }}</span>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

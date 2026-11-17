@@ -10,6 +10,7 @@ Will add a checkbox to the selects form(s) where the customer has to accept the 
 This can be used to make sure the customer has accepted the terms and conditions before placing an order.
 
 * [Screenshots](#screenshots)
+* [Admin](#admin)
 * [Forms](#forms)
 * [Required and optional terms, and position](#required-and-optional-terms-and-position)
 * [Finding and checking the Terms on a Form in code](#finding-and-checking-the-terms-on-a-form-in-code)
@@ -28,18 +29,68 @@ Before the customer can place order, he/she has to check the required terms
 
 ### Admin
 
-Here is a list of terms. Notice the `terms_and_conditions` which is associated with multiple channels.
-
 ![Screenshot showing admin terms index page](docs/images/admin-terms-index.png)
-
-Notice that you select the forms where the terms are shown. By default the checkout complete, registration and contact
-forms are available, and you can add more in the `setono_sylius_terms.forms` configuration option (see [Forms](#forms)).
 
 ![Screenshot showing admin terms update page](docs/images/admin-terms-update.png)
 
-The `Label` field is the text shown on the complete order page. Notice you can use a placeholder (`[link:Link text]`) to tell where the link should be.
+## Admin
 
-![Screenshot showing admin terms translation update page](docs/images/admin-terms-update-translation.png)
+Terms are under **Configuration > Terms**. The index lists every Terms in position order, with the Forms and channels
+it is placed on and whether it is required and enabled. Search it by code or name, or filter it by enabled.
+
+The form has three cards:
+
+* **General:** the code, enabled, required and position. A new Terms is required. Leave the position blank to put the
+  Terms last (see [Required and optional terms, and position](#required-and-optional-terms-and-position)).
+* **Placement:** the [Forms](#forms) the Terms shows on, each listed by its label, and the channels.
+* **Translations:** the name, slug, label and content in each locale. The `Label` is the text next to the checkbox. Use
+  a Link placeholder (`[link:Link text]`) to tell where the link to the Terms page goes.
+
+The wand button next to a slug makes the slug from the name in that locale. A slug left blank is made from the name
+when the Terms is saved. Slugs stay editable: changing one changes the address of the Terms page, and the old address
+stops working.
+
+A Terms can be placed on a Form code that isn't configured, for example after you remove a Form from
+`setono_sylius_terms.forms`. The admin shows such a code as an extra, ticked choice labelled `<code> (not configured)`,
+and the index flags it the same way. The shop ignores it, and it stays on the Terms until an admin unticks it and
+saves.
+
+Deleting a Terms also deletes its [versions](#terms-versions). To retire a Terms and keep its history, disable it
+instead.
+
+### Changing the admin
+
+The pages are Sylius' CRUD pages, and their hooks are under `setono_sylius_terms.admin.terms`:
+
+| Hook                                                                        | Hookables                                 |
+|-----------------------------------------------------------------------------|-------------------------------------------|
+| `setono_sylius_terms.admin.terms.{create,update}.content.form`              | `general`, `placement`, `translations`    |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.general`      | `code`, `enabled`, `required`, `position` |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.placement`    | `forms`, `channels`                       |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.translations` | `name`, `slug`, `label`, `content`        |
+
+The form is the Live Component `setono_sylius_terms:admin:terms:form`
+(`Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent`).
+
+The index is the PHP grid `setono_sylius_terms_terms`. Change it with a grid mutator:
+
+```php
+use Sylius\Component\Grid\Attribute\AsGridMutator;
+use Sylius\Component\Grid\Builder\GridBuilderInterface;
+use Sylius\Component\Grid\Mutator\GridMutatorInterface;
+
+#[AsGridMutator(grid: 'setono_sylius_terms_terms')]
+final class TermsGridMutator implements GridMutatorInterface
+{
+    public function __invoke(GridBuilderInterface $gridBuilder): void
+    {
+        $gridBuilder->removeField('channels');
+    }
+}
+```
+
+Slugs are made by `Setono\SyliusTermsPlugin\Generator\SlugGeneratorInterface`, which uses Symfony's slugger. Decorate
+or replace it to make slugs another way.
 
 ## Forms
 
@@ -332,17 +383,9 @@ in the `config/bundles.php` file of your project:
 # config/bundles.php
 return [
     // ...
-    
     Setono\SyliusTermsPlugin\SetonoSyliusTermsPlugin::class => ['all' => true],
-    
-    // It is important to add plugin before the grid bundle
-    Sylius\Bundle\GridBundle\SyliusGridBundle::class => ['all' => true],
-    
-    // ...
 ];
 ```
-
-**NOTE** that you must instantiate the plugin before the grid bundle, else you will see an exception like `You have requested a non-existent parameter "setono_sylius_terms.model.terms.class".`
 
 ### Step 3: Import routing
 
@@ -420,9 +463,6 @@ Override the [Sylius Form](https://github.com/Sylius/Sylius/blob/master/src/Syli
     and double-check you added terms field at template like described
     at `Override checkout complete form` section.
     
-* If you see `Grid "setono_sylius_terms_terms" does not exists`
-
-    Then you forgot to import config from `Step 3: Import config` section.
 
 [ico-version]: https://poser.pugx.org/setono/sylius-terms-plugin/v/stable
 [ico-license]: https://poser.pugx.org/setono/sylius-terms-plugin/license

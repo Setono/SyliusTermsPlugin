@@ -62,7 +62,16 @@ final class RoutingTest extends KernelTestCase
             }
         }
 
-        self::assertNotEmpty($adminPaths);
+        $names = array_keys($adminPaths);
+        sort($names);
+        // Core's CRUD routes without show, which the admin doesn't have
+        self::assertSame([
+            'setono_sylius_terms_admin_terms_bulk_delete',
+            'setono_sylius_terms_admin_terms_create',
+            'setono_sylius_terms_admin_terms_delete',
+            'setono_sylius_terms_admin_terms_index',
+            'setono_sylius_terms_admin_terms_update',
+        ], $names);
         foreach ($adminPaths as $name => $path) {
             self::assertStringStartsWith('/back-office/terms', $path, $name);
         }

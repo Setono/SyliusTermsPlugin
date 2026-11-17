@@ -8,6 +8,12 @@ setono_sylius_terms:
         code: Kode
         name: Navn
         channels: Kanaler
+        position: Position
+        forms: Formularer
+        required: Påkrævet
+        enabled: Aktiveret
+        placement: Placering
+        delete_terms_warning: Når betingelserne slettes, slettes alle deres versioner også. Deaktiver betingelserne i stedet, hvis versionshistorikken skal bevares.
         
     menu:
         admin:
@@ -30,6 +36,14 @@ setono_sylius_terms:
             content: Indhold
             content_help: Hvis indholdet er tomt vil teksten ved siden af afkrydsningsfeltet ikke have et link
             channels: Kanaler
+            forms: Formularer
+            slug_help: Lad feltet være tomt for at danne det ud fra navnet. Når sluggen ændres, ændres adressen på betingelsessiden, og den gamle adresse holder op med at virke.
+            generate_slug: Dan slug ud fra navnet
+            required: Påkrævet
+            required_help: Kunderne skal sætte flueben ved påkrævede betingelser, før de kan indsende formularen. Valgfrie betingelser må efterlades uden flueben.
+            position: Position
+            position_help: Bestemmer rækkefølgen af betingelserne på alle formularer, laveste først. Lad feltet være tomt for at placere betingelserne sidst.
+            unconfigured_form: "%code% (ikke konfigureret)"
             term_form:
                 checkout_complete: Kassen > Gennemfør ordre
                 registration: Konto > Opret konto

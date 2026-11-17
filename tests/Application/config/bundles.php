@@ -29,8 +29,6 @@ return [
     Sylius\Bundle\ReviewBundle\SyliusReviewBundle::class => ['all' => true],
     Sylius\Bundle\CoreBundle\SyliusCoreBundle::class => ['all' => true],
     Sylius\Bundle\ResourceBundle\SyliusResourceBundle::class => ['all' => true],
-    // The plugin prepends its grid with a parameter its own extension sets, so it must load before the grid bundle
-    Setono\SyliusTermsPlugin\SetonoSyliusTermsPlugin::class => ['all' => true],
     Sylius\Bundle\GridBundle\SyliusGridBundle::class => ['all' => true],
     Knp\Bundle\GaufretteBundle\KnpGaufretteBundle::class => ['all' => true],
     Knp\Bundle\MenuBundle\KnpMenuBundle::class => ['all' => true],
@@ -60,6 +58,7 @@ return [
     Symfony\UX\Autocomplete\AutocompleteBundle::class => ['all' => true],
     Symfony\UX\StimulusBundle\StimulusBundle::class => ['all' => true],
     Sylius\Abstraction\StateMachine\SyliusStateMachineAbstractionBundle::class => ['all' => true],
+    Setono\SyliusTermsPlugin\SetonoSyliusTermsPlugin::class => ['all' => true],
     DAMA\DoctrineTestBundle\DAMADoctrineTestBundle::class => ['test' => true],
     Playwright\Symfony\PlaywrightSymfonyBundle::class => ['test' => true],
 ];

@@ -23,6 +23,9 @@ use Setono\SyliusTermsPlugin\Form\Extension\FormTypeExtension;
 use Setono\SyliusTermsPlugin\Form\Type\TermsCheckboxCollectionType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsType;
+use Setono\SyliusTermsPlugin\Generator\SlugGenerator;
+use Setono\SyliusTermsPlugin\Generator\SlugGeneratorInterface;
+use Setono\SyliusTermsPlugin\Grid\TermsGrid;
 use Setono\SyliusTermsPlugin\Lookup\FormTermsLookup;
 use Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface;
 use Setono\SyliusTermsPlugin\Model\Terms;
@@ -38,6 +41,7 @@ use Setono\SyliusTermsPlugin\Renderer\LabelRendererInterface;
 use Setono\SyliusTermsPlugin\Sanitizer\HeadingIdAttributeSanitizer;
 use Setono\SyliusTermsPlugin\Snapshotter\TermsVersionSnapshotter;
 use Setono\SyliusTermsPlugin\Snapshotter\TermsVersionSnapshotterInterface;
+use Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent;
 use Setono\SyliusTermsPlugin\Twig\ContentRuntime;
 use Setono\SyliusTermsPlugin\Twig\TermsExtension;
 use Setono\SyliusTermsPlugin\Twig\TermsRuntime;
@@ -114,6 +118,9 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         yield 'content renderer' => [ContentRenderer::class];
         yield 'heading id attribute sanitizer' => [HeadingIdAttributeSanitizer::class];
         yield 'content runtime' => [ContentRuntime::class];
+        yield 'slug generator' => [SlugGenerator::class];
+        yield 'terms grid' => [TermsGrid::class];
+        yield 'terms form component' => [TermsFormComponent::class];
     }
 
     #[Test]
@@ -128,6 +135,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias(FormTermsLookupInterface::class, FormTermsLookup::class);
         $this->assertContainerBuilderHasAlias(RequiredTermsCheckerInterface::class, RequiredTermsChecker::class);
         $this->assertContainerBuilderHasAlias(ContentRendererInterface::class, ContentRenderer::class);
+        $this->assertContainerBuilderHasAlias(SlugGeneratorInterface::class, SlugGenerator::class);
     }
 
     #[Test]
@@ -241,53 +249,102 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
     }
 
     #[Test]
-    public function it_prepends_the_terms_grid(): void
+    public function it_registers_the_terms_grid_as_an_invokable_grid(): void
     {
         $this->load();
 
-        self::assertSame([[
-            'grids' => [
-                'setono_sylius_terms_terms' => [
-                    'driver' => [
-                        'name' => 'doctrine/orm',
-                        'options' => [
-                            'class' => '%setono_sylius_terms.model.terms.class%',
-                        ],
-                    ],
-                    'fields' => [
-                        'code' => [
-                            'type' => 'string',
-                            'label' => 'setono_sylius_terms.ui.code',
-                        ],
-                        'name' => [
-                            'type' => 'string',
-                            'label' => 'setono_sylius_terms.ui.name',
-                        ],
-                        'channels' => [
-                            'type' => 'twig',
-                            'label' => 'setono_sylius_terms.ui.channels',
-                            'options' => [
-                                'template' => '@SetonoSyliusTermsPlugin/admin/grid/field/channels.html.twig',
-                            ],
-                        ],
-                    ],
-                    'actions' => [
-                        'main' => [
-                            'create' => [
-                                'type' => 'create',
-                            ],
-                        ],
-                        'item' => [
-                            'update' => [
-                                'type' => 'update',
-                            ],
-                            'delete' => [
-                                'type' => 'delete',
-                            ],
-                        ],
-                    ],
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(TermsGrid::class, 'sylius.invokable_grid');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsGrid::class, 0, '%setono_sylius_terms.forms%');
+        self::assertSame([], $this->container->getExtensionConfig('sylius_grid'), 'The grid is no longer prepended as an array grid');
+    }
+
+    #[Test]
+    public function it_registers_the_terms_form_as_an_admin_live_component(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(TermsFormComponent::class, 'sylius.live_component.admin', ['key' => 'setono_sylius_terms:admin:terms:form']);
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsFormComponent::class, 0, new Reference('setono_sylius_terms.repository.terms'));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsFormComponent::class, 2, '%setono_sylius_terms.model.terms.class%');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsFormComponent::class, 3, '%setono_sylius_terms.form.terms.class%');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsFormComponent::class, 4, new Reference(SlugGeneratorInterface::class));
+    }
+
+    #[Test]
+    public function it_generates_slugs_with_symfonys_slugger(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(SlugGenerator::class, 0, new Reference('slugger'));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsTranslationType::class, 1, new Reference(SlugGeneratorInterface::class));
+    }
+
+    #[Test]
+    public function it_prepends_the_admin_hooks(): void
+    {
+        $this->load();
+
+        $config = $this->container->getExtensionConfig('sylius_twig_hooks');
+        self::assertCount(1, $config);
+
+        /** @var array<string, array<string, array<string, mixed>>> $hooks */
+        $hooks = $config[0]['hooks'];
+
+        foreach (array_keys($hooks) as $hook) {
+            self::assertStringStartsWith('setono_sylius_terms.admin.terms.', $hook);
+        }
+
+        self::assertSame([
+            'template' => '@SyliusAdmin/shared/crud/common/content/header/title_block/title.html.twig',
+            'configuration' => ['icon' => 'tabler:circle-check', 'subheader' => 'setono_sylius_terms.ui.manage_terms'],
+            'priority' => 100,
+        ], $hooks['setono_sylius_terms.admin.terms.index.content.header.title_block']['title']);
+
+        foreach (['create' => 'new_terms', 'update' => 'edit_terms'] as $page => $header) {
+            $prefix = 'setono_sylius_terms.admin.terms.' . $page;
+
+            self::assertSame([
+                'template' => sprintf('@SyliusAdmin/shared/crud/%s/content/header/title_block/title.html.twig', $page),
+                'configuration' => ['header' => 'setono_sylius_terms.ui.' . $header],
+                'priority' => 100,
+            ], $hooks[$prefix . '.content.header.title_block']['title']);
+
+            self::assertSame([
+                'component' => 'setono_sylius_terms:admin:terms:form',
+                'props' => [
+                    'resource' => '@=_context.resource',
+                    'form' => '@=_context.form',
+                    'template' => '@SetonoSyliusTermsPlugin/admin/terms/form.html.twig',
                 ],
-            ],
-        ]], $this->container->getExtensionConfig('sylius_grid'));
+                'configuration' => ['render_rest' => false],
+                'priority' => 0,
+            ], $hooks[$prefix . '.content']['form']);
+
+            self::assertSame([
+                'general' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/general.html.twig', 'priority' => 200],
+                'placement' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/placement.html.twig', 'priority' => 100],
+                'translations' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations.html.twig', 'priority' => 0],
+                'sections' => ['enabled' => false],
+            ], $hooks[$prefix . '.content.form']);
+
+            self::assertSame([
+                'code' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/general/code.html.twig', 'priority' => 300],
+                'enabled' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/general/enabled.html.twig', 'priority' => 200],
+                'required' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/general/required.html.twig', 'priority' => 100],
+                'position' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/general/position.html.twig', 'priority' => 0],
+            ], $hooks[$prefix . '.content.form.general']);
+
+            self::assertSame([
+                'forms' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/placement/forms.html.twig', 'priority' => 100],
+                'channels' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/placement/channels.html.twig', 'priority' => 0],
+            ], $hooks[$prefix . '.content.form.placement']);
+
+            self::assertSame([
+                'name' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/name.html.twig', 'priority' => 300],
+                'slug' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/slug.html.twig', 'priority' => 200],
+                'label' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/label.html.twig', 'priority' => 100],
+                'content' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/content.html.twig', 'priority' => 0],
+            ], $hooks[$prefix . '.content.form.translations']);
+        }
     }
 }
