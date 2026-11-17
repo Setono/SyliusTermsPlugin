@@ -97,6 +97,15 @@ final class TermsRuntimeTest extends TestCase
     }
 
     #[Test]
+    public function the_link_ignores_a_given_href_and_points_at_the_terms_page(): void
+    {
+        self::assertSame(
+            '<a href="/de_DE/terms/allgemeine-geschaeftsbedingungen" class="nav-link">AGB &amp; Datenschutz</a>',
+            $this->render("{{ terms_link('terms_and_conditions', {href: '/elsewhere', class: 'nav-link', HREF: '/elsewhere'}) }}"),
+        );
+    }
+
+    #[Test]
     public function the_link_renders_from_the_overridable_link_template(): void
     {
         $override = new ArrayLoader([
