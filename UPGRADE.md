@@ -106,6 +106,7 @@ Paths to plugin files drop `Resources/`. Template paths (`@SetonoSyliusTermsPlug
 
 - The admin routes mount under `/%sylius_admin.path_name%` instead of a literal `/admin`, so they stay inside the admin firewall and access rule when the admin path is changed.
 - The route `setono_sylius_terms_shop_show_terms` is renamed to `setono_sylius_terms_shop_terms_show`, with no alias. Prefer `terms_path(code)` over generating the URL by name.
+- The admin routes `setono_sylius_terms_admin_terms_show` and `setono_sylius_terms_admin_terms_bulk_delete` are gone. The admin has no Terms show page, and it deletes one Terms at a time, past the warning that its versions are deleted too.
 - The Terms page path and the `routing.terms` option are unchanged.
 
 ### Template paths

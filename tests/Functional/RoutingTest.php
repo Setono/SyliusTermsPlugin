@@ -64,9 +64,9 @@ final class RoutingTest extends KernelTestCase
 
         $names = array_keys($adminPaths);
         sort($names);
-        // Core's CRUD routes without show, which the admin doesn't have
+        // Core's CRUD routes without show, which the admin doesn't have, and without bulk delete, which would delete
+        // several Terms and their versions past no warning
         self::assertSame([
-            'setono_sylius_terms_admin_terms_bulk_delete',
             'setono_sylius_terms_admin_terms_create',
             'setono_sylius_terms_admin_terms_delete',
             'setono_sylius_terms_admin_terms_index',
