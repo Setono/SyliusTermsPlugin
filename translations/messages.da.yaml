@@ -48,3 +48,6 @@ setono_sylius_terms:
                 checkout_complete: Kassen > Gennemfør ordre
                 registration: Konto > Opret konto
                 contact: Kontakt
+
+    pdf:
+        version_line: Version %number%, gældende fra %date%

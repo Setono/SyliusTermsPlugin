@@ -32,6 +32,12 @@ use Setono\SyliusTermsPlugin\Model\Terms;
 use Setono\SyliusTermsPlugin\Model\TermsTranslation;
 use Setono\SyliusTermsPlugin\Model\TermsVersion;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslation;
+use Setono\SyliusTermsPlugin\Pdf\ImageInliner;
+use Setono\SyliusTermsPlugin\Pdf\ImageInlinerInterface;
+use Setono\SyliusTermsPlugin\Pdf\TermsPdfGenerator;
+use Setono\SyliusTermsPlugin\Pdf\TermsPdfGeneratorInterface;
+use Setono\SyliusTermsPlugin\Pdf\UrlAbsolutiser;
+use Setono\SyliusTermsPlugin\Pdf\UrlAbsolutiserInterface;
 use Setono\SyliusTermsPlugin\Provider\TermsProvider;
 use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
 use Setono\SyliusTermsPlugin\Renderer\ContentRenderer;
@@ -48,6 +54,9 @@ use Setono\SyliusTermsPlugin\Twig\TermsRuntime;
 use Setono\SyliusTermsPlugin\Validator\Constraints\RequiredTermsTickedValidator;
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Sylius\Bundle\ShopBundle\Form\Type\CustomerRegistrationType;
+use Sylius\PdfGenerationBundle\Core\Renderer\HtmlToPdfRendererInterface;
+use Sylius\PdfGenerationBundle\SyliusPdfGenerationBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\Config\Resource\ResourceInterface;
 use Symfony\Component\DependencyInjection\Reference;
 
@@ -277,6 +286,87 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
 
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(SlugGenerator::class, 0, new Reference('slugger'));
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsTranslationType::class, 1, new Reference(SlugGeneratorInterface::class));
+    }
+
+    #[Test]
+    public function the_terms_pdfs_register_nothing_when_switched_off(): void
+    {
+        $this->load();
+
+        self::assertSame([], $this->container->getExtensionConfig('sylius_pdf_generation'));
+        self::assertCount(1, $this->container->getExtensionConfig('framework'), 'Only the content sanitizer is prepended, no cache pool');
+        $this->assertContainerBuilderNotHasService(TermsPdfGenerator::class);
+        $this->assertContainerBuilderNotHasService(TermsPdfGeneratorInterface::class);
+        $this->assertContainerBuilderNotHasService(ImageInliner::class);
+        $this->assertContainerBuilderNotHasService(UrlAbsolutiser::class);
+    }
+
+    #[Test]
+    public function switching_the_terms_pdfs_on_prepends_a_dompdf_context_and_the_cache_pool(): void
+    {
+        $this->loadWithPdf([FrameworkBundle::class, SyliusPdfGenerationBundle::class]);
+
+        self::assertSame([[
+            'contexts' => [
+                'setono_sylius_terms' => ['adapter' => 'dompdf'],
+            ],
+        ]], $this->container->getExtensionConfig('sylius_pdf_generation'));
+
+        self::assertContains([
+            'cache' => [
+                'pools' => [
+                    'setono_sylius_terms.pdf' => ['adapter' => 'cache.app'],
+                ],
+            ],
+        ], $this->container->getExtensionConfig('framework'));
+    }
+
+    #[Test]
+    public function switching_the_terms_pdfs_on_registers_the_generator(): void
+    {
+        $this->loadWithPdf([SyliusPdfGenerationBundle::class]);
+
+        $this->assertContainerBuilderHasAlias(TermsPdfGeneratorInterface::class, TermsPdfGenerator::class);
+        $this->assertContainerBuilderHasAlias(UrlAbsolutiserInterface::class, UrlAbsolutiser::class);
+        $this->assertContainerBuilderHasAlias(ImageInlinerInterface::class, ImageInliner::class);
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(UrlAbsolutiser::class, 0, '%sylius.unsecured_urls%');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(ImageInliner::class, 0, new Reference('http_client'));
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsPdfGenerator::class, 0, new Reference('twig'));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsPdfGenerator::class, 1, new Reference(UrlAbsolutiserInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsPdfGenerator::class, 2, new Reference(ImageInlinerInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsPdfGenerator::class, 3, new Reference(HtmlToPdfRendererInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsPdfGenerator::class, 4, new Reference('setono_sylius_terms.pdf'));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsPdfGenerator::class, 5, new Reference(SlugGeneratorInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsPdfGenerator::class, 6, new Reference('logger'));
+    }
+
+    #[Test]
+    public function switching_the_terms_pdfs_on_without_the_pdf_generation_bundle_fails_with_the_composer_require_hint(): void
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Run "composer require sylius/pdf-generation-bundle dompdf/dompdf symfony/http-client" and register Sylius\PdfGenerationBundle\SyliusPdfGenerationBundle in config/bundles.php.');
+
+        $this->loadWithPdf([FrameworkBundle::class]);
+    }
+
+    /**
+     * prepend() reads the switch from the extension's config, so it is set there as well as passed to load()
+     *
+     * @param list<class-string> $bundles
+     */
+    private function loadWithPdf(array $bundles): void
+    {
+        $config = ['order_confirmation_email' => ['pdf' => true]];
+
+        $this->setParameter('kernel.bundles', array_combine(
+            array_map(static fn (string $bundle): string => substr($bundle, (int) strrpos($bundle, '\\') + 1), $bundles),
+            $bundles,
+        ));
+        $this->container->loadFromExtension('setono_sylius_terms', $config);
+
+        $this->load($config);
     }
 
     #[Test]

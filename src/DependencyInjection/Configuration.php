@@ -101,6 +101,15 @@ final class Configuration implements ConfigurationInterface
                             ->defaultValue('terms')
                             ->cannotBeEmpty()
                             ->info('The path prefix for displaying terms on the frontend. Example: https://example.com/terms/privacy-policy - here "terms" is the path prefix')
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('order_confirmation_email')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('pdf')
+                            ->defaultFalse()
+                            ->info('Set true to generate Terms PDFs for the order confirmation email. It needs sylius/pdf-generation-bundle, dompdf/dompdf and symfony/http-client, with SyliusPdfGenerationBundle registered')
         ;
 
         $this->addResourcesSection($rootNode);

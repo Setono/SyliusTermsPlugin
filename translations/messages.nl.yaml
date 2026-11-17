@@ -48,3 +48,6 @@ setono_sylius_terms:
                 checkout_complete: Afrekenen > Bestelling afronden
                 registration: Account > Registreren
                 contact: Contact
+
+    pdf:
+        version_line: Versie %number%, van kracht sinds %date%

@@ -237,4 +237,24 @@ final class ConfigurationTest extends TestCase
             'The path "setono_sylius_terms.routing.terms" cannot contain an empty value',
         );
     }
+
+    #[Test]
+    public function the_terms_pdfs_are_off_by_default(): void
+    {
+        $this->assertProcessedConfigurationEquals(
+            [],
+            ['order_confirmation_email' => ['pdf' => false]],
+            'order_confirmation_email',
+        );
+    }
+
+    #[Test]
+    public function an_app_switches_the_terms_pdfs_on(): void
+    {
+        $this->assertProcessedConfigurationEquals(
+            [['order_confirmation_email' => ['pdf' => true]]],
+            ['order_confirmation_email' => ['pdf' => true]],
+            'order_confirmation_email',
+        );
+    }
 }

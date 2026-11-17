@@ -58,6 +58,7 @@ return [
     Symfony\UX\Autocomplete\AutocompleteBundle::class => ['all' => true],
     Symfony\UX\StimulusBundle\StimulusBundle::class => ['all' => true],
     Sylius\Abstraction\StateMachine\SyliusStateMachineAbstractionBundle::class => ['all' => true],
+    Sylius\PdfGenerationBundle\SyliusPdfGenerationBundle::class => ['all' => true],
     Setono\SyliusTermsPlugin\SetonoSyliusTermsPlugin::class => ['all' => true],
     DAMA\DoctrineTestBundle\DAMADoctrineTestBundle::class => ['test' => true],
     Playwright\Symfony\PlaywrightSymfonyBundle::class => ['test' => true],

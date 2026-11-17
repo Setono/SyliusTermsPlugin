@@ -1,0 +1,15 @@
+when@test:
+    setono_sylius_terms:
+        order_confirmation_email:
+            pdf: true
+
+    framework:
+        cache:
+            pools:
+                # Points the plugin's pool at another adapter the way an app would. An array keeps the PDFs to one kernel
+                setono_sylius_terms.pdf:
+                    adapter: cache.adapter.array
+
+        # Tests never touch the network. Each test gives the factory the responses it needs
+        http_client:
+            mock_response_factory: Setono\SyliusTermsPlugin\Tests\Application\HttpClient\MockResponseFactory
