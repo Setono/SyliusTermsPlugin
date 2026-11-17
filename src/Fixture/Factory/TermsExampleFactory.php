@@ -170,11 +170,13 @@ class TermsExampleFactory extends AbstractExampleFactory
             ->setDefault('position', null)
             ->setAllowedTypes('position', ['null', 'int'])
 
-            ->setDefault('forms', ['checkout_complete'])
+            // A Terms is on a Form only when the fixture says so
+            ->setDefault('forms', [])
             ->setAllowedTypes('forms', ['string[]'])
             ->setNormalizer('forms', $this->normalizeForms(...))
 
-            ->setDefault('channels', LazyOption::randomOnes($this->channelRepository, 3))
+            // Every channel, like Sylius' promotion and payment method fixtures
+            ->setDefault('channels', LazyOption::all($this->channelRepository))
             ->setAllowedTypes('channels', ['array'])
             ->setNormalizer('channels', LazyOption::findBy($this->channelRepository, 'code'))
 

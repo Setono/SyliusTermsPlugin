@@ -65,10 +65,11 @@ Markdown headings in rendered Content now carry `id` attributes, such as `id="co
 #### The `setono_terms` fixture
 
 - `forms` takes Form codes, such as `[checkout_complete]`, instead of form type classes. A code that isn't configured fails the fixture load.
+- Left out, `forms` now puts the Terms on no Form. In 2.x it put the Terms on checkout complete, so if your suite relies on that, set `forms: [checkout_complete]`.
 - `required` (default true), `position` (default last) and `locales` (default every locale) are new options.
 - Content is Markdown (see above), and the faked content is Markdown with two `##` sections. The faked label holds a Link placeholder.
 - A locale in `translations` now inherits the Terms' `name`, `slug`, `label` and `content` for the keys it leaves out. In 2.x they were faked.
-- Left out, `channels` now defaults to three random channels, as the example factory always did. In 2.x the fixture passed an empty list, so the Terms got no channels.
+- Left out, `channels` now puts the Terms in every channel. In 2.x the fixture passed an empty list, so the Terms got no channels.
 
 #### Terms PDFs for the order confirmation email are a new opt-in
 
