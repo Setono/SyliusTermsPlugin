@@ -78,7 +78,7 @@ it on. To use it, run `composer require sylius/pdf-generation-bundle dompdf/domp
 
 #### The Terms page and `terms_link()` show the Terms version in force
 
-- The Terms page shows the name and Content of the Terms version in force, with its number and the date it has been in force since. It is not found when the Terms has no version in force, as well as when the Terms is disabled, isn't in the channel or has no translation in the locale. `terms_link()` and the new `terms_path()` return nothing in exactly those cases, and the link text is the name of the version in force. Terms upgraded from 2.x have no version until `setono:sylius-terms:upgrade-from-2x` gives them version 1, so until then their pages are not found and `terms_link()` renders nothing.
+- The Terms page shows the name and Content of the Terms version in force, with its number and the date it has been in force since. It is not found when the Terms has no version in force or the version in force has no Content in the locale, as well as when the Terms is disabled, isn't in the channel or has no translation in the locale. `terms_link()` and the new `terms_path()` return nothing in exactly those cases, and the link text is the name of the version in force. Terms upgraded from 2.x have no version until `setono:sylius-terms:upgrade-from-2x` gives them version 1, so until then their pages are not found and `terms_link()` renders nothing.
 - `terms_link()`'s second argument is now HTML attributes, such as `{class: 'nav-link'}`, not a template name, see "Removed classes, services, templates, files and translation keys" below.
 
 ### Plugin file layout

@@ -45,6 +45,14 @@ final readonly class TermsPageLookup implements TermsPageLookupInterface
             return null;
         }
 
-        return $this->termsVersionRepository->findOneInForce($terms, $this->clock->now(), $localeCode);
+        $translation = $this->termsVersionRepository->findOneInForce($terms, $this->clock->now(), $localeCode);
+
+        // Without Content the page would be empty, the case where LabelRenderer doesn't link the Label either
+        $content = $translation?->getContent();
+        if (null === $content || '' === $content) {
+            return null;
+        }
+
+        return $translation;
     }
 }

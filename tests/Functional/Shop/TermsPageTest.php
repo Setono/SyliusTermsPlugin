@@ -198,6 +198,12 @@ final class TermsPageTest extends WebTestCase
         // The baseline Terms are translated into en_US and de_DE only
         yield 'locale with no translation' => [static fn (): string => '/fr_FR/terms/terms-and-conditions'];
 
+        yield 'no Content' => [static function (): string {
+            self::createTerms('without_content', channels: [self::getChannel('FASHION_WEB')], hasContent: false);
+
+            return '/en_US/terms/without-content';
+        }];
+
         yield 'no version in force' => [static function (): string {
             self::mockTime('2026-11-18 12:00:00');
             self::createTerms('upcoming', channels: [self::getChannel('FASHION_WEB')]);

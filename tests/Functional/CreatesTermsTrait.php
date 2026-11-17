@@ -18,7 +18,8 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 trait CreatesTermsTrait
 {
     /**
-     * Persists and flushes a Terms. Saving it creates version 1, in force from the clock's now
+     * Persists and flushes a Terms. Saving it creates version 1, in force from the clock's now. With $hasContent false,
+     * its translations have no Content
      *
      * @param list<string> $forms
      * @param list<ChannelInterface> $channels
@@ -32,6 +33,7 @@ trait CreatesTermsTrait
         bool $enabled = true,
         bool $required = true,
         ?int $position = null,
+        bool $hasContent = true,
     ): TermsInterface {
         /** @var FactoryInterface $factory */
         $factory = self::getContainer()->get('setono_sylius_terms.factory.terms');
@@ -49,7 +51,7 @@ trait CreatesTermsTrait
         }
 
         foreach ($localeCodes as $localeCode) {
-            $terms->addTranslation(self::createTermsTranslation($code, $localeCode));
+            $terms->addTranslation(self::createTermsTranslation($code, $localeCode, $hasContent));
         }
 
         self::getEntityManager()->persist($terms);
@@ -58,7 +60,7 @@ trait CreatesTermsTrait
         return $terms;
     }
 
-    private static function createTermsTranslation(string $code, string $localeCode): TermsTranslationInterface
+    private static function createTermsTranslation(string $code, string $localeCode, bool $hasContent = true): TermsTranslationInterface
     {
         /** @var FactoryInterface $factory */
         $factory = self::getContainer()->get('setono_sylius_terms.factory.terms_translation');
@@ -69,7 +71,7 @@ trait CreatesTermsTrait
         $translation->setName(sprintf('%s (%s)', $code, $localeCode));
         $translation->setSlug(str_replace('_', '-', $code));
         $translation->setLabel(sprintf('I accept the [link:%s]', $code));
-        $translation->setContent(sprintf('The content of %s', $code));
+        $translation->setContent($hasContent ? sprintf('The content of %s', $code) : null);
 
         return $translation;
     }

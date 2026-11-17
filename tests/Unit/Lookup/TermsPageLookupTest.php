@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Tests\Unit\Lookup;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -11,6 +12,7 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Setono\SyliusTermsPlugin\Lookup\TermsPageLookup;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
+use Setono\SyliusTermsPlugin\Model\TermsVersionTranslation;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslationInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsVersionRepositoryInterface;
@@ -52,7 +54,7 @@ final class TermsPageLookupTest extends TestCase
     public function it_returns_the_translation_of_the_version_in_force_now_by_slug_and_by_code(): void
     {
         $terms = $this->prophesize(TermsInterface::class)->reveal();
-        $translation = $this->prophesize(TermsVersionTranslationInterface::class)->reveal();
+        $translation = self::translation('## Ordering');
 
         $this->termsRepository->findOneByChannelAndLocaleAndSlug($this->channel, 'da_DK', 'vilkaar')->willReturn($terms);
         $this->termsRepository->findOneByChannelAndLocaleAndCode($this->channel, 'da_DK', 'terms_and_conditions')->willReturn($terms);
@@ -78,6 +80,29 @@ final class TermsPageLookupTest extends TestCase
     }
 
     #[Test]
+    #[DataProvider('provideNoContent')]
+    public function it_returns_null_when_the_version_in_force_has_no_content(?string $content): void
+    {
+        $terms = $this->prophesize(TermsInterface::class)->reveal();
+
+        $this->termsRepository->findOneByChannelAndLocaleAndSlug($this->channel, 'da_DK', 'vilkaar')->willReturn($terms);
+        $this->termsRepository->findOneByChannelAndLocaleAndCode($this->channel, 'da_DK', 'terms_and_conditions')->willReturn($terms);
+        $this->termsVersionRepository->findOneInForce($terms, Argument::any(), 'da_DK')->willReturn(self::translation($content));
+
+        self::assertNull($this->lookup->lookupBySlug('vilkaar', $this->channel, 'da_DK'));
+        self::assertNull($this->lookup->lookupByCode('terms_and_conditions', $this->channel, 'da_DK'));
+    }
+
+    /**
+     * @return \Generator<string, array{?string}>
+     */
+    public static function provideNoContent(): \Generator
+    {
+        yield 'null' => [null];
+        yield 'empty' => [''];
+    }
+
+    #[Test]
     public function it_returns_null_without_a_terms_and_looks_no_further(): void
     {
         $this->termsRepository->findOneByChannelAndLocaleAndSlug($this->channel, 'da_DK', 'unknown')->willReturn(null);
@@ -86,5 +111,13 @@ final class TermsPageLookupTest extends TestCase
 
         self::assertNull($this->lookup->lookupBySlug('unknown', $this->channel, 'da_DK'));
         self::assertNull($this->lookup->lookupByCode('unknown', $this->channel, 'da_DK'));
+    }
+
+    private static function translation(?string $content): TermsVersionTranslationInterface
+    {
+        $translation = new TermsVersionTranslation();
+        $translation->setContent($content);
+
+        return $translation;
     }
 }

@@ -64,8 +64,9 @@ final class TermsPageLookupTest extends KernelTestCase
         self::createTerms('in_another_channel', channels: [self::createChannel('OTHER_WEB')]);
         self::createTerms('in_no_channel');
         self::createTerms('in_en_US', channels: [$fashionWeb], localeCodes: ['en_US']);
+        self::createTerms('without_content', channels: [$fashionWeb], hasContent: false);
 
-        foreach ([['disabled', 'en_US'], ['in_another_channel', 'en_US'], ['in_no_channel', 'en_US'], ['in_en_US', 'de_DE'], ['unknown', 'en_US']] as [$code, $localeCode]) {
+        foreach ([['disabled', 'en_US'], ['in_another_channel', 'en_US'], ['in_no_channel', 'en_US'], ['in_en_US', 'de_DE'], ['without_content', 'en_US'], ['unknown', 'en_US']] as [$code, $localeCode]) {
             self::assertNull(self::getLookup()->lookupByCode($code, $fashionWeb, $localeCode), $code . ' by code');
             self::assertNull(self::getLookup()->lookupBySlug(str_replace('_', '-', $code), $fashionWeb, $localeCode), $code . ' by slug');
         }
@@ -91,6 +92,24 @@ final class TermsPageLookupTest extends KernelTestCase
         self::mockTime('2026-11-16 11:59:59');
         self::assertNull(self::getLookup()->lookupByCode('versioned', $fashionWeb, 'en_US'));
         self::assertNull(self::getLookup()->lookupBySlug('versioned', $fashionWeb, 'en_US'));
+    }
+
+    #[Test]
+    public function it_finds_nothing_once_a_version_without_content_is_in_force(): void
+    {
+        $fashionWeb = self::getChannel('FASHION_WEB');
+
+        $terms = self::createTerms('emptied', channels: [$fashionWeb]);
+        $this->clock->sleep(3600);
+        $terms->getTranslation('en_US')->setContent('');
+        self::getEntityManager()->flush();
+
+        self::assertNull(self::getLookup()->lookupByCode('emptied', $fashionWeb, 'en_US'));
+        self::assertNull(self::getLookup()->lookupBySlug('emptied', $fashionWeb, 'en_US'));
+
+        // Version 1, which has Content, was in force until then
+        self::mockTime('2026-11-16 12:59:59');
+        self::assertSame(1, self::getLookup()->lookupByCode('emptied', $fashionWeb, 'en_US')?->getVersion()->getNumber());
     }
 
     private static function getLookup(): TermsPageLookupInterface

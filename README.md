@@ -393,7 +393,8 @@ of the content that stays in view while the customer scrolls. Below that, it is 
 content. The page needs no JavaScript, and printing it prints the name and the content only.
 
 The page is not found when the Terms is disabled, isn't in the current channel, has no translation in the current
-locale or has no version in force. There are no pages for past versions.
+locale, has no version in force, or the version in force has no Content in the current locale. There are no pages for
+past versions.
 
 ### Linking to a Terms page
 
