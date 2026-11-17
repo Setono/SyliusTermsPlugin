@@ -20,6 +20,8 @@ The PHP process serves the page's requests only while it is inside a Playwright 
 
 Create the data inline (see CLAUDE.md's Tests section), then clear the entity manager before the page reads it: the page then loads the Terms through Doctrine, which sets the locale their translations are read in. A Terms still in the identity map has none, and the page fails with "No locale has been set".
 
+For checkout complete, create a cart with `CreatesCartTrait::createCartReadyToComplete()` and log in as `getShopUser()` on the `shop` firewall. The cart context finds a logged-in customer's cart only if it wasn't created by a guest, which is why the trait sets the customer with `setCustomerWithAuthorization()`. Without that, checkout redirects to the empty cart.
+
 ## Locating
 
 - Bootstrap moves an open modal to the end of the page. Locate it from the page (`.modal.show`), not from the row that opened it.

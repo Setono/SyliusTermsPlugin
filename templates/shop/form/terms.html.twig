@@ -1,0 +1,14 @@
+{#
+    The Terms checkboxes of the form in the hook's context. The plugin adds this template as a hookable to every hook
+    of each configured Form. A Form with no Terms in the current channel and locale has no terms field, so it renders
+    nothing
+#}
+{% set form = hookable_metadata.context.form|default(null) %}
+
+{% if form.terms is defined %}
+    <div class="mb-3" {{ sylius_test_html_attribute('terms') }}>
+        {% for checkbox in form.terms %}
+            {{ form_row(checkbox, sylius_test_form_attribute('terms-checkbox', checkbox.vars.name)) }}
+        {% endfor %}
+    </div>
+{% endif %}

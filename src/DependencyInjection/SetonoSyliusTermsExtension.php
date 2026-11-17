@@ -17,6 +17,9 @@ use Symfony\Component\HttpClient\HttpClient;
 
 final class SetonoSyliusTermsExtension extends AbstractResourceExtension implements PrependExtensionInterface
 {
+    /** The name of the hookable that renders the Terms checkboxes in each hook of a Form */
+    public const FORM_HOOKABLE = 'setono_sylius_terms_checkboxes';
+
     /** The admin Terms routes set this as their hook_prefix, see config/routes/admin.yaml */
     private const ADMIN_HOOK_PREFIX = 'setono_sylius_terms.admin.terms';
 
@@ -69,22 +72,58 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
             ],
         ]);
 
-        $container->prependExtensionConfig('sylius_twig_hooks', ['hooks' => self::getAdminHooks()]);
+        $config = $this->getConfigForPrepend($container);
 
-        if ($this->isPdfEnabled($container)) {
+        $container->prependExtensionConfig('sylius_twig_hooks', [
+            'hooks' => self::getAdminHooks() + self::getFormHooks($config['forms']),
+        ]);
+
+        if ($config['order_confirmation_email']['pdf']) {
             self::prependPdf($container);
         }
     }
 
-    private function isPdfEnabled(ContainerBuilder $container): bool
+    /**
+     * The plugin's own config, processed, as far as it is known when the extensions are prepended
+     *
+     * @return array{forms: array<string, array{hooks: array<string, int>}>, order_confirmation_email: array{pdf: bool}}
+     */
+    private function getConfigForPrepend(ContainerBuilder $container): array
     {
         /** @var list<array<string, mixed>> $configs */
         $configs = $container->getParameterBag()->resolveValue($container->getExtensionConfig($this->getAlias()));
 
-        /** @var array{order_confirmation_email: array{pdf: bool}} $config */
+        /** @var array{forms: array<string, array{hooks: array<string, int>}>, order_confirmation_email: array{pdf: bool}} $config */
         $config = $this->processConfiguration(new Configuration(), $configs);
 
-        return $config['order_confirmation_email']['pdf'];
+        return $config;
+    }
+
+    /**
+     * One hookable per hook of each enabled Form, at the hook's priority. They all render the same template, which
+     * renders the Terms checkboxes of the form in the hook's context, if it has any. A hook that several Forms list
+     * gets one hookable, at the priority of the last of them
+     *
+     * @param array<string, array{hooks: array<string, int>}> $forms
+     *
+     * @return array<string, array<string, array{template: string, priority: int}>>
+     */
+    private static function getFormHooks(array $forms): array
+    {
+        $hooks = [];
+
+        foreach ($forms as $form) {
+            foreach ($form['hooks'] as $hook => $priority) {
+                $hooks[$hook] = [
+                    self::FORM_HOOKABLE => [
+                        'template' => '@SetonoSyliusTermsPlugin/shop/form/terms.html.twig',
+                        'priority' => $priority,
+                    ],
+                ];
+            }
+        }
+
+        return $hooks;
     }
 
     /**

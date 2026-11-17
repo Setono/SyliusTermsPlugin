@@ -9,7 +9,7 @@ use Setono\SyliusTermsPlugin\Form\Type\TermsCheckboxCollectionType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsType;
 use Setono\SyliusTermsPlugin\Generator\SlugGeneratorInterface;
-use Setono\SyliusTermsPlugin\Provider\TermsProviderInterface;
+use Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface;
 use Setono\SyliusTermsPlugin\Renderer\LabelRendererInterface;
 
 return static function (ContainerConfigurator $container): void {
@@ -47,7 +47,9 @@ return static function (ContainerConfigurator $container): void {
 
     $services->set(FormTypeExtension::class)
         ->args([
-            service(TermsProviderInterface::class),
+            service(FormTermsLookupInterface::class),
+            service('sylius.context.channel'),
+            service('sylius.context.locale'),
             param('setono_sylius_terms.forms'),
         ])
         ->tag('form.type_extension')

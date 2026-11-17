@@ -43,6 +43,15 @@ setono_sylius_terms:
 - A Form without a `label` gets the translation key `setono_sylius_terms.form.terms.term_form.<code>`. In 2.x the key was derived from the form type's short class name.
 - The `setono_sylius_terms.forms` parameter is keyed by Form code and holds only the enabled Forms, each with `type`, `label`, `hooks` and `saved_event`.
 
+#### Terms checkboxes
+
+- The Label is escaped on every path, so HTML in a Label now shows as text. In 2.x, a Terms without content printed its Label unescaped. The Link placeholder (`[link:Link text]`) is the Label's only markup. Without content, nothing links, and a Link placeholder now shows just its link text instead of `[link:Link text]`.
+- Each checkbox shows the Label of the Terms version in force, read through the Form lookup in the current channel and locale.
+- Required terms are enforced in the `terms` field's own validation group, `setono_sylius_terms_checkboxes`, so the form's own validation groups no longer matter. In 2.x the field copied its parents' groups, which never enforced the terms on a form without array groups, such as the contact form.
+- A required Terms' checkbox renders with the HTML `required` attribute and the shop theme's `required` class, and an optional Terms' checkbox renders without them. In 2.x every checkbox rendered without them.
+- The `terms` field no longer renders the label "Accept all terms below to complete an order" above the checkboxes. To keep a heading, render it from your own hookable in the Form's hook.
+- `$form->get('terms')->getData()` is the list of the ticked Terms' codes.
+
 #### Content is Markdown that allows HTML, and its output is sanitised
 
 2.x Content, which is HTML, carries over without conversion. Every rendering of it is sanitised: scripts, event handlers, unsafe URLs and `class` and `style` attributes are removed. Some 2.x Content renders differently:
@@ -100,6 +109,7 @@ Paths to plugin files drop `Resources/`. Template paths (`@SetonoSyliusTermsPlug
 - Admin hooks live under `setono_sylius_terms.admin.terms`, such as `setono_sylius_terms.admin.terms.update.content.form.translations` (see the README's Admin section). The Sylius 1 template events and the jQuery slug scripts are gone: the slug wand next to each slug is a Live Component action, and a slug left blank is made from the name on save.
 - `templates/bundles` overrides of `admin/terms/_form.html.twig` or `admin/grid/field/channels.html.twig` no longer apply.
 - Overridden templates that print content with `|raw` must switch to the `terms_content` filter, which renders and sanitises it: `{{ terms.content|terms_content }}`.
+- Terms checkboxes render through Twig hooks on each configured Form, so 2.x's manual override of the checkout complete form (`{{ form_row(form.terms) }}` in `templates/bundles/SyliusShopBundle/Checkout/Complete/_form.html.twig`) is no longer needed. Sylius 2 doesn't read that template, so delete it. See the README's "Terms checkboxes" section.
 
 ### Grid
 
@@ -130,7 +140,7 @@ On Sylius ≥ 2.3, a same-named YAML grid replaces the plugin's grid wholesale.
 | `setono_sylius_terms.form.type.terms` | `Setono\SyliusTermsPlugin\Form\Type\TermsType` |
 | `setono_sylius_terms.form.type.terms_translation` | `Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType` |
 | `setono_sylius_terms.form.type.terms_checkbox_collection` | `Setono\SyliusTermsPlugin\Form\Type\TermsCheckboxCollectionType` |
-| `setono_sylius_terms.provider.terms` | `Setono\SyliusTermsPlugin\Provider\TermsProvider`, aliased as `Setono\SyliusTermsPlugin\Provider\TermsProviderInterface` |
+| `setono_sylius_terms.provider.terms`, `Setono\SyliusTermsPlugin\Provider\TermsProvider` and `Setono\SyliusTermsPlugin\Provider\TermsProviderInterface` | The Form lookup, `Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface`, which takes the channel and locale and returns the Terms versions in force |
 | `setono_sylius_terms.renderer.label` | `Setono\SyliusTermsPlugin\Renderer\LabelRenderer`, aliased as `Setono\SyliusTermsPlugin\Renderer\LabelRendererInterface` |
 | `setono_sylius_terms.twig.terms_extension` | `Setono\SyliusTermsPlugin\Twig\TermsExtension` |
 | `setono_sylius_terms.twig.terms_runtime` | `Setono\SyliusTermsPlugin\Twig\TermsRuntime` |
@@ -140,6 +150,10 @@ On Sylius ≥ 2.3, a same-named YAML grid replaces the plugin's grid wholesale.
 | `TermsRepositoryInterface::findByFormAndChannelAndLocale()`, which took a form type class | `TermsRepositoryInterface::findByFormAndChannel()`, which takes a Form code, or the Form lookup, `Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface` |
 | The translation key `setono_sylius_terms.form.terms.term_form.complete` | `setono_sylius_terms.form.terms.term_form.checkout_complete` |
 | `src/Resources/config/app/fixtures.yaml`, the demo suite with the EULA Terms, the `EU_WEB` and `UA_WEB` channels and UAH | Nothing. The plugin ships no fixture suite. If you imported it, copy what you need into your own suite (see the README's Fixtures section). |
+| The validation-group collector, the `PRE_SET_DATA` listener in `TermsCheckboxCollectionType` that gave each checkbox an `IsTrue` constraint in its parents' groups | The `terms` field's own validation group, `setono_sylius_terms_checkboxes`, with the `RequiredTermsTicked` constraint |
+| `TermsCheckboxCollectionType`'s `error_message` option | The `setono_sylius_terms.terms_checkbox.required` key in the `validators` translation domain, which `RequiredTermsTicked` uses |
+| `TermsCheckboxCollectionType`'s `terms` option, a list of `TermsInterface` | The same option, a list of `TermsVersionTranslationInterface` as the Form lookup returns them, and the new required `form` option, the Form code |
+| `LabelRendererInterface::render(TermsInterface $terms)` | `LabelRendererInterface::render(TermsVersionTranslationInterface $translation)`, which renders the Label of a Terms version |
 
 `TermsRepositoryInterface` has a new method, `createListQueryBuilder()`, which feeds the admin grid. A repository that implements the interface without extending `TermsRepository` must add it.
 
