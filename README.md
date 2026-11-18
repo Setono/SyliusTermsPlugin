@@ -408,8 +408,9 @@ Two Twig functions take a Terms code and use the current channel and locale:
 ```
 
 `terms_link()` takes the `<a>`'s HTML attributes, escapes them, and uses the name of the Terms version in force as the
-link text. Both functions return nothing, `null` and an empty string, in exactly the cases where the Terms page is not
-found, so a link never leads to a missing page. Guard your own markup with `{% if terms_path('…') %}`.
+link text. A passed `href` is ignored, so the link always points at the Terms page. Both functions return nothing,
+`null` and an empty string, in exactly the cases where the Terms page is not found, so a link never leads to a missing
+page. Guard your own markup with `{% if terms_path('…') %}`.
 
 To change the markup of `terms_link()`, override `@SetonoSyliusTermsPlugin/shop/terms/link.html.twig` in
 `templates/bundles/SetonoSyliusTermsPlugin/shop/terms/link.html.twig`. It gets `path`, `terms`, `translation` (the

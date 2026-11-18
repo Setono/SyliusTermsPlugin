@@ -6,6 +6,7 @@
     - path: the path of the Terms page
     - terms: the TermsInterface
     - translation: the TermsVersionTranslationInterface in force, in the current locale. Its name is the link text
-    - attributes: the HTML attributes passed to terms_link(), such as {class: 'nav-link'}
+    - attributes: the HTML attributes passed to terms_link(), such as {class: 'nav-link'}. A passed href is skipped, so the
+      link always points at the Terms page
 #}
-<a href="{{ path }}"{% for name, value in attributes %} {{ name|e('html_attr') }}="{{ value }}"{% endfor %}>{{ translation.name }}</a>
+<a href="{{ path }}"{% for name, value in attributes|filter((value, name) => name|lower != 'href') %} {{ name|e('html_attr') }}="{{ value }}"{% endfor %}>{{ translation.name }}</a>
