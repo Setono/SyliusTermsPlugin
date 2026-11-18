@@ -1,9 +1,10 @@
+# No show page, and no bulk delete: deleting a Terms deletes its versions, so the admin deletes one at a time, past a warning
 setono_sylius_terms_admin_terms:
     resource: |
         alias: setono_sylius_terms.terms
         section: admin
         templates: "@SyliusAdmin\\shared\\crud"
-        except: ['show']
+        except: ['show', 'bulkDelete']
         redirect: update
         grid: setono_sylius_terms_terms
         vars:
