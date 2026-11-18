@@ -452,6 +452,23 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
                 'label' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/label.html.twig', 'priority' => 100],
                 'content' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/content.html.twig', 'priority' => 0],
             ], $hooks[$prefix . '.content.form.translations']);
+
+            // The content editor's three parts are separate hookables, so apps can disable or replace each one
+            self::assertSame([
+                'toolbar' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/content/toolbar.html.twig', 'priority' => 0],
+            ], $hooks[$prefix . '.content.form.translations.content#write']);
+
+            self::assertSame([
+                'preview' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/content/preview.html.twig', 'priority' => 0],
+            ], $hooks[$prefix . '.content.form.translations.content#preview']);
+
+            self::assertSame([
+                'markdown_toolbar' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/javascripts.html.twig', 'priority' => -100],
+            ], $hooks[$prefix . '#javascripts']);
+
+            self::assertSame([
+                'terms_content' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/stylesheets.html.twig', 'priority' => -100],
+            ], $hooks[$prefix . '#stylesheets']);
         }
     }
 

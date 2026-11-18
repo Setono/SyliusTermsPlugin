@@ -26,6 +26,17 @@ setono_sylius_terms:
         preview: Preview
         source: Source
         no_content: No content
+        write: Write
+        markdown_toolbar:
+            label: Formatting
+            heading: Heading
+            bold: Bold
+            italic: Italic
+            quote: Quote
+            link: Link
+            image: Image
+            bulleted_list: Bulleted list
+            numbered_list: Numbered list
         
     menu:
         admin:

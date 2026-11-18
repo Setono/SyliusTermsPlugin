@@ -235,6 +235,25 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
             $hooks[sprintf('%s.%s.content.form.general', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/general', ['code', 'enabled', 'required', 'position']);
             $hooks[sprintf('%s.%s.content.form.placement', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/placement', ['forms', 'channels']);
             $hooks[sprintf('%s.%s.content.form.translations', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/translations', ['name', 'slug', 'label', 'content']);
+
+            // The content editor's three parts, each its own hookable so apps can disable or replace it: the Markdown
+            // toolbar above the textarea, the Write and Preview tabs, and the script that defines the toolbar's elements
+            $hooks[sprintf('%s.%s.content.form.translations.content#write', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/translations/content', ['toolbar']);
+            $hooks[sprintf('%s.%s.content.form.translations.content#preview', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/translations/content', ['preview']);
+            $hooks[sprintf('%s.%s#javascripts', $prefix, $page)] = [
+                'markdown_toolbar' => [
+                    'template' => '@SetonoSyliusTermsPlugin/admin/terms/javascripts.html.twig',
+                    'priority' => -100,
+                ],
+            ];
+
+            // Styles the rendered Content in the Preview tabs
+            $hooks[sprintf('%s.%s#stylesheets', $prefix, $page)] = [
+                'terms_content' => [
+                    'template' => '@SetonoSyliusTermsPlugin/admin/terms/stylesheets.html.twig',
+                    'priority' => -100,
+                ],
+            ];
         }
 
         // Next to core's Cancel and Update buttons, where Sylius' product page has View in store

@@ -39,6 +39,10 @@ Each Terms has its own page, with a table of contents and the Terms version in f
 
 ![Screenshot showing admin terms update page](docs/images/admin-terms-update.png)
 
+The Preview tab of the content shows it as the Terms page renders it, unsaved edits included (see [Writing Content](#writing-content))
+
+![Screenshot showing the Preview tab of a Terms' content in the admin](docs/images/admin-terms-content-preview.png)
+
 ![Screenshot showing the read-only page of a Terms version in the admin](docs/images/admin-terms-version.png)
 
 ## Admin
@@ -52,7 +56,8 @@ The form has three cards:
   Terms last (see [Required and optional terms, and position](#required-and-optional-terms-and-position)).
 * **Placement:** the [Forms](#forms) the Terms shows on, each listed by its label, and the channels.
 * **Translations:** the name, slug, label and content in each locale. The `Label` is the text next to the checkbox. Use
-  a Link placeholder (`[link:Link text]`) to tell where the link to the Terms page goes.
+  a Link placeholder (`[link:Link text]`) to tell where the link to the Terms page goes. The content is Markdown, with a
+  toolbar and a preview (see [Writing Content](#writing-content)).
 
 The wand button next to a slug makes the slug from the name in that locale. A slug left blank is made from the name
 when the Terms is saved. Slugs stay editable: changing one changes the address of the Terms page, and the old address
@@ -62,6 +67,27 @@ A Terms can be placed on a Form code that isn't configured, for example after yo
 `setono_sylius_terms.forms`. The admin shows such a code as an extra, ticked choice labelled `<code> (not configured)`,
 and the index flags it the same way. The shop ignores it, and it stays on the Terms until an admin unticks it and
 saves.
+
+### Writing Content
+
+The content of each locale is [Markdown](#content), written in a textarea with a toolbar above it. Its buttons insert a
+heading, bold, italic, a quote, a link, an image, a bulleted list and a numbered list, around the selected text or at
+the cursor. They insert through the browser's editing commands, so undo and redo work as they do for typing.
+
+* The heading button inserts `## `, a second-level heading, because the Terms page shows the Terms' name as its `<h1>`.
+  The `##` headings make up the page's table of contents.
+* Images are inserted by URL; there is no upload. Select the image's alt text and click the image button to get
+  `![alt text](url)` with `url` selected, then type or paste the image's URL. If you select a URL instead, it goes in
+  place of `url`.
+
+The **Preview** tab shows the content as the Terms page renders it, sanitised, including edits that aren't saved yet.
+The server renders it, through the same `ContentRendererInterface` as the Terms page, each time the form re-renders,
+for example when you click the tab.
+
+The toolbar is GitHub's [`<markdown-toolbar>` element](https://github.com/github/markdown-toolbar-element) 2.2.3. The
+plugin ships its prebuilt file, with its MIT license, in `public/admin/markdown-toolbar-element-2.2.3/`, and loads it as
+a module script on the Terms create and update pages only. Your app needs no npm install and no rebuild:
+`assets:install` copies it to your `public/` directory along with the other bundles' assets.
 
 ### Version history
 
@@ -87,17 +113,26 @@ default locale, or `null` when there is no page there.
 
 The pages are Sylius' CRUD pages, and their hooks are under `setono_sylius_terms.admin.terms`:
 
-| Hook                                                                        | Hookables                                 |
-|-----------------------------------------------------------------------------|-------------------------------------------|
-| `setono_sylius_terms.admin.terms.{create,update}.content.form`              | `general`, `placement`, `translations`    |
-| `setono_sylius_terms.admin.terms.{create,update}.content.form.general`      | `code`, `enabled`, `required`, `position` |
-| `setono_sylius_terms.admin.terms.{create,update}.content.form.placement`    | `forms`, `channels`                       |
-| `setono_sylius_terms.admin.terms.{create,update}.content.form.translations` | `name`, `slug`, `label`, `content`        |
-| `setono_sylius_terms.admin.terms.update.content`                            | `versions`, below core's `form`           |
-| `setono_sylius_terms.admin.terms.update.content.header.title_block.actions` | `view_in_store`, before core's buttons    |
+| Hook                                                                                        | Hookables                                 |
+|---------------------------------------------------------------------------------------------|-------------------------------------------|
+| `setono_sylius_terms.admin.terms.{create,update}.content.form`                              | `general`, `placement`, `translations`    |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.general`                      | `code`, `enabled`, `required`, `position` |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.placement`                    | `forms`, `channels`                       |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.translations`                 | `name`, `slug`, `label`, `content`        |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.translations.content#write`   | `toolbar`, above the textarea             |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.translations.content#preview` | `preview`, the Write and Preview tabs     |
+| `setono_sylius_terms.admin.terms.{create,update}#javascripts`                               | `markdown_toolbar`, the toolbar's script  |
+| `setono_sylius_terms.admin.terms.{create,update}#stylesheets`                               | `terms_content`, the preview's stylesheet |
+| `setono_sylius_terms.admin.terms.update.content`                                            | `versions`, below core's `form`           |
+| `setono_sylius_terms.admin.terms.update.content.header.title_block.actions`                 | `view_in_store`, before core's buttons    |
 
 The form is the Live Component `setono_sylius_terms:admin:terms:form`
 (`Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent`). The Versions card is outside it.
+
+The content editor's three parts, `toolbar`, `preview` and `markdown_toolbar`, are separate hookables, so you can
+disable or replace each one. The `toolbar` and `preview` hookables get the locale's translation form as `form`, and
+`locale`. Without `preview` there are no tabs, and the textarea shows on its own. The Write tab shows the element whose
+id is the textarea's id followed by `-write`, so a replacement `preview` has to keep pointing there.
 
 The read-only version page, `setono_sylius_terms_admin_terms_version_show` at
 `/%sylius_admin.path_name%/terms/{id}/versions/{number}`, is Sylius' CRUD show page, with its hooks under
@@ -132,6 +167,66 @@ final class TermsGridMutator implements GridMutatorInterface
 
 Slugs are made by `Setono\SyliusTermsPlugin\Generator\SlugGeneratorInterface`, which uses Symfony's slugger. Decorate
 or replace it to make slugs another way.
+
+### Recipe: swapping in a WYSIWYG HTML editor
+
+To write Content with an HTML editor instead of the Markdown toolbar:
+
+1. Add a form type extension on `TermsTranslationType` that re-adds `content` with the editor's form type:
+
+    ```php
+    use Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType;
+    use Symfony\Component\Form\AbstractTypeExtension;
+    use Symfony\Component\Form\FormBuilderInterface;
+
+    final class TermsTranslationTypeExtension extends AbstractTypeExtension
+    {
+        public function buildForm(FormBuilderInterface $builder, array $options): void
+        {
+            $builder->add('content', YourEditorType::class, [
+                'required' => false,
+                'label' => 'setono_sylius_terms.form.terms.content',
+                'help' => 'setono_sylius_terms.form.terms.content_help',
+            ]);
+        }
+
+        public static function getExtendedTypes(): iterable
+        {
+            return [TermsTranslationType::class];
+        }
+    }
+    ```
+
+   The form is a Live Component that re-renders when a field changes. If the editor keeps its HTML in a hidden field,
+   it has to fire a bubbling `change` event on that field when it writes to it, or a re-render brings back the old
+   value.
+
+2. Disable the three hookables, on both pages:
+
+    ```yaml
+    # config/packages/sylius_twig_hooks.yaml
+    sylius_twig_hooks:
+        hooks:
+            'setono_sylius_terms.admin.terms.create.content.form.translations.content#write':
+                toolbar: { enabled: false }
+            'setono_sylius_terms.admin.terms.update.content.form.translations.content#write':
+                toolbar: { enabled: false }
+            'setono_sylius_terms.admin.terms.create.content.form.translations.content#preview':
+                preview: { enabled: false }
+            'setono_sylius_terms.admin.terms.update.content.form.translations.content#preview':
+                preview: { enabled: false }
+            'setono_sylius_terms.admin.terms.create#javascripts':
+                markdown_toolbar: { enabled: false }
+            'setono_sylius_terms.admin.terms.update#javascripts':
+                markdown_toolbar: { enabled: false }
+    ```
+
+   Load the editor's own script from a hookable of your own on the same `#javascripts` hooks.
+
+3. Either keep the default `ContentRendererInterface` or replace it. Markdown allows raw HTML, and the default renderer
+   sanitises HTML input as it sanitises Markdown, so the editor's HTML renders as it is, minus what the sanitiser
+   removes (see [Content](#content)). To render the HTML another way, replace the renderer (see
+   [Replacing or decorating the renderer](#replacing-or-decorating-the-renderer)).
 
 ## Forms
 
@@ -294,7 +389,8 @@ final class CompleteCheckoutCommand
 
 The Content of a Terms is Markdown ([CommonMark](https://commonmark.org/) plus GitHub's tables and autolinks) that
 allows raw HTML, so Content written as HTML works too. Every rendering of Content is sanitised: scripts, event
-handlers, unsafe URLs and `class` and `style` attributes are removed.
+handlers, unsafe URLs and `class` and `style` attributes are removed. Admins write it with a Markdown toolbar and a
+preview (see [Writing Content](#writing-content)).
 
 Print Content with the `terms_content` filter, never with `|raw`:
 

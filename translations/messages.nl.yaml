@@ -26,6 +26,17 @@ setono_sylius_terms:
         preview: Voorbeeld
         source: Bron
         no_content: Geen inhoud
+        write: Schrijven
+        markdown_toolbar:
+            label: Opmaak
+            heading: Kop
+            bold: Vet
+            italic: Cursief
+            quote: Citaat
+            link: Link
+            image: Afbeelding
+            bulleted_list: Opsommingslijst
+            numbered_list: Genummerde lijst
 
     menu:
         admin:

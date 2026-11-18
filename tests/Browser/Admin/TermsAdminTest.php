@@ -205,6 +205,105 @@ final class TermsAdminTest extends PlaywrightTestCase
         self::assertSame([], $page->pageErrors(), 'The Terms version page threw JavaScript errors');
     }
 
+    #[Test]
+    public function the_toolbar_inserts_markdown_at_the_cursor_and_the_saved_terms_holds_it(): void
+    {
+        $terms = self::createTerms('cookie_policy', localeCodes: ['en_US', 'de_DE']);
+        self::getEntityManager()->clear();
+
+        $page = $this->open(sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
+        // The module script has defined the toolbar's elements
+        $page->waitForFunction('() => undefined !== customElements.get("markdown-toolbar")');
+
+        // The German Content is in a collapsed item of the accordion
+        $page->locator('[data-test-terms-translations-accordion="de_DE"]')->click();
+        $textarea = $page->locator('[data-test-content="de_DE"]');
+        $textarea->fill("Kekse\n\nWir verwenden Kekse.");
+
+        // The heading button turns the line with the selection into a ## heading
+        self::selectText($textarea, 'Kekse');
+        self::clickMarkdownButton($page, 'de_DE', 'heading');
+        expect($textarea)->toHaveValue("## Kekse\n\nWir verwenden Kekse.");
+
+        // Clicking the toolbar took the focus from the textarea, which re-rendered the Live form. The toolbar still works
+        $page->waitForFunction('() => null === document.querySelector("[data-controller~=live][busy]")');
+        self::selectText($textarea, 'Kekse', last: true);
+        self::clickMarkdownButton($page, 'de_DE', 'bold');
+        expect($textarea)->toHaveValue("## Kekse\n\nWir verwenden **Kekse**.");
+
+        // The buttons insert through the browser's editing commands, so undo and redo work
+        $page->keyboard()->press('ControlOrMeta+z');
+        expect($textarea)->toHaveValue("## Kekse\n\nWir verwenden Kekse.");
+        $page->keyboard()->press('ControlOrMeta+Shift+z');
+        expect($textarea)->toHaveValue("## Kekse\n\nWir verwenden **Kekse**.");
+
+        // The image button turns the selected alt text into ![alt text](url) and selects url, which typing the image's URL
+        // replaces
+        $textarea->evaluate('textarea => textarea.setSelectionRange(textarea.value.length, textarea.value.length)');
+        $page->keyboard()->press('Enter');
+        $page->keyboard()->press('Enter');
+        $page->keyboard()->type('Ein Keks');
+        self::selectText($textarea, 'Ein Keks');
+        self::clickMarkdownButton($page, 'de_DE', 'image');
+        $page->keyboard()->type('https://example.com/kekse.png');
+        $expected = "## Kekse\n\nWir verwenden **Kekse**.\n\n![Ein Keks](https://example.com/kekse.png)";
+        expect($textarea)->toHaveValue($expected);
+
+        self::changeAndWaitForRerender($page, 'document.querySelector(\'[data-test-content="de_DE"]\').blur()');
+        expect($textarea)->toHaveValue($expected);
+        $page->locator('[data-test-update-changes-button]')->click();
+        expect($page->locator('[data-test-sylius-flash-message-type="success"]'))->toBeVisible();
+
+        $terms = self::reloadTerms($terms);
+        self::assertSame($expected, $terms->getTranslation('de_DE')->getContent());
+        self::assertSame('The content of cookie_policy', $terms->getTranslation('en_US')->getContent());
+        self::assertSame([], $page->pageErrors(), 'The Terms form threw JavaScript errors');
+    }
+
+    #[Test]
+    public function the_preview_tab_shows_the_unsaved_edits_in_each_locale(): void
+    {
+        $terms = self::createTerms('cookie_policy', localeCodes: ['en_US', 'de_DE']);
+        self::getEntityManager()->clear();
+
+        $page = $this->open(sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
+
+        $english = $page->locator('[data-test-content="en_US"]');
+        $englishPreview = $page->locator('[data-test-content-preview="en_US"]');
+        expect($englishPreview)->toBeHidden();
+        $english->fill("## Cookies\n\nWe use **cookies** to remember your cart.");
+
+        // Clicking the tab takes the focus from the textarea, which re-renders the Live form with the edit
+        $page->locator('[data-test-content-preview-tab="en_US"]')->click();
+        expect($englishPreview)->toBeVisible();
+        expect($englishPreview->locator('h2#content-cookies'))->toContainText('Cookies');
+        expect($englishPreview->locator('strong'))->toHaveText('cookies');
+        expect($english)->toBeHidden();
+
+        $page->locator('[data-test-terms-translations-accordion="de_DE"]')->click();
+        $german = $page->locator('[data-test-content="de_DE"]');
+        $german->fill("## Kekse\n\n* Wir verwenden _Kekse_.");
+        $page->locator('[data-test-content-preview-tab="de_DE"]')->click();
+        $germanPreview = $page->locator('[data-test-content-preview="de_DE"]');
+        expect($germanPreview->locator('h2#content-kekse'))->toContainText('Kekse');
+        expect($germanPreview->locator('li em'))->toHaveText('Kekse');
+
+        // The English Preview tab stayed open through the German re-render
+        $page->locator('[data-test-terms-translations-accordion="en_US"]')->click();
+        expect($englishPreview)->toBeVisible();
+        expect($englishPreview->locator('strong'))->toHaveText('cookies');
+
+        // The Write tab shows the textarea with the edit again
+        $page->locator('[data-test-content-write-tab="en_US"]')->click();
+        expect($english)->toBeVisible();
+        expect($english)->toHaveValue("## Cookies\n\nWe use **cookies** to remember your cart.");
+        expect($englishPreview)->toBeHidden();
+
+        // Previewing saved nothing
+        self::assertSame('The content of cookie_policy', self::reloadTerms($terms)->getTranslation('en_US')->getContent());
+        self::assertSame([], $page->pageErrors(), 'The Terms form threw JavaScript errors');
+    }
+
     /**
      * Opens the page and waits until its scripts have set it up, so clicks reach Bootstrap and the Live components
      */
@@ -223,6 +322,26 @@ final class TermsAdminTest extends PlaywrightTestCase
     {
         $page->waitForResponse('**/_components/**', ['action' => $script]);
         $page->waitForFunction('() => null === document.querySelector("[data-controller~=live][busy]")');
+    }
+
+    /**
+     * Selects the first, or the last, occurrence of the text in the textarea
+     */
+    private static function selectText(LocatorInterface $textarea, string $text, bool $last = false): void
+    {
+        $textarea->evaluate(
+            '(textarea, [text, last]) => {
+                const start = last ? textarea.value.lastIndexOf(text) : textarea.value.indexOf(text);
+                textarea.focus();
+                textarea.setSelectionRange(start, start + text.length);
+            }',
+            [$text, $last],
+        );
+    }
+
+    private static function clickMarkdownButton(PageInterface $page, string $localeCode, string $button): void
+    {
+        $page->locator(sprintf('[data-test-markdown-toolbar="%s"] [data-test-markdown-button="%s"]', $localeCode, $button))->click();
     }
 
     /**
