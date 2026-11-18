@@ -14,6 +14,7 @@ The customer has to tick the required terms before the form can be submitted, fo
 * [Terms checkboxes](#terms-checkboxes)
 * [Required and optional terms, and position](#required-and-optional-terms-and-position)
 * [Finding and checking the Terms on a Form in code](#finding-and-checking-the-terms-on-a-form-in-code)
+* [Reacting to Answers](#reacting-to-answers)
 * [Content](#content)
 * [Terms versions](#terms-versions)
 * [Terms pages](#terms-pages)
@@ -257,6 +258,8 @@ setono_sylius_terms:
 ```
 
 * Set `hooks: []` to render the checkboxes yourself (see [Rendering the checkboxes by hand](#rendering-the-checkboxes-by-hand)).
+* The Form's Answers are dispatched after its `saved_event`, or right after a valid submit without one (see
+  [Answers on your own Forms](#answers-on-your-own-forms)).
 * Without a `label`, the admin shows the translation key `setono_sylius_terms.form.terms.term_form.<code>`.
 * Each Form needs its own form type, because the plugin finds a Form by the type of the form being built. Two enabled
   Forms with the same type fail the container build. To reuse a default Form's type under your own code, switch the
@@ -383,6 +386,94 @@ final class CompleteCheckoutCommand
     #[RequiredTermsTicked(form: 'checkout_complete')]
     public array $terms = [];
 }
+```
+
+## Reacting to Answers
+
+An Answer is whether the customer ticked a Terms checkbox when submitting a Form. The plugin doesn't store Answers. It
+hands them to you in one event, `Setono\SyliusTermsPlugin\Event\TermsAnsweredEvent`, so you can keep your own record,
+such as a consent log. The event is dispatched once per valid submit of a Form that shows Terms, after the Form's work
+is saved:
+
+| Form                | Dispatched                                                                       | `data`                         |
+|---------------------|----------------------------------------------------------------------------------|--------------------------------|
+| `checkout_complete` | after `sylius.order.post_complete`, once the completed order is saved            | the `Order`                    |
+| `registration`      | after `sylius.customer.post_register`, once the customer is saved and has an ID  | the `Customer`                 |
+| `contact`           | right after the valid submit, since the contact form saves nothing               | the submitted values, an array |
+
+* Until the Form's save, the Answers wait. When the save doesn't come, nothing is dispatched. For example, Sylius'
+  `OrderIntegrityChecker` stops a checkout on `sylius.order.pre_complete` when a promotion no longer applies or the
+  total has changed. The customer submits again, and that submit's Answers are dispatched once the order completes.
+* An invalid submit dispatches nothing, and neither does a Live Component re-render, such as the registration form's.
+
+```php
+use Setono\SyliusTermsPlugin\Event\TermsAnsweredEvent;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+
+#[AsEventListener]
+final class RecordConsentListener
+{
+    public function __invoke(TermsAnsweredEvent $event): void
+    {
+        $event->form;       // the Form's code, such as checkout_complete
+        $event->data;       // the form's data, see the table above
+        $event->channel;    // the channel the Terms were shown in
+        $event->localeCode; // the locale they were shown in
+
+        foreach ($event->answers as $answer) {
+            $answer->version->getTerms()->getCode(); // terms_and_conditions
+            $answer->version->getNumber();           // 3
+            $answer->ticked;                         // true or false
+        }
+    }
+}
+```
+
+* `answers` holds one Answer per Terms shown, in the order shown. Its `version` is the
+  [Terms version](#terms-versions) shown, the one in force when the form was built. Its text in the locale shown is
+  `$answer->version->getTranslation($event->localeCode)`.
+* A required Terms is always ticked, since the Form can't be submitted without it. Only an optional Terms can be
+  unticked.
+* Your listener runs after Sylius has flushed the Form's data, so changes you make to the order or customer aren't part
+  of Sylius' save. Flush what you change yourself.
+
+### Answers on your own Forms
+
+A Form you add (see [Adding a Form](#adding-a-form)) gets the after-save guarantee only if its config names a
+`saved_event`: the event your code dispatches once the form's data is saved. Without one, its Answers are dispatched
+right after its valid submit, before your code has saved anything.
+
+```yaml
+# config/packages/setono_sylius_terms.yaml
+setono_sylius_terms:
+    forms:
+        newsletter:
+            type: App\Form\Type\NewsletterType
+            hooks: { app.newsletter.form: 50 }
+            saved_event: app.newsletter.post_subscribe
+```
+
+* Dispatch the saved event in the request that submitted the form. Answers that are still waiting when the request
+  ends are dropped. The event's object can be anything.
+* The Answers come from the root form, so the Form's type must be the type of the form you submit. A Form nested inside
+  another form dispatches nothing.
+* A Live Component re-renders its form by submitting it, so in a Live Component request a valid submit can't be told
+  from a re-render. A Form without a `saved_event` dispatches nothing there. If a LiveAction saves your Form, give the
+  Form a `saved_event` and dispatch it in the action.
+
+### Dispatching Answers from your own code
+
+To pass on Answers that don't come through a Symfony form, such as from an API, hand them to
+`Setono\SyliusTermsPlugin\Dispatcher\TermsAnsweredDispatcherInterface`. It applies the same rule: the event waits for the
+Form's `saved_event` in the same request, or is dispatched right away for a Form without one.
+
+```php
+use Setono\SyliusTermsPlugin\Event\Answer;
+use Setono\SyliusTermsPlugin\Event\TermsAnsweredEvent;
+
+$termsAnsweredDispatcher->dispatch(new TermsAnsweredEvent('checkout_complete', $order, $channel, 'en_US', [
+    new Answer($termsVersion, ticked: true),
+]));
 ```
 
 ## Content

@@ -14,6 +14,8 @@ use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeCheckerInterface;
 use Setono\SyliusTermsPlugin\Controller\Action\ShowTermsAction;
 use Setono\SyliusTermsPlugin\Converter\ContentConverter;
 use Setono\SyliusTermsPlugin\DependencyInjection\SetonoSyliusTermsExtension;
+use Setono\SyliusTermsPlugin\Dispatcher\TermsAnsweredDispatcher;
+use Setono\SyliusTermsPlugin\Dispatcher\TermsAnsweredDispatcherInterface;
 use Setono\SyliusTermsPlugin\EventListener\AttachTermsPdfsListener;
 use Setono\SyliusTermsPlugin\EventListener\CreateTermsVersionListener;
 use Setono\SyliusTermsPlugin\EventListener\PreventTermsVersionEditListener;
@@ -131,6 +133,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         yield 'slug generator' => [SlugGenerator::class];
         yield 'terms grid' => [TermsGrid::class];
         yield 'terms form component' => [TermsFormComponent::class];
+        yield 'terms answered dispatcher' => [TermsAnsweredDispatcher::class];
     }
 
     #[Test]
@@ -146,6 +149,43 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias(RequiredTermsCheckerInterface::class, RequiredTermsChecker::class);
         $this->assertContainerBuilderHasAlias(ContentRendererInterface::class, ContentRenderer::class);
         $this->assertContainerBuilderHasAlias(SlugGeneratorInterface::class, SlugGenerator::class);
+        $this->assertContainerBuilderHasAlias(TermsAnsweredDispatcherInterface::class, TermsAnsweredDispatcher::class);
+    }
+
+    #[Test]
+    public function the_terms_answered_dispatcher_dispatches_with_symfonys_event_dispatcher_and_is_reset_between_requests(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsAnsweredDispatcher::class, 0, new Reference('event_dispatcher'));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsAnsweredDispatcher::class, 1, '%setono_sylius_terms.forms%');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(TermsAnsweredDispatcher::class, 'kernel.reset', ['method' => 'reset']);
+    }
+
+    #[Test]
+    public function the_terms_answered_dispatcher_listens_to_the_saved_event_of_each_enabled_form_once(): void
+    {
+        $this->load(['forms' => [
+            'registration' => ['enabled' => false],
+            'newsletter' => ['type' => 'App\Form\Type\NewsletterType', 'saved_event' => 'app.newsletter.post_subscribe'],
+            // A second Form that is saved by the same event
+            'newsletter_footer' => ['type' => 'App\Form\Type\NewsletterFooterType', 'saved_event' => 'app.newsletter.post_subscribe'],
+        ]]);
+
+        self::assertSame([
+            ['event' => 'sylius.order.post_complete', 'method' => 'onSaved'],
+            ['event' => 'app.newsletter.post_subscribe', 'method' => 'onSaved'],
+        ], $this->container->getDefinition(TermsAnsweredDispatcher::class)->getTag('kernel.event_listener'));
+    }
+
+    #[Test]
+    public function the_form_type_extension_hands_the_answers_to_the_terms_answered_dispatcher(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormTypeExtension::class, 3, new Reference(TermsAnsweredDispatcherInterface::class));
+        // To tell a Live Component request
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormTypeExtension::class, 4, new Reference('request_stack'));
     }
 
     #[Test]
@@ -571,7 +611,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormTypeExtension::class, 0, new Reference(FormTermsLookupInterface::class));
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormTypeExtension::class, 1, new Reference('sylius.context.channel'));
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormTypeExtension::class, 2, new Reference('sylius.context.locale'));
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormTypeExtension::class, 3, '%setono_sylius_terms.forms%');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormTypeExtension::class, 5, '%setono_sylius_terms.forms%');
 
         $this->assertContainerBuilderHasServiceDefinitionWithTag(TermsCheckboxCollectionType::class, 'form.type');
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsCheckboxCollectionType::class, 0, new Reference(LabelRendererInterface::class));

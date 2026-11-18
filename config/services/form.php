@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Setono\SyliusTermsPlugin\Dispatcher\TermsAnsweredDispatcherInterface;
 use Setono\SyliusTermsPlugin\Form\Extension\FormTypeExtension;
 use Setono\SyliusTermsPlugin\Form\Type\TermsCheckboxCollectionType;
 use Setono\SyliusTermsPlugin\Form\Type\TermsTranslationType;
@@ -50,6 +51,8 @@ return static function (ContainerConfigurator $container): void {
             service(FormTermsLookupInterface::class),
             service('sylius.context.channel'),
             service('sylius.context.locale'),
+            service(TermsAnsweredDispatcherInterface::class),
+            service('request_stack'),
             param('setono_sylius_terms.forms'),
         ])
         ->tag('form.type_extension')
