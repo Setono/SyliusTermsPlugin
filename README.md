@@ -436,6 +436,11 @@ final class RecordConsentListener
   unticked.
 * Your listener runs after Sylius has flushed the Form's data, so changes you make to the order or customer aren't part
   of Sylius' save. Flush what you change yourself.
+* The plugin listens to the saved event at priority -100, after Sylius' own listeners there, such as the order
+  confirmation email and the registration email. They have run by the time your listener does, so a listener of yours
+  that throws can't stop them. The reverse holds too: when one of them throws, for example because the email can't be
+  sent through a synchronous mailer transport, the request fails after the order or customer is saved, and that save's
+  Answers are never dispatched. A consent log that must not miss an order shouldn't rely on the event alone.
 
 ### Answers on your own Forms
 

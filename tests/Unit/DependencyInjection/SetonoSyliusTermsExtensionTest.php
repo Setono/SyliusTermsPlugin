@@ -163,7 +163,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
     }
 
     #[Test]
-    public function the_terms_answered_dispatcher_listens_to_the_saved_event_of_each_enabled_form_once(): void
+    public function the_terms_answered_dispatcher_listens_to_the_saved_event_of_each_enabled_form_once_after_sylius_own_listeners(): void
     {
         $this->load(['forms' => [
             'registration' => ['enabled' => false],
@@ -172,9 +172,10 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
             'newsletter_footer' => ['type' => 'App\Form\Type\NewsletterFooterType', 'saved_event' => 'app.newsletter.post_subscribe'],
         ]]);
 
+        // Sylius' own listeners on its saved events, such as the order confirmation email, listen at 0
         self::assertSame([
-            ['event' => 'sylius.order.post_complete', 'method' => 'onSaved'],
-            ['event' => 'app.newsletter.post_subscribe', 'method' => 'onSaved'],
+            ['event' => 'sylius.order.post_complete', 'method' => 'onSaved', 'priority' => -100],
+            ['event' => 'app.newsletter.post_subscribe', 'method' => 'onSaved', 'priority' => -100],
         ], $this->container->getDefinition(TermsAnsweredDispatcher::class)->getTag('kernel.event_listener'));
     }
 
