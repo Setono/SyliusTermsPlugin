@@ -26,6 +26,9 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
     /** The admin Terms routes set this as their hook_prefix, see config/routes/admin.yaml */
     private const ADMIN_HOOK_PREFIX = 'setono_sylius_terms.admin.terms';
 
+    /** The admin Terms version route sets this as its hook_prefix, see config/routes/admin.yaml */
+    private const ADMIN_TERMS_VERSION_HOOK_PREFIX = 'setono_sylius_terms.admin.terms_version';
+
     public function load(array $configs, ContainerBuilder $container): void
     {
         /**
@@ -234,7 +237,68 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
             $hooks[sprintf('%s.%s.content.form.translations', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/translations', ['name', 'slug', 'label', 'content']);
         }
 
-        return $hooks;
+        // Next to core's Cancel and Update buttons, where Sylius' product page has View in store
+        $hooks[$prefix . '.update.content.header.title_block.actions'] = [
+            'view_in_store' => [
+                'template' => '@SetonoSyliusTermsPlugin/admin/terms/update/view_in_store.html.twig',
+                'priority' => 300,
+            ],
+        ];
+
+        // Below the Live form and outside it, above core's footer at -100
+        $hooks[$prefix . '.update.content']['versions'] = [
+            'template' => '@SetonoSyliusTermsPlugin/admin/terms/update/versions.html.twig',
+            'priority' => -50,
+        ];
+
+        return $hooks + self::getAdminTermsVersionHooks();
+    }
+
+    /**
+     * The hookables of the read-only Terms version page. It is core's shared CRUD show page, so only what differs from
+     * core's sylius_admin.common.show hooks is set here
+     *
+     * @return array<string, array<string, array{template: string, priority: int}>>
+     */
+    private static function getAdminTermsVersionHooks(): array
+    {
+        $prefix = self::ADMIN_TERMS_VERSION_HOOK_PREFIX . '.show';
+        $templates = '@SetonoSyliusTermsPlugin/admin/terms_version/show';
+
+        return [
+            // Styles the rendered Content in the Preview tabs
+            $prefix . '#stylesheets' => [
+                'terms_content' => [
+                    'template' => $templates . '/stylesheets.html.twig',
+                    'priority' => -100,
+                ],
+            ],
+            $prefix . '.content.header' => [
+                'breadcrumbs' => [
+                    'template' => $templates . '/breadcrumbs.html.twig',
+                    'priority' => 100,
+                ],
+            ],
+            $prefix . '.content.header.title_block' => [
+                'title' => [
+                    'template' => $templates . '/title.html.twig',
+                    'priority' => 0,
+                ],
+            ],
+            $prefix . '.content' => [
+                'sections' => [
+                    'template' => $templates . '/sections.html.twig',
+                    'priority' => 0,
+                ],
+            ],
+            $prefix . '.content.sections' => [
+                'translations' => [
+                    'template' => $templates . '/sections/translations.html.twig',
+                    'priority' => 0,
+                ],
+            ],
+            $prefix . '.content.sections.translations' => self::getHookables($templates . '/sections/translations', ['name', 'label', 'content']),
+        ];
     }
 
     /**

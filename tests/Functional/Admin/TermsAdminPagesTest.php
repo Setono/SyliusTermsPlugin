@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Tests\Functional\Admin;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Tests\Functional\CreatesTermsTrait;
 use Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent;
 use Sylius\Component\Core\Model\AdminUserInterface;
+use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\User\Repository\UserRepositoryInterface;
+use Sylius\Resource\Doctrine\Persistence\RepositoryInterface;
 use Sylius\TwigHooks\Hookable\AbstractHookable;
 use Sylius\TwigHooks\Hookable\HookableComponent;
 use Sylius\TwigHooks\Registry\HookablesRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -25,6 +29,7 @@ use Symfony\UX\LiveComponent\Test\InteractsWithLiveComponents;
 
 final class TermsAdminPagesTest extends WebTestCase
 {
+    use ClockSensitiveTrait;
     use CreatesTermsTrait;
     use InteractsWithLiveComponents;
 
@@ -60,6 +65,228 @@ final class TermsAdminPagesTest extends WebTestCase
             self::assertSame(['forms', 'channels'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.placement'))));
             self::assertSame(['name', 'slug', 'label', 'content'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.translations'))));
         }
+
+        $updatePrefixes = static fn (string $hook): array => [
+            'setono_sylius_terms.admin.terms.update.' . $hook,
+            'sylius_admin.terms.update.' . $hook,
+            'sylius_admin.common.update.' . $hook,
+        ];
+        // The Versions card sits below the Live form and outside it
+        self::assertSame(['flashes', 'header', 'form_error_alert', 'form', 'versions', 'footer'], self::getHookableNames($registry->getEnabledFor($updatePrefixes('content'))));
+        self::assertSame(['view_in_store', 'show', 'cancel', 'update'], self::getHookableNames($registry->getEnabledFor($updatePrefixes('content.header.title_block.actions'))));
+
+        // The prefixes core's show template passes for a route with hook_prefix: setono_sylius_terms.admin.terms_version
+        $versionPrefixes = static fn (string $hook): array => [
+            'setono_sylius_terms.admin.terms_version.show.' . $hook,
+            'sylius_admin.terms_version.show.' . $hook,
+            'sylius_admin.common.show.' . $hook,
+        ];
+        self::assertSame(['flashes', 'header', 'sections', 'footer'], self::getHookableNames($registry->getEnabledFor($versionPrefixes('content'))));
+        self::assertSame(['translations'], self::getHookableNames($registry->getEnabledFor($versionPrefixes('content.sections'))));
+        self::assertSame(['name', 'label', 'content'], self::getHookableNames($registry->getEnabledFor($versionPrefixes('content.sections.translations'))));
+    }
+
+    #[Test]
+    public function the_update_page_lists_the_versions_newest_first(): void
+    {
+        self::mockTime('2026-11-16 12:00:00');
+        $client = self::createAdminClient();
+        $terms = self::createTerms('cookie_policy', localeCodes: ['en_US', 'de_DE']);
+
+        self::mockTime('2026-11-17 09:30:00');
+        $terms->getTranslation('de_DE')->setContent('Der neue Inhalt');
+        self::getEntityManager()->flush();
+        self::getEntityManager()->clear();
+
+        $crawler = $client->request('GET', sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
+
+        self::assertResponseIsSuccessful();
+        $card = $crawler->filter('[data-test-terms-versions]');
+        self::assertNotContains('form', $card->ancestors()->each(static fn (Crawler $ancestor): string => $ancestor->nodeName()), 'The Versions card is outside the form');
+        self::assertSame('Versions', trim($card->filter('.card-title')->text()));
+
+        $rows = $card->filter('tbody tr');
+        self::assertSame(['2', '1'], $rows->each(static fn (Crawler $row): ?string => $row->attr('data-test-terms-version')));
+        self::assertStringContainsString('Nov 17, 2026', $rows->eq(0)->text());
+        self::assertStringContainsString('Nov 16, 2026', $rows->eq(1)->text());
+        self::assertStringContainsString('English (United States), German (Germany)', $rows->eq(0)->text());
+        self::assertSame(
+            sprintf('/admin/terms/%d/versions/2', (int) $terms->getId()),
+            $rows->eq(0)->filter('[data-test-show-terms-version]')->attr('href'),
+        );
+    }
+
+    #[Test]
+    public function the_version_page_shows_the_rendered_content_and_the_source_for_each_locale(): void
+    {
+        self::mockTime('2026-11-16 12:00:00');
+        $client = self::createAdminClient();
+        $terms = self::createTerms('cookie_policy', localeCodes: ['de_DE', 'en_US']);
+        $sources = [
+            'en_US' => "## Cookies\n\nWe use **cookies**.<script>alert('en')</script>",
+            'de_DE' => "## Cookies\n\nWir verwenden **Cookies**.<script>alert('de')</script>",
+        ];
+
+        self::mockTime('2026-11-17 09:30:00');
+        foreach ($sources as $localeCode => $source) {
+            $terms->getTranslation($localeCode)->setContent($source);
+        }
+        self::getEntityManager()->flush();
+        self::getEntityManager()->clear();
+
+        $crawler = $client->request('GET', sprintf('/admin/terms/%d/versions/2', (int) $terms->getId()));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1.page-title', 'Version 2');
+        self::assertSelectorTextContains('[data-test-terms-version-title]', 'In force since November 17, 2026');
+        self::assertCount(1, $crawler->filter('link[data-test-terms-content-stylesheet]'));
+        // The admin's locale first, then the others by name
+        self::assertSame(['en_US', 'de_DE'], $crawler->filter('[data-test-terms-version-translations-accordion]')->each(static fn (Crawler $header): ?string => $header->attr('data-test-terms-version-translations-accordion')));
+        self::assertSame(
+            sprintf('/admin/terms/%d/edit', (int) $terms->getId()),
+            $crawler->filter('.breadcrumb a')->reduce(static fn (Crawler $link): bool => 'cookie_policy (en_US)' === trim($link->text()))->attr('href'),
+        );
+
+        foreach ($sources as $localeCode => $source) {
+            self::assertSame(sprintf('cookie_policy (%s)', $localeCode), trim($crawler->filter(sprintf('[data-test-name="%s"]', $localeCode))->text()));
+            self::assertSame('I accept the [link:cookie_policy]', trim($crawler->filter(sprintf('[data-test-label="%s"]', $localeCode))->text()));
+
+            $preview = $crawler->filter(sprintf('[data-test-content-preview="%s"]', $localeCode));
+            self::assertSame('content-cookies', $preview->filter('h2')->attr('id'));
+            self::assertStringStartsWith('Cookies', trim($preview->filter('h2')->text()));
+            self::assertSame('cookies', strtolower(trim($preview->filter('strong')->text())));
+            self::assertCount(0, $preview->filter('script'), 'The preview is sanitised');
+
+            self::assertSame($source, $crawler->filter(sprintf('[data-test-content-source="%s"]', $localeCode))->text(normalizeWhitespace: false));
+        }
+
+        // A version shows its own text, not the Terms' current text
+        $crawler = $client->request('GET', sprintf('/admin/terms/%d/versions/1', (int) $terms->getId()));
+
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1.page-title', 'Version 1');
+        self::assertSame('The content of cookie_policy', $crawler->filter('[data-test-content-source="en_US"]')->text());
+    }
+
+    #[Test]
+    public function the_version_page_says_when_a_locale_has_no_content(): void
+    {
+        $client = self::createAdminClient();
+        $terms = self::createTerms('cookie_policy', hasContent: false);
+        self::getEntityManager()->clear();
+
+        $crawler = $client->request('GET', sprintf('/admin/terms/%d/versions/1', (int) $terms->getId()));
+
+        self::assertResponseIsSuccessful();
+        self::assertSame('No content', trim($crawler->filter('[data-test-no-content="en_US"]')->text()));
+        self::assertCount(0, $crawler->filter('[data-test-content-preview]'));
+    }
+
+    #[Test]
+    public function the_version_page_is_not_found_for_a_number_the_terms_does_not_have(): void
+    {
+        $client = self::createAdminClient();
+        $terms = self::createTerms('cookie_policy');
+        $other = self::findTerms('terms_and_conditions');
+
+        $client->request('GET', sprintf('/admin/terms/%d/versions/2', (int) $terms->getId()));
+        self::assertResponseStatusCodeSame(404);
+
+        // Every Terms has a version 1, but this one is found by the Terms in the path
+        $client->request('GET', sprintf('/admin/terms/%d/versions/1', (int) $other->getId()));
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.breadcrumb', 'Terms and Conditions');
+    }
+
+    #[Test]
+    public function view_in_store_points_at_the_terms_page(): void
+    {
+        $client = self::createAdminClient();
+        $terms = self::findTerms('terms_and_conditions');
+
+        $crawler = $client->request('GET', sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
+
+        self::assertResponseIsSuccessful();
+        $link = $crawler->filter('a[data-test-view-in-store]');
+        self::assertSame('View in store', trim($link->text()));
+        // FASHION_WEB's hostname is localhost, its default locale en_US, and Sylius' URLs are unsecured by default
+        $url = 'http://localhost/en_US/terms/terms-and-conditions';
+        self::assertSame($url, $link->attr('href'));
+        self::assertStringNotContainsString('disabled', (string) $link->attr('class'));
+
+        // The link leads to the Terms page
+        $client->request('GET', $url);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('h1[data-test-terms-name]', 'Terms and Conditions');
+    }
+
+    #[Test]
+    public function view_in_store_has_an_entry_per_enabled_channel_the_terms_is_in(): void
+    {
+        $client = self::createAdminClient();
+        $second = self::createChannel('SECOND_WEB');
+        $second->setHostname('second.example.com');
+        // The Terms has no de_DE translation, so it has no page in this channel's default locale
+        $german = self::createChannel('GERMAN_WEB');
+        $german->setDefaultLocale(self::getLocale('de_DE'));
+        $disabled = self::createChannel('DISABLED_WEB');
+        $disabled->setEnabled(false);
+        $terms = self::createTerms('cookie_policy', channels: [self::getChannel('FASHION_WEB'), $second, $german, $disabled]);
+        self::getEntityManager()->clear();
+
+        $crawler = $client->request('GET', sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
+
+        self::assertResponseIsSuccessful();
+        $entries = $crawler->filter('[data-test-view-in-store] a[data-test-channel-code]');
+        self::assertSame(
+            ['FASHION_WEB', 'SECOND_WEB', 'GERMAN_WEB'],
+            $entries->each(static fn (Crawler $entry): ?string => $entry->attr('data-test-channel-code')),
+        );
+        self::assertSame(
+            ['http://localhost/en_US/terms/cookie-policy', 'http://second.example.com/en_US/terms/cookie-policy', '#'],
+            $entries->each(static fn (Crawler $entry): ?string => $entry->attr('href')),
+        );
+        self::assertStringContainsString('disabled', (string) $entries->eq(2)->attr('class'));
+    }
+
+    /**
+     * @param list<string> $channelCodes
+     * @param list<string> $localeCodes
+     */
+    #[Test]
+    #[DataProvider('provideTermsWithoutATermsPage')]
+    public function view_in_store_is_disabled_without_a_terms_page_to_show(array $channelCodes, array $localeCodes, bool $enabled, bool $hasContent): void
+    {
+        $client = self::createAdminClient();
+        $terms = self::createTerms(
+            'cookie_policy',
+            channels: array_map(self::getChannel(...), $channelCodes),
+            localeCodes: $localeCodes,
+            enabled: $enabled,
+            hasContent: $hasContent,
+        );
+        self::getEntityManager()->clear();
+
+        $crawler = $client->request('GET', sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
+
+        self::assertResponseIsSuccessful();
+        $link = $crawler->filter('a[data-test-view-in-store]');
+        self::assertCount(1, $link);
+        self::assertStringContainsString('disabled', (string) $link->attr('class'));
+        self::assertSame('#', $link->attr('href'));
+    }
+
+    /**
+     * The cases where the Terms page in FASHION_WEB's default locale, en_US, would be not found
+     *
+     * @return \Generator<string, array{channelCodes: list<string>, localeCodes: list<string>, enabled: bool, hasContent: bool}>
+     */
+    public static function provideTermsWithoutATermsPage(): \Generator
+    {
+        yield 'disabled' => ['channelCodes' => ['FASHION_WEB'], 'localeCodes' => ['en_US'], 'enabled' => false, 'hasContent' => true];
+        yield 'in no channel' => ['channelCodes' => [], 'localeCodes' => ['en_US'], 'enabled' => true, 'hasContent' => true];
+        yield "not translated into the channel's default locale" => ['channelCodes' => ['FASHION_WEB'], 'localeCodes' => ['de_DE'], 'enabled' => true, 'hasContent' => true];
+        yield 'no Content in the default locale' => ['channelCodes' => ['FASHION_WEB'], 'localeCodes' => ['en_US'], 'enabled' => true, 'hasContent' => false];
     }
 
     #[Test]
@@ -216,6 +443,17 @@ final class TermsAdminPagesTest extends WebTestCase
         self::assertInstanceOf(AdminUserInterface::class, $admin);
 
         return $admin;
+    }
+
+    private static function getLocale(string $code): LocaleInterface
+    {
+        /** @var RepositoryInterface<LocaleInterface> $repository */
+        $repository = self::getContainer()->get('sylius.repository.locale');
+
+        $locale = $repository->findOneBy(['code' => $code]);
+        self::assertInstanceOf(LocaleInterface::class, $locale);
+
+        return $locale;
     }
 
     private static function findTerms(string $code): TermsInterface

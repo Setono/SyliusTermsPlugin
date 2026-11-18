@@ -1,0 +1,79 @@
+{#
+    The Content in two tabs, in the card-header tabs Sylius uses for channel pricing: Preview, open by default, renders it
+    as the shop does, and Source shows the stored Markdown verbatim. The version stores the source, so the preview is
+    rendered on every display (ADR 0002)
+#}
+
+{% set translation = hookable_metadata.context.translation %}
+{% set locale = hookable_metadata.context.locale %}
+{% set id = 'terms-version-content-' ~ locale %}
+
+<div class="col-12">
+    <div class="mb-2"><strong>{{ 'setono_sylius_terms.form.terms.content'|trans }}</strong></div>
+
+    {% if translation.content is empty %}
+        <div class="text-body-secondary" {{ sylius_test_html_attribute('no-content', locale) }}>
+            {{ 'setono_sylius_terms.ui.no_content'|trans }}
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a
+                            class="nav-link active"
+                            id="{{ id }}-preview-tab"
+                            role="tab"
+                            data-bs-toggle="tab"
+                            href="#{{ id }}-preview"
+                            aria-controls="{{ id }}-preview"
+                            aria-selected="true"
+                            {{ sylius_test_html_attribute('content-preview-tab', locale) }}
+                        >
+                            {{ 'setono_sylius_terms.ui.preview'|trans }}
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a
+                            class="nav-link"
+                            id="{{ id }}-source-tab"
+                            role="tab"
+                            data-bs-toggle="tab"
+                            href="#{{ id }}-source"
+                            aria-controls="{{ id }}-source"
+                            aria-selected="false"
+                            {{ sylius_test_html_attribute('content-source-tab', locale) }}
+                        >
+                            {{ 'setono_sylius_terms.ui.source'|trans }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                    <div
+                        class="tab-pane show active"
+                        id="{{ id }}-preview"
+                        role="tabpanel"
+                        aria-labelledby="{{ id }}-preview-tab"
+                        tabindex="0"
+                        {{ sylius_test_html_attribute('content-preview', locale) }}
+                    >
+                        <div class="setono-terms-content">
+                            {{ translation.content|terms_content }}
+                        </div>
+                    </div>
+                    <div
+                        class="tab-pane"
+                        id="{{ id }}-source"
+                        role="tabpanel"
+                        aria-labelledby="{{ id }}-source-tab"
+                        tabindex="0"
+                    >
+                        <textarea class="form-control font-monospace" rows="15" readonly {{ sylius_test_html_attribute('content-source', locale) }}>{{ translation.content }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>

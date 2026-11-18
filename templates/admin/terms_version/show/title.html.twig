@@ -1,0 +1,15 @@
+{# The version as number and date: "Version 3", "In force since 16 November 2026" #}
+
+{% import '@SyliusAdmin/shared/helper/header.html.twig' as header %}
+
+{% set version = hookable_metadata.context.resource %}
+
+<div class="col-12 col-md-6" {{ sylius_test_html_attribute('terms-version-title') }}>
+    <div class="d-md-flex gap-2 align-items-center">
+        {{ header.h1(
+            'setono_sylius_terms.ui.version'|trans({'%number%': version.number}),
+            null,
+            'setono_sylius_terms.ui.in_force_since'|trans({'%date%': version.inForceFrom|format_date('long')}),
+        ) }}
+    </div>
+</div>

@@ -39,6 +39,7 @@ final class AddMenuSubscriber implements EventSubscriberInterface
                 'extras' => ['routes' => [
                     ['route' => 'setono_sylius_terms_admin_terms_create'],
                     ['route' => 'setono_sylius_terms_admin_terms_update'],
+                    ['route' => 'setono_sylius_terms_admin_terms_version_show'],
                 ]],
             ])
             ->setLabel('setono_sylius_terms.menu.admin.main.configuration.terms')

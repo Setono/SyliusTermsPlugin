@@ -19,6 +19,14 @@ setono_sylius_terms:
     version: Version %number%
     in_force_since: En vigueur depuis le %date%
 
+    terms_versions: Versions des conditions
+    versions: Versions
+    number: Numéro
+    in_force_from: En vigueur depuis
+    preview: Aperçu
+    source: Source
+    no_content: Aucun contenu
+
   menu:
     admin:
       main:

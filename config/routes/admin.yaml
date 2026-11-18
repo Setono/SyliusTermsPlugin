@@ -11,3 +11,24 @@ setono_sylius_terms_admin_terms:
             all:
                 hook_prefix: setono_sylius_terms.admin.terms
     type: sylius.resource
+
+# The read-only page of one Terms version, found by its Terms and its number
+setono_sylius_terms_admin_terms_version_show:
+    path: /terms/{id}/versions/{number}
+    methods: [GET]
+    requirements:
+        id: \d+
+        number: \d+
+    defaults:
+        _controller: setono_sylius_terms.controller.terms_version::showAction
+        _sylius:
+            section: admin
+            permission: false
+            template: '@SyliusAdmin/shared/crud/show.html.twig'
+            repository:
+                method: findOneBy
+                arguments:
+                    - terms: $id
+                      number: $number
+            vars:
+                hook_prefix: setono_sylius_terms.admin.terms_version
