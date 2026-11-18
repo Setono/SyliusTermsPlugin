@@ -145,6 +145,9 @@ setono_sylius_terms:
             enabled: false
 ```
 
+Terms placed on a Form that you switch off keep its code, which the admin shows as "contact (not configured)". They
+are no longer shown, enforced or attached to the order confirmation email for that Form.
+
 ## Terms checkboxes
 
 When a Form's form type is built in the shop, the plugin adds a `terms` field to it, with one checkbox per Terms the
@@ -227,7 +230,8 @@ foreach ($translations as $translation) {
 }
 ```
 
-The moment defaults to now. The placement (enabled, channels and Forms) is always the current one.
+The moment defaults to now. The placement (enabled, channels and Forms) is always the current one. A Form that isn't
+enabled in the `forms` config has no Terms, even if Terms placed on it before still list its code.
 
 The required terms checker returns the required Terms on a Form that the customer left unticked, given the codes of
 the ticked Terms:
