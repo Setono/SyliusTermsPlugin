@@ -75,9 +75,9 @@ final class TermsExampleFactoryTest extends TestCase
     }
 
     #[Test]
-    public function it_places_the_terms_on_the_checkout_complete_form_by_default(): void
+    public function it_places_the_terms_on_no_form_by_default(): void
     {
-        self::assertSame(['checkout_complete'], $this->createFactory()->create(['code' => 'eula', 'channels' => []])->getForms());
+        self::assertSame([], $this->createFactory()->create(['code' => 'eula', 'channels' => []])->getForms());
     }
 
     #[Test]
@@ -105,17 +105,14 @@ final class TermsExampleFactoryTest extends TestCase
     }
 
     #[Test]
-    public function it_picks_three_random_channels_by_default(): void
+    public function it_puts_the_terms_in_every_channel_by_default(): void
     {
         $channels = [self::channel('A'), self::channel('B'), self::channel('C'), self::channel('D')];
-        $this->channelRepository->findBy([])->willReturn($channels);
+        $this->channelRepository->findAll()->willReturn($channels);
 
         $terms = $this->createFactory()->create(['code' => 'eula']);
 
-        self::assertCount(3, $terms->getChannels());
-        foreach ($terms->getChannels() as $channel) {
-            self::assertContains($channel, $channels);
-        }
+        self::assertSame($channels, $terms->getChannels()->toArray());
     }
 
     #[Test]

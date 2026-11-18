@@ -617,8 +617,8 @@ sylius_fixtures:
                         custom:
                             terms_and_conditions:
                                 code: terms_and_conditions
-                                forms: [checkout_complete]     # Form codes. Default: [checkout_complete]
-                                channels: [FASHION_WEB]        # channel codes. Default: three random channels
+                                forms: [checkout_complete]     # Form codes. Default: no Form
+                                channels: [FASHION_WEB]        # channel codes. Default: every channel
                                 locales: [en_US, de_DE]        # Default: every locale
                                 required: true                 # Default: true
                                 enabled: true                  # Default: true
