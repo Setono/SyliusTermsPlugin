@@ -17,7 +17,7 @@ use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsVersionRepositoryInterface;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
-use Sylius\Component\Resource\Factory\FactoryInterface;
+use Sylius\Resource\Factory\FactoryInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;

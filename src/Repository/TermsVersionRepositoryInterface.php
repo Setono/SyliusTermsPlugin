@@ -6,7 +6,7 @@ namespace Setono\SyliusTermsPlugin\Repository;
 
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslationInterface;
-use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Sylius\Resource\Doctrine\Persistence\RepositoryInterface;
 
 interface TermsVersionRepositoryInterface extends RepositoryInterface
 {

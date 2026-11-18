@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Model;
 
-use Sylius\Component\Resource\Model\ResourceInterface;
-use Sylius\Component\Resource\Model\TranslatableInterface;
+use Sylius\Resource\Model\ResourceInterface;
+use Sylius\Resource\Model\TranslatableInterface;
 
 /**
  * An immutable, numbered snapshot of a Terms' name, label and content in every locale. The translations hold the text

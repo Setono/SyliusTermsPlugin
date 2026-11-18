@@ -7,7 +7,7 @@ namespace Setono\SyliusTermsPlugin\Repository;
 use Doctrine\ORM\QueryBuilder;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Sylius\Component\Channel\Model\ChannelInterface;
-use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Sylius\Resource\Doctrine\Persistence\RepositoryInterface;
 
 interface TermsRepositoryInterface extends RepositoryInterface
 {
