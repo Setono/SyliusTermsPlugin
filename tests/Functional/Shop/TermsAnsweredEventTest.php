@@ -8,7 +8,6 @@ use PHPUnit\Framework\Attributes\Test;
 use Setono\SyliusTermsPlugin\Event\Answer;
 use Setono\SyliusTermsPlugin\Event\TermsAnsweredEvent;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
-use Setono\SyliusTermsPlugin\Model\TermsVersionTranslationInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Tests\Application\EventListener\TermsAnsweredEventRecorder;
 use Setono\SyliusTermsPlugin\Tests\Functional\CreatesCartTrait;
@@ -186,12 +185,12 @@ final class TermsAnsweredEventTest extends WebTestCase
         self::assertSame([
             ['terms_and_conditions', 2, 'I accept the new [link:terms and conditions]', true],
             ['newsletter_consent', 1, 'I accept the [link:newsletter_consent]', false],
-        ], array_map(static function (Answer $answer) use ($event): array {
-            $translation = $answer->version->getTranslation($event->localeCode);
-            self::assertInstanceOf(TermsVersionTranslationInterface::class, $translation);
-
-            return [$answer->version->getTerms()?->getCode(), $answer->version->getNumber(), $translation->getLabel(), $answer->ticked];
-        }, $event->answers));
+        ], array_map(static fn (Answer $answer): array => [
+            $answer->version->getTerms()?->getCode(),
+            $answer->version->getNumber(),
+            $answer->version->getTranslation($event->localeCode)->getLabel(),
+            $answer->ticked,
+        ], $event->answers));
     }
 
     /**
