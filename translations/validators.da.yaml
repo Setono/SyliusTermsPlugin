@@ -3,6 +3,7 @@ setono_sylius_terms:
         code:
             regex: Koden kan kun bestå af bogstaver, tal, bindestreger og underscores.
             unique: Denne kode er allerede i brug.
+            reserved: 'Koden "content" er reserveret til hooks på betingelsessiden. Vælg en anden kode.'
         slug:
             unique: Sluggen skal være unik.
     terms_checkbox:

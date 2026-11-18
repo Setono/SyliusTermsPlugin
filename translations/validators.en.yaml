@@ -3,6 +3,7 @@ setono_sylius_terms:
         code:
             regex: Term code can only be comprised of letters, numbers, dashes and underscores.
             unique: This code is already in use.
+            reserved: 'The code "content" is reserved for the hooks of the Terms page. Choose another code.'
         slug:
             unique: Terms slug must be unique.
     terms_checkbox:

@@ -131,6 +131,27 @@ final class TermsAdminPagesTest extends WebTestCase
     }
 
     #[Test]
+    public function creating_terms_with_the_reserved_code_content_fails(): void
+    {
+        $client = self::createAdminClient();
+        $crawler = $client->request('GET', '/admin/terms/new');
+
+        $form = $crawler->filter('form[name="setono_sylius_terms_terms"]')->form();
+        $client->submit($form, [
+            'setono_sylius_terms_terms[code]' => 'content',
+            'setono_sylius_terms_terms[translations][en_US][name]' => 'Content',
+            'setono_sylius_terms_terms[translations][en_US][label]' => 'I accept the [link:content]',
+        ]);
+
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.invalid-feedback', 'The code "content" is reserved for the hooks of the Terms page. Choose another code.');
+
+        /** @var TermsRepositoryInterface $repository */
+        $repository = self::getContainer()->get('setono_sylius_terms.repository.terms');
+        self::assertNull($repository->findOneBy(['code' => 'content']));
+    }
+
+    #[Test]
     public function the_update_page_flags_a_form_code_that_is_not_configured(): void
     {
         $client = self::createAdminClient();

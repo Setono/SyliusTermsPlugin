@@ -3,6 +3,7 @@ setono_sylius_terms:
         code:
             regex: Le code pour les conditions ne peut comporter que des lettres, des chiffres, - et _.
             unique: Le code est déjà utilisé.
+            reserved: 'Le code « content » est réservé aux hooks de la page des conditions. Choisissez un autre code.'
         slug:
             unique: "L'identifiant est déjà utilisé."
     terms_checkbox:
