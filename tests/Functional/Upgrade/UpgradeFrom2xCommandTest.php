@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * The Terms from 2.x are inserted with DBAL as the 3.0 schema migration leaves them: form type classes in forms, no
@@ -329,7 +330,11 @@ final class UpgradeFrom2xCommandTest extends KernelTestCase
      */
     private static function runCommand(array $input = []): string
     {
-        $tester = new CommandTester((new Application(self::$kernel ?? self::bootKernel()))->find('setono:sylius-terms:upgrade-from-2x'));
+        // The booted kernel, whose entity manager the test shares. Symfony 6.4 and 7.4 type KernelTestCase::$kernel differently
+        $kernel = self::getContainer()->get('kernel');
+        self::assertInstanceOf(KernelInterface::class, $kernel);
+
+        $tester = new CommandTester((new Application($kernel))->find('setono:sylius-terms:upgrade-from-2x'));
         $tester->execute($input);
         $tester->assertCommandIsSuccessful();
 
