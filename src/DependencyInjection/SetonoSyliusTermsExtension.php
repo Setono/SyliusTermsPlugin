@@ -30,6 +30,14 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
     /** The admin Terms version route sets this as its hook_prefix, see config/routes/admin.yaml */
     private const ADMIN_TERMS_VERSION_HOOK_PREFIX = 'setono_sylius_terms.admin.terms_version';
 
+    /**
+     * The TermsAnsweredEvent dispatcher listens to each saved_event at this priority. Sylius' own listeners there, such
+     * as the order confirmation email on sylius.order.post_complete and the registration email and user verification on
+     * sylius.customer.post_register, listen at 0. Coming after them means an integrator's TermsAnsweredEvent listener
+     * that throws can't stop them
+     */
+    private const SAVED_EVENT_LISTENER_PRIORITY = -100;
+
     public function load(array $configs, ContainerBuilder $container): void
     {
         /**
@@ -105,7 +113,11 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
         $savedEvents = array_filter(array_column($forms, 'saved_event'), static fn (?string $savedEvent): bool => null !== $savedEvent);
 
         foreach (array_unique($savedEvents) as $savedEvent) {
-            $dispatcher->addTag('kernel.event_listener', ['event' => $savedEvent, 'method' => 'onSaved']);
+            $dispatcher->addTag('kernel.event_listener', [
+                'event' => $savedEvent,
+                'method' => 'onSaved',
+                'priority' => self::SAVED_EVENT_LISTENER_PRIORITY,
+            ]);
         }
     }
 
