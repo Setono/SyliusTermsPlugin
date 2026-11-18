@@ -11,6 +11,8 @@ $configuration = (new Configuration())
     ->ignoreErrorsOnPackage('symfony/clock', [ErrorType::UNUSED_DEPENDENCY])
     // The admin templates render Twig components ({% component %}), which symfony/ux-twig-component provides
     ->ignoreErrorsOnPackage('symfony/ux-twig-component', [ErrorType::UNUSED_DEPENDENCY])
+    // The Terms page and the Terms PDF template format dates with format_date, which twig/intl-extra provides
+    ->ignoreErrorsOnPackage('twig/intl-extra', [ErrorType::UNUSED_DEPENDENCY])
 ;
 
 // The Terms PDFs are opt-in, so their tooling is suggested, not required. Only code that runs when
