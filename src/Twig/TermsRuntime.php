@@ -8,6 +8,7 @@ use Setono\SyliusTermsPlugin\Lookup\TermsPageLookupInterface;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslationInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Context\LocaleContextInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
@@ -62,6 +63,23 @@ final readonly class TermsRuntime implements RuntimeExtensionInterface
         ]));
     }
 
+    /**
+     * Returns the path of the Terms page in the channel's default locale, or null when the Terms has no page there. The
+     * admin's View in store button uses it, so the path names its locale instead of taking the current one
+     */
+    public function channelPath(TermsInterface $terms, ChannelInterface $channel): ?string
+    {
+        $code = $terms->getCode();
+        $localeCode = $channel->getDefaultLocale()?->getCode();
+        if (null === $code || null === $localeCode) {
+            return null;
+        }
+
+        $translation = $this->termsPageLookup->lookupByCode($code, $channel, $localeCode);
+
+        return null === $translation ? null : $this->generatePath($translation, ['_locale' => $localeCode]);
+    }
+
     private function lookup(string $code): ?TermsVersionTranslationInterface
     {
         return $this->termsPageLookup->lookupByCode(
@@ -73,13 +91,15 @@ final readonly class TermsRuntime implements RuntimeExtensionInterface
 
     /**
      * The slug isn't versioned, so the address is the Terms' current slug in the translation's locale
+     *
+     * @param array<string, string> $parameters more route parameters, such as the _locale
      */
-    private function generatePath(TermsVersionTranslationInterface $translation): string
+    private function generatePath(TermsVersionTranslationInterface $translation, array $parameters = []): string
     {
         $slug = self::getTerms($translation)->getTranslation($translation->getLocale())->getSlug();
         Assert::notNull($slug);
 
-        return $this->urlGenerator->generate('setono_sylius_terms_shop_terms_show', ['slug' => $slug]);
+        return $this->urlGenerator->generate('setono_sylius_terms_shop_terms_show', ['slug' => $slug] + $parameters);
     }
 
     private static function getTerms(TermsVersionTranslationInterface $translation): TermsInterface

@@ -73,12 +73,15 @@ saved. There is no diff between versions and no record of who saved one.
 
 Deleting a Terms also deletes its versions. To keep a Terms' history, disable the Terms instead of deleting it.
 
-### Show in shop
+### View in store
 
-The update page has a **Show in shop** button that opens the [Terms page](#terms-pages), as Sylius' View in store does
-for a product. A Terms in several channels gets a dropdown with one entry per channel. Each entry links to the page in
-the channel's default locale, on the channel's hostname. The button is disabled when the Terms is disabled or in no
-enabled channel, and an entry is disabled when the Terms has no slug in the channel's default locale.
+Like Sylius' product page, the update page has a **View in store** button that opens the [Terms page](#terms-pages). A
+Terms in several channels gets a dropdown with one entry per enabled channel. Each entry links to the page in the
+channel's default locale, on the channel's hostname, and is disabled exactly when that page is not found. The button is
+disabled when the Terms is disabled or in no enabled channel.
+
+The links come from `terms_channel_path(terms, channel)`, which returns the path of the Terms page in the channel's
+default locale, or `null` when there is no page there.
 
 ### Changing the admin
 
@@ -91,7 +94,7 @@ The pages are Sylius' CRUD pages, and their hooks are under `setono_sylius_terms
 | `setono_sylius_terms.admin.terms.{create,update}.content.form.placement`    | `forms`, `channels`                       |
 | `setono_sylius_terms.admin.terms.{create,update}.content.form.translations` | `name`, `slug`, `label`, `content`        |
 | `setono_sylius_terms.admin.terms.update.content`                            | `versions`, below core's `form`           |
-| `setono_sylius_terms.admin.terms.update.content.header.title_block.actions` | `show_in_shop`, before core's buttons     |
+| `setono_sylius_terms.admin.terms.update.content.header.title_block.actions` | `view_in_store`, before core's buttons    |
 
 The form is the Live Component `setono_sylius_terms:admin:terms:form`
 (`Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent`). The Versions card is outside it.
@@ -427,7 +430,7 @@ Every Terms has its own page in the shop, at `/{_locale}/terms/{slug}`, such as 
 The slug is set per locale, and the `terms` part of the path is the `routing.terms` option (see
 [Step 3: Import routing](#step-3-import-routing)). These addresses stay the same as long as the slug does, so link to
 them from your footer, your emails or anywhere else the customer should be able to read the terms. To find a Terms'
-address, use the [Show in shop](#show-in-shop) button on its admin update page, or generate it with
+address, use the [View in store](#view-in-store) button on its admin update page, or generate it with
 [`terms_path()`](#linking-to-a-terms-page).
 
 The page shows the Terms version in force: its name, its Content, and its number and the date it has been in force

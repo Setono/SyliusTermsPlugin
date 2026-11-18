@@ -11,7 +11,9 @@ use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Tests\Functional\CreatesTermsTrait;
 use Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent;
 use Sylius\Component\Core\Model\AdminUserInterface;
+use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\User\Repository\UserRepositoryInterface;
+use Sylius\Resource\Doctrine\Persistence\RepositoryInterface;
 use Sylius\TwigHooks\Hookable\AbstractHookable;
 use Sylius\TwigHooks\Hookable\HookableComponent;
 use Sylius\TwigHooks\Registry\HookablesRegistry;
@@ -71,7 +73,7 @@ final class TermsAdminPagesTest extends WebTestCase
         ];
         // The Versions card sits below the Live form and outside it
         self::assertSame(['flashes', 'header', 'form_error_alert', 'form', 'versions', 'footer'], self::getHookableNames($registry->getEnabledFor($updatePrefixes('content'))));
-        self::assertSame(['show_in_shop', 'show', 'cancel', 'update'], self::getHookableNames($registry->getEnabledFor($updatePrefixes('content.header.title_block.actions'))));
+        self::assertSame(['view_in_store', 'show', 'cancel', 'update'], self::getHookableNames($registry->getEnabledFor($updatePrefixes('content.header.title_block.actions'))));
 
         // The prefixes core's show template passes for a route with hook_prefix: setono_sylius_terms.admin.terms_version
         $versionPrefixes = static fn (string $hook): array => [
@@ -197,7 +199,7 @@ final class TermsAdminPagesTest extends WebTestCase
     }
 
     #[Test]
-    public function show_in_shop_points_at_the_terms_page(): void
+    public function view_in_store_points_at_the_terms_page(): void
     {
         $client = self::createAdminClient();
         $terms = self::findTerms('terms_and_conditions');
@@ -205,8 +207,8 @@ final class TermsAdminPagesTest extends WebTestCase
         $crawler = $client->request('GET', sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
 
         self::assertResponseIsSuccessful();
-        $link = $crawler->filter('a[data-test-show-in-shop]');
-        self::assertSame('Show in shop', trim($link->text()));
+        $link = $crawler->filter('a[data-test-view-in-store]');
+        self::assertSame('View in store', trim($link->text()));
         // FASHION_WEB's hostname is localhost, its default locale en_US, and Sylius' URLs are unsecured by default
         $url = 'http://localhost/en_US/terms/terms-and-conditions';
         self::assertSame($url, $link->attr('href'));
@@ -219,22 +221,32 @@ final class TermsAdminPagesTest extends WebTestCase
     }
 
     #[Test]
-    public function show_in_shop_has_an_entry_per_channel_the_terms_is_in(): void
+    public function view_in_store_has_an_entry_per_enabled_channel_the_terms_is_in(): void
     {
         $client = self::createAdminClient();
         $second = self::createChannel('SECOND_WEB');
         $second->setHostname('second.example.com');
+        // The Terms has no de_DE translation, so it has no page in this channel's default locale
+        $german = self::createChannel('GERMAN_WEB');
+        $german->setDefaultLocale(self::getLocale('de_DE'));
         $disabled = self::createChannel('DISABLED_WEB');
         $disabled->setEnabled(false);
-        $terms = self::createTerms('cookie_policy', channels: [self::getChannel('FASHION_WEB'), $second, $disabled]);
+        $terms = self::createTerms('cookie_policy', channels: [self::getChannel('FASHION_WEB'), $second, $german, $disabled]);
         self::getEntityManager()->clear();
 
         $crawler = $client->request('GET', sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
 
         self::assertResponseIsSuccessful();
-        $entries = $crawler->filter('[data-test-show-in-shop] a[data-test-channel-code]');
-        self::assertSame(['FASHION_WEB', 'SECOND_WEB'], $entries->each(static fn (Crawler $entry): ?string => $entry->attr('data-test-channel-code')));
-        self::assertSame(['http://localhost/en_US/terms/cookie-policy', 'http://second.example.com/en_US/terms/cookie-policy'], $entries->each(static fn (Crawler $entry): ?string => $entry->attr('href')));
+        $entries = $crawler->filter('[data-test-view-in-store] a[data-test-channel-code]');
+        self::assertSame(
+            ['FASHION_WEB', 'SECOND_WEB', 'GERMAN_WEB'],
+            $entries->each(static fn (Crawler $entry): ?string => $entry->attr('data-test-channel-code')),
+        );
+        self::assertSame(
+            ['http://localhost/en_US/terms/cookie-policy', 'http://second.example.com/en_US/terms/cookie-policy', '#'],
+            $entries->each(static fn (Crawler $entry): ?string => $entry->attr('href')),
+        );
+        self::assertStringContainsString('disabled', (string) $entries->eq(2)->attr('class'));
     }
 
     /**
@@ -243,7 +255,7 @@ final class TermsAdminPagesTest extends WebTestCase
      */
     #[Test]
     #[DataProvider('provideTermsWithoutATermsPage')]
-    public function show_in_shop_is_disabled_without_a_terms_page_to_show(array $channelCodes, array $localeCodes, bool $enabled): void
+    public function view_in_store_is_disabled_without_a_terms_page_to_show(array $channelCodes, array $localeCodes, bool $enabled, bool $hasContent): void
     {
         $client = self::createAdminClient();
         $terms = self::createTerms(
@@ -251,26 +263,30 @@ final class TermsAdminPagesTest extends WebTestCase
             channels: array_map(self::getChannel(...), $channelCodes),
             localeCodes: $localeCodes,
             enabled: $enabled,
+            hasContent: $hasContent,
         );
         self::getEntityManager()->clear();
 
         $crawler = $client->request('GET', sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
 
         self::assertResponseIsSuccessful();
-        $link = $crawler->filter('a[data-test-show-in-shop]');
+        $link = $crawler->filter('a[data-test-view-in-store]');
         self::assertCount(1, $link);
         self::assertStringContainsString('disabled', (string) $link->attr('class'));
         self::assertSame('#', $link->attr('href'));
     }
 
     /**
-     * @return \Generator<string, array{channelCodes: list<string>, localeCodes: list<string>, enabled: bool}>
+     * The cases where the Terms page in FASHION_WEB's default locale, en_US, would be not found
+     *
+     * @return \Generator<string, array{channelCodes: list<string>, localeCodes: list<string>, enabled: bool, hasContent: bool}>
      */
     public static function provideTermsWithoutATermsPage(): \Generator
     {
-        yield 'disabled' => ['channelCodes' => ['FASHION_WEB'], 'localeCodes' => ['en_US'], 'enabled' => false];
-        yield 'in no channel' => ['channelCodes' => [], 'localeCodes' => ['en_US'], 'enabled' => true];
-        yield "not translated into the channel's default locale" => ['channelCodes' => ['FASHION_WEB'], 'localeCodes' => ['de_DE'], 'enabled' => true];
+        yield 'disabled' => ['channelCodes' => ['FASHION_WEB'], 'localeCodes' => ['en_US'], 'enabled' => false, 'hasContent' => true];
+        yield 'in no channel' => ['channelCodes' => [], 'localeCodes' => ['en_US'], 'enabled' => true, 'hasContent' => true];
+        yield "not translated into the channel's default locale" => ['channelCodes' => ['FASHION_WEB'], 'localeCodes' => ['de_DE'], 'enabled' => true, 'hasContent' => true];
+        yield 'no Content in the default locale' => ['channelCodes' => ['FASHION_WEB'], 'localeCodes' => ['en_US'], 'enabled' => true, 'hasContent' => false];
     }
 
     #[Test]
@@ -427,6 +443,17 @@ final class TermsAdminPagesTest extends WebTestCase
         self::assertInstanceOf(AdminUserInterface::class, $admin);
 
         return $admin;
+    }
+
+    private static function getLocale(string $code): LocaleInterface
+    {
+        /** @var RepositoryInterface<LocaleInterface> $repository */
+        $repository = self::getContainer()->get('sylius.repository.locale');
+
+        $locale = $repository->findOneBy(['code' => $code]);
+        self::assertInstanceOf(LocaleInterface::class, $locale);
+
+        return $locale;
     }
 
     private static function findTerms(string $code): TermsInterface

@@ -1,7 +1,8 @@
 {#
-    Links to the Terms page in each enabled channel the Terms is in, as Sylius' View in store does for a product: a button
-    for one channel, a dropdown for several. Each link uses the channel's default locale, and is disabled when the Terms
-    has no slug in that locale. The button is disabled when the Terms is disabled or in no enabled channel
+    Links to the Terms page in each enabled channel the Terms is in, as Sylius' View in store does for a product: a
+    button for one channel, a dropdown for several. Each link is the Terms page in the channel's default locale, on the
+    channel's hostname, and is disabled exactly when that page doesn't exist (see terms_channel_path()). The button is
+    disabled when the Terms is disabled or in no enabled channel
 #}
 
 {% if sylius_route_exists('setono_sylius_terms_shop_terms_show') %}
@@ -9,26 +10,25 @@
 
     {% set entries = [] %}
     {% for channel in terms.channels|filter(channel => channel.enabled) %}
-        {% set locale = channel.defaultLocale.code|default(null) %}
-        {% set slug = locale is null ? null : terms.translations[locale].slug|default(null) %}
+        {% set path = terms_channel_path(terms, channel) %}
 
         {% set entries = entries|merge([{
             channel: channel,
-            url: slug is null ? null : sylius_channel_url(path('setono_sylius_terms_shop_terms_show', {slug: slug, _locale: locale}), channel),
+            url: path is null ? null : sylius_channel_url(path, channel),
         }]) %}
     {% endfor %}
 
     {% if not terms.enabled or entries is empty %}
-        <a class="btn disabled" href="#" aria-disabled="true" {{ sylius_test_html_attribute('show-in-shop') }}>
+        <a class="btn disabled" href="#" aria-disabled="true" {{ sylius_test_html_attribute('view-in-store') }}>
             {{ ux_icon('tabler:arrow-up-right') }}
-            {{ 'setono_sylius_terms.ui.show_in_shop'|trans }}
+            {{ 'sylius.ui.view_in_store'|trans }}
         </a>
     {% elseif entries|length > 1 %}
         <div class="dropdown">
             <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                {{ 'setono_sylius_terms.ui.show_in_shop'|trans }}
+                {{ 'sylius.ui.view_in_store'|trans }}
             </button>
-            <ul class="dropdown-menu" {{ sylius_test_html_attribute('show-in-shop') }}>
+            <ul class="dropdown-menu" {{ sylius_test_html_attribute('view-in-store') }}>
                 {% for entry in entries %}
                     <li>
                         <a
@@ -53,10 +53,10 @@
             href="{{ entry.url ?? '#' }}"
             target="_blank"
             {% if entry.url is null %}aria-disabled="true"{% endif %}
-            {{ sylius_test_html_attribute('show-in-shop') }}
+            {{ sylius_test_html_attribute('view-in-store') }}
         >
             {{ ux_icon('tabler:arrow-up-right') }}
-            {{ 'setono_sylius_terms.ui.show_in_shop'|trans }}
+            {{ 'sylius.ui.view_in_store'|trans }}
         </a>
     {% endif %}
 {% endif %}

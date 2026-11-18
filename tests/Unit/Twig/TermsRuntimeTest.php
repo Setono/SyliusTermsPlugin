@@ -17,7 +17,9 @@ use Setono\SyliusTermsPlugin\Twig\TermsExtension;
 use Setono\SyliusTermsPlugin\Twig\TermsRuntime;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Channel\Model\ChannelInterface;
+use Sylius\Component\Core\Model\ChannelInterface as CoreChannelInterface;
 use Sylius\Component\Locale\Context\LocaleContextInterface;
+use Sylius\Component\Locale\Model\Locale;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
@@ -56,6 +58,10 @@ final class TermsRuntimeTest extends TestCase
         $urlGenerator
             ->generate('setono_sylius_terms_shop_terms_show', ['slug' => 'allgemeine-geschaeftsbedingungen'])
             ->willReturn('/de_DE/terms/allgemeine-geschaeftsbedingungen')
+        ;
+        $urlGenerator
+            ->generate('setono_sylius_terms_shop_terms_show', ['slug' => 'terms-and-conditions', '_locale' => 'en_US'])
+            ->willReturn('/en_US/terms/terms-and-conditions')
         ;
 
         $this->termsPageLookup = $this->prophesize(TermsPageLookupInterface::class);
@@ -135,6 +141,35 @@ final class TermsRuntimeTest extends TestCase
         );
     }
 
+    #[Test]
+    public function the_channel_path_is_the_terms_page_in_the_channels_default_locale(): void
+    {
+        $channel = $this->createChannel('en_US');
+        $translation = self::createTranslation('en_US');
+        $this->termsPageLookup->lookupByCode('terms_and_conditions', $channel, 'en_US')->willReturn($translation);
+
+        // The current locale is de_DE, so the path names the channel's locale
+        self::assertSame('/en_US/terms/terms-and-conditions', $this->runtime->channelPath(self::getTerms($translation), $channel));
+    }
+
+    #[Test]
+    public function the_channel_path_is_null_when_the_terms_has_no_page_in_the_channel(): void
+    {
+        $channel = $this->createChannel('en_US');
+        $translation = self::createTranslation('en_US');
+        $this->termsPageLookup->lookupByCode('terms_and_conditions', $channel, 'en_US')->willReturn(null);
+
+        self::assertNull($this->runtime->channelPath(self::getTerms($translation), $channel));
+    }
+
+    #[Test]
+    public function the_channel_path_is_null_without_a_code_or_a_default_locale(): void
+    {
+        // The lookup isn't asked: any call would fail as unexpected
+        self::assertNull($this->runtime->channelPath(self::getTerms(self::createTranslation('en_US')), $this->createChannel(null)));
+        self::assertNull($this->runtime->channelPath(new Terms(), $this->createChannel('en_US')));
+    }
+
     /**
      * Renders the template with the plugin's templates, after the override, if given
      */
@@ -157,10 +192,10 @@ final class TermsRuntimeTest extends TestCase
     }
 
     /**
-     * Version 3 of the Terms in de_DE. The Terms' own name has changed since, which the link doesn't show, but its
+     * Version 3 of the Terms in the locale. The Terms' own name has changed since, which the link doesn't show, but its
      * slug is the one the page has now
      */
-    private static function createTranslation(): TermsVersionTranslation
+    private static function createTranslation(string $localeCode = 'de_DE'): TermsVersionTranslation
     {
         $terms = new Terms();
         $terms->setCode('terms_and_conditions');
@@ -178,10 +213,32 @@ final class TermsRuntimeTest extends TestCase
         $terms->addVersion($version);
 
         $translation = new TermsVersionTranslation();
-        $translation->setLocale('de_DE');
+        $translation->setLocale($localeCode);
         $translation->setName('AGB & Datenschutz');
         $version->addTranslation($translation);
 
         return $translation;
+    }
+
+    private static function getTerms(TermsVersionTranslation $translation): Terms
+    {
+        $terms = $translation->getVersion()->getTerms();
+        self::assertInstanceOf(Terms::class, $terms);
+
+        return $terms;
+    }
+
+    private function createChannel(?string $defaultLocaleCode): CoreChannelInterface
+    {
+        $defaultLocale = null;
+        if (null !== $defaultLocaleCode) {
+            $defaultLocale = new Locale();
+            $defaultLocale->setCode($defaultLocaleCode);
+        }
+
+        $channel = $this->prophesize(CoreChannelInterface::class);
+        $channel->getDefaultLocale()->willReturn($defaultLocale);
+
+        return $channel->reveal();
     }
 }

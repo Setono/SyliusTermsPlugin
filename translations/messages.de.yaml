@@ -26,7 +26,6 @@ setono_sylius_terms:
     preview: Vorschau
     source: Quelltext
     no_content: Kein Inhalt
-    show_in_shop: Im Shop anzeigen
 
   menu:
     admin:

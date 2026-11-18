@@ -239,8 +239,8 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
 
         // Next to core's Cancel and Update buttons, where Sylius' product page has View in store
         $hooks[$prefix . '.update.content.header.title_block.actions'] = [
-            'show_in_shop' => [
-                'template' => '@SetonoSyliusTermsPlugin/admin/terms/update/show_in_shop.html.twig',
+            'view_in_store' => [
+                'template' => '@SetonoSyliusTermsPlugin/admin/terms/update/view_in_store.html.twig',
                 'priority' => 300,
             ],
         ];
