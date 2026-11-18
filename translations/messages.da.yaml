@@ -26,6 +26,17 @@ setono_sylius_terms:
         preview: Forhåndsvisning
         source: Kilde
         no_content: Intet indhold
+        write: Skriv
+        markdown_toolbar:
+            label: Formatering
+            heading: Overskrift
+            bold: Fed
+            italic: Kursiv
+            quote: Citat
+            link: Link
+            image: Billede
+            bulleted_list: Punktopstilling
+            numbered_list: Nummereret liste
         
     menu:
         admin:

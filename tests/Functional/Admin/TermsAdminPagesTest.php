@@ -7,6 +7,7 @@ namespace Setono\SyliusTermsPlugin\Tests\Functional\Admin;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
+use Setono\SyliusTermsPlugin\Renderer\ContentRendererInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Tests\Functional\CreatesTermsTrait;
 use Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent;
@@ -14,8 +15,12 @@ use Sylius\Component\Core\Model\AdminUserInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\User\Repository\UserRepositoryInterface;
 use Sylius\Resource\Doctrine\Persistence\RepositoryInterface;
+use Sylius\TwigHooks\Bag\DataBag;
+use Sylius\TwigHooks\Bag\ScalarDataBag;
+use Sylius\TwigHooks\Hook\Metadata\HookMetadata;
 use Sylius\TwigHooks\Hookable\AbstractHookable;
 use Sylius\TwigHooks\Hookable\HookableComponent;
+use Sylius\TwigHooks\Hookable\Metadata\HookableMetadata;
 use Sylius\TwigHooks\Registry\HookablesRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -26,6 +31,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\UX\LiveComponent\Test\InteractsWithLiveComponents;
+use Symfony\UX\LiveComponent\Test\TestLiveComponent;
 
 final class TermsAdminPagesTest extends WebTestCase
 {
@@ -64,6 +70,17 @@ final class TermsAdminPagesTest extends WebTestCase
             self::assertSame(['code', 'enabled', 'required', 'position'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.general'))));
             self::assertSame(['forms', 'channels'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.placement'))));
             self::assertSame(['name', 'slug', 'label', 'content'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.translations'))));
+            self::assertSame(['toolbar'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.translations.content#write'))));
+            self::assertSame(['preview'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.translations.content#preview'))));
+
+            // The page's own hooks, such as update#javascripts, have no dot after the page
+            $pagePrefixes = static fn (string $hook): array => [
+                sprintf('setono_sylius_terms.admin.terms.%s%s', $page, $hook),
+                sprintf('sylius_admin.terms.%s%s', $page, $hook),
+                sprintf('sylius_admin.common.%s%s', $page, $hook),
+            ];
+            self::assertSame(['markdown_toolbar'], self::getHookableNames($registry->getEnabledFor($pagePrefixes('#javascripts'))));
+            self::assertSame(['terms_content'], self::getHookableNames($registry->getEnabledFor($pagePrefixes('#stylesheets'))));
         }
 
         $updatePrefixes = static fn (string $hook): array => [
@@ -400,20 +417,7 @@ final class TermsAdminPagesTest extends WebTestCase
     {
         $client = self::createAdminClient();
 
-        // The component is first rendered outside a request, and its form's CSRF token needs a session
-        $request = new Request();
-        $request->setSession(new Session(new MockArraySessionStorage()));
-        /** @var RequestStack $requestStack */
-        $requestStack = self::getContainer()->get('request_stack');
-        $requestStack->push($request);
-
-        $component = $this->createLiveComponent('setono_sylius_terms:admin:terms:form', [
-            'template' => '@SetonoSyliusTermsPlugin/admin/terms/form.html.twig',
-        ], $client);
-
-        $component
-            // The admin's Live Component route is /admin/{_locale}/_components/…
-            ->setRouteLocale('en_US')
+        $component = $this->createFormComponent($client)
             ->set('setono_sylius_terms_terms.translations.en_US.name', 'Privacy & Cookies')
             ->call('generateTermsSlug', ['localeCode' => 'en_US'])
         ;
@@ -424,6 +428,162 @@ final class TermsAdminPagesTest extends WebTestCase
         /** @var array{translations: array<string, array{slug: string}>} $formValues */
         $formValues = $formComponent->formValues;
         self::assertSame('privacy-and-cookies', $formValues['translations']['en_US']['slug']);
+    }
+
+    #[Test]
+    public function the_form_pages_load_the_markdown_toolbar_script_and_the_content_stylesheet(): void
+    {
+        $client = self::createAdminClient();
+        $terms = self::findTerms('terms_and_conditions');
+
+        foreach (['/admin/terms/new', sprintf('/admin/terms/%d/edit', (int) $terms->getId())] as $path) {
+            $crawler = $client->request('GET', $path);
+
+            self::assertResponseIsSuccessful();
+            $script = $crawler->filter('script[data-test-markdown-toolbar-script]');
+            self::assertCount(1, $script, $path);
+            self::assertSame('module', $script->attr('type'));
+            self::assertSame('/bundles/setonosyliustermsplugin/admin/markdown-toolbar-element-2.2.3/index.js', $script->attr('src'));
+            self::assertSame('/bundles/setonosyliustermsplugin/admin/terms-content.css', $crawler->filter('link[data-test-terms-content-stylesheet]')->attr('href'));
+        }
+
+        // The index has no editor
+        $crawler = $client->request('GET', '/admin/terms/');
+
+        self::assertResponseIsSuccessful();
+        self::assertCount(0, $crawler->filter('script[data-test-markdown-toolbar-script]'));
+        self::assertCount(0, $crawler->filter('link[data-test-terms-content-stylesheet]'));
+    }
+
+    #[Test]
+    public function each_locales_content_has_a_markdown_toolbar_and_write_and_preview_tabs(): void
+    {
+        $client = self::createAdminClient();
+        $terms = self::createTerms('cookie_policy', localeCodes: ['en_US', 'de_DE']);
+        $terms->getTranslation('en_US')->setContent("## Cookies\n\nWe use **cookies**.");
+        $terms->getTranslation('de_DE')->setContent(null);
+        self::getEntityManager()->flush();
+        self::getEntityManager()->clear();
+
+        $crawler = $client->request('GET', sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
+
+        self::assertResponseIsSuccessful();
+
+        foreach (['en_US', 'de_DE'] as $localeCode) {
+            $textarea = $crawler->filter(sprintf('textarea[data-test-content="%s"]', $localeCode));
+            $id = (string) $textarea->attr('id');
+            self::assertSame(sprintf('%s-write', $id), $textarea->ancestors()->filter('.tab-pane')->attr('id'), 'The textarea is in the Write pane');
+
+            $toolbar = $crawler->filter(sprintf('markdown-toolbar[data-test-markdown-toolbar="%s"]', $localeCode));
+            self::assertSame($id, $toolbar->attr('for'));
+            self::assertSame(
+                ['heading', 'bold', 'italic', 'quote', 'link', 'image', 'bulleted_list', 'numbered_list'],
+                $toolbar->filter('[data-test-markdown-button]')->each(static fn (Crawler $button): ?string => $button->attr('data-test-markdown-button')),
+            );
+            self::assertSame(
+                ['md-header', 'md-bold', 'md-italic', 'md-quote', 'md-link', 'md-image', 'md-unordered-list', 'md-ordered-list'],
+                $toolbar->filter('[data-test-markdown-button]')->each(static fn (Crawler $button): string => $button->nodeName()),
+            );
+            // The Terms page's <h1> is the Terms' name, so the heading button inserts ##
+            self::assertSame('2', $toolbar->filter('md-header')->attr('level'));
+            self::assertSame('Bold', $toolbar->filter('md-bold')->attr('title'));
+            self::assertCount(8, $toolbar->filter('svg.icon'), 'Each button has its Tabler icon');
+
+            self::assertSame('#' . $id . '-write', $crawler->filter(sprintf('[data-test-content-write-tab="%s"]', $localeCode))->attr('href'));
+            self::assertSame('#' . $id . '-preview', $crawler->filter(sprintf('[data-test-content-preview-tab="%s"]', $localeCode))->attr('href'));
+        }
+
+        // The preview of the saved Content is there before any edit
+        self::assertSame(
+            self::normalizeHtml(self::getContentRenderer()->render("## Cookies\n\nWe use **cookies**.")->html),
+            self::normalizeHtml($crawler->filter('[data-test-content-preview="en_US"] .setono-terms-content')->html()),
+        );
+        self::assertSame('No content', trim($crawler->filter('[data-test-no-content="de_DE"]')->text()));
+    }
+
+    #[Test]
+    public function a_live_rerender_with_changed_content_returns_the_rendered_preview(): void
+    {
+        $client = self::createAdminClient();
+        $terms = self::createTerms('cookie_policy', localeCodes: ['en_US', 'de_DE']);
+        $sources = [
+            'en_US' => "## Cookies\n\nWe use **cookies**.\n\n![A cookie](https://example.com/cookie.png)<script>alert('en')</script>",
+            'de_DE' => "## Kekse\n\n* Wir verwenden _Kekse_.\n* [Mehr](https://example.com)",
+        ];
+
+        $component = $this->createFormComponent($client, $terms);
+
+        foreach ($sources as $localeCode => $source) {
+            $component->set(sprintf('setono_sylius_terms_terms.translations.%s.content', $localeCode), $source);
+        }
+
+        $crawler = $component->render()->crawler();
+
+        foreach ($sources as $localeCode => $source) {
+            $preview = $crawler->filter(sprintf('[data-test-content-preview="%s"] .setono-terms-content', $localeCode));
+
+            // Exactly what the Terms page shows for the same Content
+            self::assertSame(self::normalizeHtml(self::getContentRenderer()->render($source)->html), self::normalizeHtml($preview->html()));
+            self::assertCount(1, $preview->filter('h2'));
+            self::assertCount(0, $preview->filter('script'), 'The preview is sanitised');
+        }
+
+        // Blanking the Content previews nothing
+        $crawler = $component->set('setono_sylius_terms_terms.translations.en_US.content', '')->render()->crawler();
+        self::assertSame('No content', trim($crawler->filter('[data-test-no-content="en_US"]')->text()));
+
+        // The preview saves nothing
+        self::assertSame('The content of cookie_policy', self::findTerms('cookie_policy')->getTranslation('en_US')->getContent());
+    }
+
+    /**
+     * The admin Terms form as a Live Component, for the Terms on the update page or for a new one on the create page
+     */
+    private function createFormComponent(KernelBrowser $client, ?TermsInterface $terms = null): TestLiveComponent
+    {
+        // The component is first rendered outside a request, and its form's CSRF token needs a session
+        $request = new Request();
+        $request->setSession(new Session(new MockArraySessionStorage()));
+        /** @var RequestStack $requestStack */
+        $requestStack = self::getContainer()->get('request_stack');
+        $requestStack->push($request);
+
+        // The hook the page renders the form in, with the prefixes core's CRUD template passes, so the form's hooks
+        // render as on the page
+        $hook = sprintf('%s.content', null === $terms ? 'create' : 'update');
+        $props = [
+            'template' => '@SetonoSyliusTermsPlugin/admin/terms/form.html.twig',
+            'hookableMetadata' => new HookableMetadata(
+                new HookMetadata('setono_sylius_terms.admin.terms.' . $hook, new DataBag()),
+                new DataBag(),
+                new ScalarDataBag(['render_rest' => false]),
+                ['setono_sylius_terms.admin.terms.' . $hook, 'sylius_admin.terms.' . $hook, 'sylius_admin.common.' . $hook],
+            ),
+        ];
+        if (null !== $terms) {
+            $props['resource'] = $terms;
+        }
+
+        return $this->createLiveComponent('setono_sylius_terms:admin:terms:form', $props, $client)
+            // The admin's Live Component route is /admin/{_locale}/_components/…
+            ->setRouteLocale('en_US')
+        ;
+    }
+
+    private static function getContentRenderer(): ContentRendererInterface
+    {
+        /** @var ContentRendererInterface $renderer */
+        $renderer = self::getContainer()->get(ContentRendererInterface::class);
+
+        return $renderer;
+    }
+
+    /**
+     * The HTML as the DOM serialises it, so HTML from the renderer compares with HTML from a page
+     */
+    private static function normalizeHtml(string $html): string
+    {
+        return trim((new Crawler('<div id="normalized">' . $html . '</div>'))->filter('#normalized')->html());
     }
 
     private static function createAdminClient(): KernelBrowser

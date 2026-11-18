@@ -1,0 +1,41 @@
+{#
+    GitHub's <markdown-toolbar> element (https://github.com/github/markdown-toolbar-element) for the textarea below it.
+    The markdown_toolbar hookable on the page's #javascripts hook loads the element. Its buttons insert Markdown with
+    execCommand('insertText'), so undo works, and the textarea fires input events, which the Live form tracks.
+
+    The heading button inserts "## ", because the Terms page's <h1> is the Terms' name
+#}
+
+{% set form = hookable_metadata.context.form %}
+{% set locale = hookable_metadata.context.locale %}
+
+{% set buttons = [
+    { element: 'md-header', name: 'heading', icon: 'heading', attributes: { level: 2 } },
+    { element: 'md-bold', name: 'bold', icon: 'bold' },
+    { element: 'md-italic', name: 'italic', icon: 'italic' },
+    { element: 'md-quote', name: 'quote', icon: 'quote' },
+    { element: 'md-link', name: 'link', icon: 'link' },
+    { element: 'md-image', name: 'image', icon: 'photo' },
+    { element: 'md-unordered-list', name: 'bulleted_list', icon: 'list' },
+    { element: 'md-ordered-list', name: 'numbered_list', icon: 'list-numbers' },
+] %}
+
+<markdown-toolbar
+    for="{{ form.content.vars.id }}"
+    class="btn-list gap-1 mb-2"
+    aria-label="{{ 'setono_sylius_terms.ui.markdown_toolbar.label'|trans }}"
+    {{ sylius_test_html_attribute('markdown-toolbar', locale) }}
+>
+    {% for button in buttons %}
+        {% set title = ('setono_sylius_terms.ui.markdown_toolbar.' ~ button.name)|trans %}
+        <{{ button.element }}
+            class="btn btn-icon btn-ghost-secondary"
+            title="{{ title }}"
+            aria-label="{{ title }}"
+            {% for attribute, value in button.attributes|default({}) %}{{ attribute }}="{{ value }}" {% endfor %}
+            {{ sylius_test_html_attribute('markdown-button', button.name) }}
+        >
+            {{ source('@SetonoSyliusTermsPlugin/icons/tabler/' ~ button.icon ~ '.svg') }}
+        </{{ button.element }}>
+    {% endfor %}
+</markdown-toolbar>

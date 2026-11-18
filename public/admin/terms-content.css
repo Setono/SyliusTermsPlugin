@@ -1,8 +1,13 @@
 /*
- * Rendered Content in the admin of setono/sylius-terms-plugin, such as the Preview tab of the Terms version page. Only
- * those pages load it, through their #stylesheets hook. Rendered Content has no class or style attributes, so its
- * styling is scoped to the content wrapper, .setono-terms-content
+ * Rendered Content in the admin of setono/sylius-terms-plugin: the Preview tabs of the Terms form and of the Terms
+ * version page. Only those pages load it, through their #stylesheets hook. Rendered Content has no class or style
+ * attributes, so its styling is scoped to the content wrapper, .setono-terms-content
  */
+
+/* The Terms form's Preview tab keeps about the height of the textarea it replaces */
+.setono-terms-content-preview {
+    min-height: 16rem;
+}
 
 .setono-terms-content {
     overflow-wrap: break-word;

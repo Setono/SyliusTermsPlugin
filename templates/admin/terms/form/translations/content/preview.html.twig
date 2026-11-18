@@ -1,0 +1,66 @@
+{#
+    The Write and Preview tabs, and the Preview tab's pane. The Write tab shows the pane admin/terms/form/translations/
+    content.html.twig renders around the textarea.
+
+    The preview is rendered on the server through the ContentRendererInterface, as the Terms page renders it. A change
+    to the textarea re-renders the Live form, and with it the preview, so it shows the unsaved edits. The textarea leaves
+    focus when the Preview tab is clicked, which is such a change. Bootstrap's tab classes survive the re-render
+#}
+
+{% set form = hookable_metadata.context.form %}
+{% set locale = hookable_metadata.context.locale %}
+{% set id = form.content.vars.id %}
+{% set content = form.content.vars.value %}
+
+<ul class="nav nav-tabs mb-2" data-bs-toggle="tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a
+            class="nav-link active"
+            id="{{ id }}-write-tab"
+            role="tab"
+            data-bs-toggle="tab"
+            href="#{{ id }}-write"
+            aria-controls="{{ id }}-write"
+            aria-selected="true"
+            {{ sylius_test_html_attribute('content-write-tab', locale) }}
+        >
+            {{ 'setono_sylius_terms.ui.write'|trans }}
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a
+            class="nav-link"
+            id="{{ id }}-preview-tab"
+            role="tab"
+            data-bs-toggle="tab"
+            href="#{{ id }}-preview"
+            aria-controls="{{ id }}-preview"
+            aria-selected="false"
+            {{ sylius_test_html_attribute('content-preview-tab', locale) }}
+        >
+            {{ 'setono_sylius_terms.ui.preview'|trans }}
+        </a>
+    </li>
+</ul>
+
+<div
+    class="tab-pane"
+    id="{{ id }}-preview"
+    role="tabpanel"
+    aria-labelledby="{{ id }}-preview-tab"
+    tabindex="0"
+    data-loading="addClass(opacity-50)"
+    {{ sylius_test_html_attribute('content-preview', locale) }}
+>
+    <div class="setono-terms-content-preview border rounded p-3">
+        {% if content is empty %}
+            <div class="text-body-secondary" {{ sylius_test_html_attribute('no-content', locale) }}>
+                {{ 'setono_sylius_terms.ui.no_content'|trans }}
+            </div>
+        {% else %}
+            <div class="setono-terms-content">
+                {{ content|terms_content }}
+            </div>
+        {% endif %}
+    </div>
+</div>
