@@ -41,6 +41,7 @@ setono_sylius_terms:
 
 - An entry with a default's code changes only the keys it sets. `checkout_complete: { hooks: { app.checkout.terms: 10 } }` replaces its hooks and keeps its type and saved event.
 - `enabled: false` switches a default Form off, for example `contact: { enabled: false }`.
+- Two enabled Forms can't have the same form type. 2.x keyed `forms` by class, so it couldn't list a class twice either, but a 2.x entry for `ContactType` or `CustomerRegistrationType` moved to a code of your own now clashes with the default `contact` or `registration` Form and fails the container build. Use the default's code, or switch the default off.
 - A Form without a `label` gets the translation key `setono_sylius_terms.form.terms.term_form.<code>`. In 2.x the key was derived from the form type's short class name.
 - The `setono_sylius_terms.forms` parameter is keyed by Form code and holds only the enabled Forms, each with `type`, `label`, `hooks` and `saved_event`.
 

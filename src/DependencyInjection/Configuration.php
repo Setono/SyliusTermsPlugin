@@ -119,7 +119,8 @@ final class Configuration implements ConfigurationInterface
 
     /**
      * Adds the default Forms to the configured ones, fills each key an entry left out, from the default Form with the
-     * same code or else from the key's own default, and drops the disabled Forms
+     * same code or else from the key's own default, drops the disabled Forms and fails when two enabled Forms share a
+     * form type
      *
      * @param array<array-key, array<string, mixed>> $forms
      *
@@ -128,6 +129,9 @@ final class Configuration implements ConfigurationInterface
     private static function resolveForms(array $forms): array
     {
         $resolved = [];
+
+        /** @var array<string, string> $codesByType */
+        $codesByType = [];
 
         // The union lists the default codes first, then the app's own codes
         foreach (array_keys(self::DEFAULT_FORMS + $forms) as $code) {
@@ -148,6 +152,18 @@ final class Configuration implements ConfigurationInterface
             if (!isset($form['type'])) {
                 throw new \InvalidArgumentException(sprintf('The Form "%s" has no type. Set it to the class of the form type the Terms checkboxes are added to.', $code));
             }
+
+            // The plugin finds a Form by the type of the form being built, so two Forms with one type can't be told apart
+            if (isset($codesByType[$form['type']])) {
+                throw new \InvalidArgumentException(sprintf(
+                    'The Forms "%s" and "%s" have the same form type, "%s". Give each Form its own form type: the plugin finds a Form by the type of the form being built, so it can\'t tell the two apart. To reuse the type of a default Form under your own code, switch the default off with enabled: false.',
+                    $codesByType[$form['type']],
+                    $code,
+                    $form['type'],
+                ));
+            }
+
+            $codesByType[$form['type']] = $code;
 
             $resolved[$code] = [
                 'type' => $form['type'],
