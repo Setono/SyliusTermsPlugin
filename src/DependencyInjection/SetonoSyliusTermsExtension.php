@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\DependencyInjection;
 
+use Setono\SyliusTermsPlugin\Dispatcher\TermsAnsweredDispatcher;
 use Setono\SyliusTermsPlugin\Pdf\TermsPdfGenerator;
 use Setono\SyliusTermsPlugin\Sanitizer\HeadingIdAttributeSanitizer;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
@@ -42,6 +43,8 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
         $container->setParameter('setono_sylius_terms.terms_path', $config['routing']['terms']);
 
         $loader->load('services.php');
+
+        self::listenToSavedEvents($container, $config['forms']);
 
         if ($config['order_confirmation_email']['pdf']) {
             $loader->load('services/conditional/pdf.php');
@@ -86,6 +89,23 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
 
         if ($config['order_confirmation_email']['pdf']) {
             self::prependPdf($container);
+        }
+    }
+
+    /**
+     * The TermsAnsweredEvent dispatcher holds the Answers of a Form with a saved_event until that event, so it listens
+     * to the saved_event of each enabled Form, once per event however many Forms name it
+     *
+     * @param array<string, array{saved_event: string|null}> $forms
+     */
+    private static function listenToSavedEvents(ContainerBuilder $container, array $forms): void
+    {
+        $dispatcher = $container->getDefinition(TermsAnsweredDispatcher::class);
+
+        $savedEvents = array_filter(array_column($forms, 'saved_event'), static fn (?string $savedEvent): bool => null !== $savedEvent);
+
+        foreach (array_unique($savedEvents) as $savedEvent) {
+            $dispatcher->addTag('kernel.event_listener', ['event' => $savedEvent, 'method' => 'onSaved']);
         }
     }
 

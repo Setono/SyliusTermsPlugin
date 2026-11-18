@@ -6,3 +6,9 @@ services:
         decorates: sylius_pdf_generation.renderer.html
         arguments:
             - '@.inner'
+
+    Setono\SyliusTermsPlugin\Tests\Application\EventListener\TermsAnsweredEventRecorder:
+        arguments:
+            - '@doctrine.dbal.default_connection'
+        tags:
+            - { name: kernel.event_listener, event: Setono\SyliusTermsPlugin\Event\TermsAnsweredEvent }
