@@ -33,4 +33,6 @@ interface TermsVersionInterface extends ResourceInterface, TranslatableInterface
     public function getInForceFrom(): ?\DateTimeImmutable;
 
     public function setInForceFrom(\DateTimeImmutable $inForceFrom): void;
+
+    public function getTranslation(?string $locale = null): TermsVersionTranslationInterface;
 }

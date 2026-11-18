@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\Model;
 
 use Sylius\Resource\Model\TranslatableTrait;
-use Sylius\Resource\Model\TranslationInterface;
 
 class TermsVersion implements TermsVersionInterface
 {
     use TranslatableTrait {
         __construct as private initializeTranslationsCollection;
+        getTranslation as private doGetTranslation;
     }
 
     protected ?int $id = null;
@@ -61,7 +61,15 @@ class TermsVersion implements TermsVersionInterface
         $this->inForceFrom = $inForceFrom;
     }
 
-    protected function createTranslation(): TranslationInterface
+    public function getTranslation(?string $locale = null): TermsVersionTranslationInterface
+    {
+        /** @var TermsVersionTranslationInterface $translation */
+        $translation = $this->doGetTranslation($locale);
+
+        return $translation;
+    }
+
+    protected function createTranslation(): TermsVersionTranslationInterface
     {
         return new TermsVersionTranslation();
     }
