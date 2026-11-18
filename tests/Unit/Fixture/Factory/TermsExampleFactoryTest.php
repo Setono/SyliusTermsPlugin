@@ -176,7 +176,8 @@ final class TermsExampleFactoryTest extends TestCase
     {
         $terms = $this->createFactory()->create(['channels' => [], 'locales' => ['en_US']]);
 
-        self::assertMatchesRegularExpression('/\A[A-Z][a-z]+( [a-z]+){2}\z/', (string) $terms->getTranslation('en_US')->getName());
+        // Three words, the first capitalised. Faker's words include one-letter ones such as "a", which becomes "A"
+        self::assertMatchesRegularExpression('/\A[A-Z][a-z]*( [a-z]+){2}\z/', (string) $terms->getTranslation('en_US')->getName());
         self::assertNotEmpty($terms->getCode());
     }
 
