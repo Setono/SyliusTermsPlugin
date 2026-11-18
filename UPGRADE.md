@@ -140,6 +140,12 @@ final class TermsGridMutator implements GridMutatorInterface
 
 On Sylius ≥ 2.3, a same-named YAML grid replaces the plugin's grid wholesale.
 
+### `Sylius\Resource` names
+
+The plugin uses `sylius/resource-bundle`'s `Sylius\Resource\…` names instead of the legacy `Sylius\Component\Resource\…` ones. Its model and repository interfaces extend the new interfaces, for example `TermsRepositoryInterface` extends `Sylius\Resource\Doctrine\Persistence\RepositoryInterface`, and the resources' default factory class is `Sylius\Resource\Factory\Factory`.
+
+At runtime each legacy name is an alias of its new name, so code that implements, extends or type-hints the legacy names keeps working. Static analysers such as PHPStan read each legacy name as a subtype of its new name, though, so passing a plugin model or repository where a legacy name is expected may now be reported. Type against the `Sylius\Resource\…` names instead.
+
 ### Removed classes, services, templates, files and translation keys
 
 | Removed | Replacement |

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Model;
 
-use Sylius\Component\Resource\Model\ResourceInterface;
-use Sylius\Component\Resource\Model\SlugAwareInterface;
-use Sylius\Component\Resource\Model\TranslationInterface;
+use Sylius\Resource\Model\ResourceInterface;
+use Sylius\Resource\Model\SlugAwareInterface;
+use Sylius\Resource\Model\TranslationInterface;
 
 interface TermsTranslationInterface extends SlugAwareInterface, ResourceInterface, TranslationInterface
 {

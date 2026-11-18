@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\Model;
 
 use Stringable;
-use Sylius\Component\Resource\Model\AbstractTranslation;
+use Sylius\Resource\Model\AbstractTranslation;
 
 class TermsTranslation extends AbstractTranslation implements TermsTranslationInterface, Stringable
 {

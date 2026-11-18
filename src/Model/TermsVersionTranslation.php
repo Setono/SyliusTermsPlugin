@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Model;
 
-use Sylius\Component\Resource\Model\AbstractTranslation;
+use Sylius\Resource\Model\AbstractTranslation;
 use Webmozart\Assert\Assert;
 
 class TermsVersionTranslation extends AbstractTranslation implements TermsVersionTranslationInterface
