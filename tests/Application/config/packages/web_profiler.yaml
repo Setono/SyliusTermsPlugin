@@ -3,10 +3,13 @@ when@dev:
         toolbar: true
         intercept_redirects: false
 
-when@test:
+when@test: &test
     web_profiler:
         toolbar: false
         intercept_redirects: false
 
     framework:
         profiler: { collect: false }
+
+# The test environment with the Terms PDFs switched off, see setono_sylius_terms.yaml
+when@test_pdf_off: *test

@@ -10,7 +10,7 @@ when@dev:
     framework:
         profiler: { only_exceptions: false }
 
-when@test:
+when@test: &test
     framework:
         test: ~
         session:
@@ -22,3 +22,6 @@ when@test:
             pools:
                 test.mailer_pool:
                     adapter: cache.adapter.filesystem
+
+# The test environment with the Terms PDFs switched off, see setono_sylius_terms.yaml
+when@test_pdf_off: *test

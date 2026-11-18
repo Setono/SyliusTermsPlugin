@@ -13,3 +13,10 @@ when@test:
         # Tests never touch the network. Each test gives the factory the responses it needs
         http_client:
             mock_response_factory: Setono\SyliusTermsPlugin\Tests\Application\HttpClient\MockResponseFactory
+
+# The test environment with the Terms PDFs switched off, as they are by default. Every other config file gives it the
+# test environment's config, and bundles.php its bundles. Tests boot it with self::bootKernel(['environment' => 'test_pdf_off'])
+when@test_pdf_off:
+    setono_sylius_terms:
+        order_confirmation_email:
+            pdf: false

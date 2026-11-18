@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Setono\SyliusTermsPlugin\EventListener\AttachTermsPdfsListener;
 use Setono\SyliusTermsPlugin\Generator\SlugGeneratorInterface;
+use Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface;
 use Setono\SyliusTermsPlugin\Pdf\ImageInliner;
 use Setono\SyliusTermsPlugin\Pdf\ImageInlinerInterface;
 use Setono\SyliusTermsPlugin\Pdf\TermsPdfGenerator;
 use Setono\SyliusTermsPlugin\Pdf\TermsPdfGeneratorInterface;
 use Setono\SyliusTermsPlugin\Pdf\UrlAbsolutiser;
 use Setono\SyliusTermsPlugin\Pdf\UrlAbsolutiserInterface;
+use Sylius\Component\Mailer\SyliusMailerEvents;
 use Sylius\PdfGenerationBundle\Core\Renderer\HtmlToPdfRendererInterface;
 
 /**
@@ -49,4 +52,13 @@ return static function (ContainerConfigurator $container): void {
     ;
 
     $services->alias(TermsPdfGeneratorInterface::class, TermsPdfGenerator::class);
+
+    $services->set(AttachTermsPdfsListener::class)
+        ->args([
+            service(FormTermsLookupInterface::class),
+            service(TermsPdfGeneratorInterface::class),
+            service('logger'),
+        ])
+        ->tag('kernel.event_listener', ['event' => SyliusMailerEvents::EMAIL_PRE_SEND])
+    ;
 };

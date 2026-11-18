@@ -7,7 +7,7 @@ sylius_twig_hooks:
             privacy_policy:
                 template: 'shop/footer/privacy_policy.html.twig'
 
-when@test:
+when@test: &test
     sylius_twig_hooks:
         hooks:
             # Per-code hooks for the Terms page of the Terms with the code hooked_terms, which tests create inline. One
@@ -19,3 +19,6 @@ when@test:
             'setono_sylius_terms.shop.terms.show.hooked_terms.content.sidebar':
                 version:
                     enabled: false
+
+# The test environment with the Terms PDFs switched off, see setono_sylius_terms.yaml
+when@test_pdf_off: *test

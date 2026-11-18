@@ -1,6 +1,9 @@
-when@test:
+when@test: &test
     playwright:
         assets:
             # The bundle's defaults plus /bundles, where assets:install puts the plugin's public/ files, and /images,
             # which holds the image in the baseline Terms' content
             prefixes: ['/assets', '/build', '/_framework/ux', '/bundles', '/images']
+
+# The test environment with the Terms PDFs switched off, see setono_sylius_terms.yaml
+when@test_pdf_off: *test

@@ -6,8 +6,3 @@ services:
         decorates: sylius_pdf_generation.renderer.html
         arguments:
             - '@.inner'
-
-    # Nothing uses the generator until the order confirmation email does, so the container would remove it
-    Setono\SyliusTermsPlugin\Pdf\TermsPdfGeneratorInterface:
-        alias: Setono\SyliusTermsPlugin\Pdf\TermsPdfGenerator
-        public: true

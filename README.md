@@ -499,13 +499,14 @@ The code `content` is reserved, and saving a Terms with it fails validation: its
 
 ## Terms in the order confirmation email
 
-When you switch it on, the plugin renders a Terms PDF of a Terms version in a locale: the version's name, a line such
-as "Version 3, in force since 16 November 2026" in that locale, and the Content. A PDF holds no order data, so one PDF
-serves every order that accepted the version. Its file name is the version's name, slugified, plus the version number,
-such as `handelsbetingelser-v3.pdf`.
+When you switch it on, the order confirmation email carries one Terms PDF for each required Terms on the checkout
+complete Form, in position order. Each PDF holds the Terms version that was in force when checkout completed, in the
+order's locale. This covers the email sent when checkout completes, in the shop or through the API, and the one an
+admin resends from the order page. The email's body stays as it is.
 
-> [!NOTE]
-> On `3.x` the PDFs are generated, but not attached to the order confirmation email yet.
+A Terms PDF holds the version's name, a line such as "Version 3, in force since 16 November 2026" in the order's
+locale, and the Content. It holds no order data, so one PDF serves every order that accepted the version. Its file name
+is the version's name, slugified, plus the version number, such as `handelsbetingelser-v3.pdf`.
 
 ### Switching it on
 
@@ -534,6 +535,43 @@ setono_sylius_terms:
 With the switch on and the bundle or the HTTP client missing, the container build fails with the `composer require`
 command above. The feature installs only where `sylius/pdf-generation-bundle` can: Symfony 6.4, or 7.4 and later.
 
+The PDFs are attached when Sylius sends the email through its default `symfony_mailer` adapter. Their bytes travel
+inside the message, so email sent asynchronously through Messenger needs no shared files.
+
+### Which Terms are attached
+
+- Only required Terms. Optional terms are never attached: the plugin doesn't store Answers, so the email can't know
+  whether the customer ticked one.
+- The Terms that are placed on checkout complete, enabled and in the order's channel when the email is sent. Placement
+  and the required flag aren't versioned, so an admin resend after a placement change can attach other Terms than the
+  first email did. The text in each PDF is still the version in force when checkout completed.
+- A Terms with no version in force when checkout completed, or none in the order's locale, is skipped. That includes
+  every order completed before `setono:sylius-terms:upgrade-from-2x` ran, because a Terms upgraded from 2.x gets
+  version 1 when the command runs. Resending the confirmation of such an order attaches no PDFs.
+
+### When a PDF can't be generated
+
+The PDFs are generated while the email is sent, which by default is inside the checkout request. If one can't be
+generated, the plugin logs an error with the order number and the Terms code, attaches the other PDFs and sends the
+email. Checkout never fails over a PDF.
+
+### Mentioning the attachments in the email
+
+The plugin leaves the email's body as it is. To tell customers about the PDFs, override the template that renders the
+content of both the first and the resent confirmation, include the original, and add your own text:
+
+```twig
+{# templates/bundles/SyliusCoreBundle/Email/Blocks/OrderConfirmation/_content.html.twig #}
+{% include '@!SyliusCore/Email/Blocks/OrderConfirmation/_content.html.twig' %}
+
+<div style="text-align: center; margin-top: 30px;">
+    {{ 'app.email.order_confirmation.terms_attached'|trans({}, null, localeCode) }}
+</div>
+```
+
+The body is rendered before the PDFs are attached, so it can't tell whether any were. Word the text so that it also
+holds for an order with no PDFs, such as one completed before the upgrade.
+
 ### Setting the channel hostname
 
 Relative link and image URLs in the Content, such as `/en_US/contact`, are made absolute against the channel's
@@ -549,8 +587,10 @@ The PDF engine downloads nothing. Before rendering, the plugin downloads each `h
 Symfony's HTTP client, and inlines it as a `data:` URI. An image is downloaded only if it answers within 5 seconds with
 an `image/*` response of at most 5 MB.
 
-An image that can't be downloaded is replaced by its alt text, and an error naming the image URL is logged. The PDF is
-still returned, because the text is intact, but it isn't cached, so the next one tries the image again.
+An image that can't be downloaded is replaced by its alt text, and an error naming the image URL, the Terms code and
+the order number is logged. The PDF is still attached, because the text is intact, but it isn't cached, so the next
+order's email tries the image again. A PDF's images download in parallel, so while an image host is down, each PDF
+waits at most about 5 seconds for them.
 
 ### Changing the PDF engine
 

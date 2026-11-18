@@ -12,6 +12,12 @@ use Sylius\PdfGenerationBundle\Core\Renderer\HtmlToPdfRendererInterface;
  */
 final class RecordingHtmlToPdfRenderer implements HtmlToPdfRendererInterface
 {
+    /**
+     * Rendering HTML that contains this text fails, as a broken PDF engine would. A test puts it in a Terms' Content.
+     * It is a constant, not a setting, so it holds in every kernel the test client boots
+     */
+    public const FAILING_TEXT = 'This Terms PDF fails to render';
+
     /** @var list<array{html: string, context: string}> */
     private array $renders = [];
 
@@ -22,6 +28,10 @@ final class RecordingHtmlToPdfRenderer implements HtmlToPdfRendererInterface
     public function render(string $html, string $context = 'default'): string
     {
         $this->renders[] = ['html' => $html, 'context' => $context];
+
+        if (str_contains($html, self::FAILING_TEXT)) {
+            throw new \RuntimeException('The PDF engine failed');
+        }
 
         return $this->decorated->render($html, $context);
     }

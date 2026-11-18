@@ -9,12 +9,16 @@ when@dev:
                 type: firephp
                 level: info
 
-when@test:
+when@test: &test
     monolog:
         handlers:
             main:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
+                level: error
+            # Keeps the errors in memory, so tests can assert on them (monolog.handler.test)
+            test:
+                type: test
                 level: error
 
 when@prod:
@@ -28,3 +32,6 @@ when@prod:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
+
+# The test environment with the Terms PDFs switched off, see setono_sylius_terms.yaml
+when@test_pdf_off: *test
