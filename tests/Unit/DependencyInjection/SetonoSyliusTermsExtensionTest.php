@@ -14,6 +14,7 @@ use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeCheckerInterface;
 use Setono\SyliusTermsPlugin\Controller\Action\ShowTermsAction;
 use Setono\SyliusTermsPlugin\Converter\ContentConverter;
 use Setono\SyliusTermsPlugin\DependencyInjection\SetonoSyliusTermsExtension;
+use Setono\SyliusTermsPlugin\EventListener\AttachTermsPdfsListener;
 use Setono\SyliusTermsPlugin\EventListener\CreateTermsVersionListener;
 use Setono\SyliusTermsPlugin\EventListener\PreventTermsVersionEditListener;
 use Setono\SyliusTermsPlugin\EventSubscriber\AddMenuSubscriber;
@@ -299,6 +300,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderNotHasService(TermsPdfGeneratorInterface::class);
         $this->assertContainerBuilderNotHasService(ImageInliner::class);
         $this->assertContainerBuilderNotHasService(UrlAbsolutiser::class);
+        $this->assertContainerBuilderNotHasService(AttachTermsPdfsListener::class);
     }
 
     #[Test]
@@ -340,6 +342,19 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsPdfGenerator::class, 4, new Reference('setono_sylius_terms.pdf'));
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsPdfGenerator::class, 5, new Reference(SlugGeneratorInterface::class));
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(TermsPdfGenerator::class, 6, new Reference('logger'));
+    }
+
+    #[Test]
+    public function switching_the_terms_pdfs_on_registers_the_order_confirmation_email_listener(): void
+    {
+        $this->loadWithPdf([SyliusPdfGenerationBundle::class]);
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(AttachTermsPdfsListener::class, 0, new Reference(FormTermsLookupInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(AttachTermsPdfsListener::class, 1, new Reference(TermsPdfGeneratorInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(AttachTermsPdfsListener::class, 2, new Reference('logger'));
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(AttachTermsPdfsListener::class, 'kernel.event_listener', [
+            'event' => 'sylius.email_send.pre_send',
+        ]);
     }
 
     #[Test]

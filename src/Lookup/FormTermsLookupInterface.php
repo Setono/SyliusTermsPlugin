@@ -18,7 +18,8 @@ interface FormTermsLookupInterface
      * in the channel, read in the given locale, in position order.
      *
      * A Terms is skipped when it has no version in force at that moment, or when that version has no translation in
-     * the locale. Placement (enabled, channels, Forms) is always the current one, whatever the moment.
+     * the locale. Placement (enabled, channels, Forms) is always the current one, whatever the moment. A Form that
+     * isn't enabled in the config (setono_sylius_terms.forms) has no Terms, even if Terms still list its code.
      *
      * Each returned translation holds the name, label and content; its version holds the number and the Terms
      *

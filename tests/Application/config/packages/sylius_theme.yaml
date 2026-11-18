@@ -1,4 +1,7 @@
-when@test:
+when@test: &test
     sylius_theme:
         sources:
             test: ~
+
+# The test environment with the Terms PDFs switched off, see setono_sylius_terms.yaml
+when@test_pdf_off: *test

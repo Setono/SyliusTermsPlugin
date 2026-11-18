@@ -13,7 +13,8 @@ use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 /**
- * The Terms are placed on a newsletter Form that no baseline Terms uses, so only the Terms a test creates are found
+ * The Terms are placed on the contact Form in channels the tests create, where no baseline Terms is, so only the Terms a
+ * test creates are found. The test app configures no newsletter Form
  */
 final class FormTermsLookupTest extends KernelTestCase
 {
@@ -42,79 +43,92 @@ final class FormTermsLookupTest extends KernelTestCase
     #[Test]
     public function it_returns_only_enabled_terms_placed_on_the_form_in_the_channel(): void
     {
-        $fashionWeb = self::getChannel('FASHION_WEB');
+        $testWeb = self::createChannel('TEST_WEB');
         $otherWeb = self::createChannel('OTHER_WEB');
 
-        self::createTerms('shown', ['newsletter'], [$fashionWeb]);
-        self::createTerms('shown_on_several_forms_and_channels', ['checkout_complete', 'newsletter'], [$otherWeb, $fashionWeb]);
-        self::createTerms('shown_optional', ['newsletter'], [$fashionWeb], required: false);
-        self::createTerms('disabled', ['newsletter'], [$fashionWeb], enabled: false);
-        self::createTerms('in_another_channel', ['newsletter'], [$otherWeb]);
-        self::createTerms('in_no_channel', ['newsletter']);
-        self::createTerms('on_another_form', ['registration'], [$fashionWeb]);
-        self::createTerms('on_no_form', [], [$fashionWeb]);
+        self::createTerms('shown', ['contact'], [$testWeb]);
+        self::createTerms('shown_on_several_forms_and_channels', ['checkout_complete', 'contact'], [$otherWeb, $testWeb]);
+        self::createTerms('shown_optional', ['contact'], [$testWeb], required: false);
+        self::createTerms('disabled', ['contact'], [$testWeb], enabled: false);
+        self::createTerms('in_another_channel', ['contact'], [$otherWeb]);
+        self::createTerms('in_no_channel', ['contact']);
+        self::createTerms('on_another_form', ['registration'], [$testWeb]);
+        self::createTerms('on_no_form', [], [$testWeb]);
 
         self::assertSame(
             ['shown', 'shown_on_several_forms_and_channels', 'shown_optional'],
-            self::codes($this->lookup('newsletter', $fashionWeb, 'en_US')),
+            self::codes($this->lookup('contact', $testWeb, 'en_US')),
         );
         self::assertSame(
             ['shown_on_several_forms_and_channels', 'in_another_channel'],
-            self::codes($this->lookup('newsletter', $otherWeb, 'en_US')),
+            self::codes($this->lookup('contact', $otherWeb, 'en_US')),
         );
-        self::assertSame([], $this->lookup('unknown', $fashionWeb, 'en_US'));
+    }
+
+    /**
+     * Terms keep the code of a Form that has been switched off or removed from the config, as the admin shows
+     */
+    #[Test]
+    public function a_form_that_is_not_enabled_has_no_terms(): void
+    {
+        $testWeb = self::createChannel('TEST_WEB');
+
+        self::createTerms('on_a_form_that_is_not_enabled', ['newsletter', 'contact'], [$testWeb]);
+
+        self::assertSame([], $this->lookup('newsletter', $testWeb, 'en_US'));
+        self::assertSame(['on_a_form_that_is_not_enabled'], self::codes($this->lookup('contact', $testWeb, 'en_US')));
     }
 
     #[Test]
     public function it_skips_terms_with_no_version_in_force_or_none_in_the_locale(): void
     {
-        $fashionWeb = self::getChannel('FASHION_WEB');
+        $testWeb = self::createChannel('TEST_WEB');
 
-        self::createTerms('in_en_US', ['newsletter'], [$fashionWeb], ['en_US']);
-        self::createTerms('in_en_US_and_de_DE', ['newsletter'], [$fashionWeb], ['en_US', 'de_DE']);
+        self::createTerms('in_en_US', ['contact'], [$testWeb], ['en_US']);
+        self::createTerms('in_en_US_and_de_DE', ['contact'], [$testWeb], ['en_US', 'de_DE']);
 
-        self::assertSame(['in_en_US', 'in_en_US_and_de_DE'], self::codes($this->lookup('newsletter', $fashionWeb, 'en_US')));
-        self::assertSame(['in_en_US_and_de_DE'], self::codes($this->lookup('newsletter', $fashionWeb, 'de_DE')), 'No fallback to another locale');
-        self::assertSame([], $this->lookup('newsletter', $fashionWeb, 'en_US', '2026-11-16 11:59:59'), 'Nothing before version 1');
+        self::assertSame(['in_en_US', 'in_en_US_and_de_DE'], self::codes($this->lookup('contact', $testWeb, 'en_US')));
+        self::assertSame(['in_en_US_and_de_DE'], self::codes($this->lookup('contact', $testWeb, 'de_DE')), 'No fallback to another locale');
+        self::assertSame([], $this->lookup('contact', $testWeb, 'en_US', '2026-11-16 11:59:59'), 'Nothing before version 1');
     }
 
     #[Test]
     public function it_returns_the_terms_in_position_order(): void
     {
-        $fashionWeb = self::getChannel('FASHION_WEB');
+        $testWeb = self::createChannel('TEST_WEB');
 
-        $second = self::createTerms('second', ['newsletter'], [$fashionWeb]);
-        self::createTerms('third', ['newsletter'], [$fashionWeb]);
+        $second = self::createTerms('second', ['contact'], [$testWeb]);
+        self::createTerms('third', ['contact'], [$testWeb]);
         // Created last, but put in front of the second
-        self::createTerms('first', ['newsletter'], [$fashionWeb], position: $second->getPosition());
+        self::createTerms('first', ['contact'], [$testWeb], position: $second->getPosition());
         self::getEntityManager()->clear();
 
-        self::assertSame(['first', 'second', 'third'], self::codes($this->lookup('newsletter', self::getChannel('FASHION_WEB'), 'en_US')));
+        self::assertSame(['first', 'second', 'third'], self::codes($this->lookup('contact', self::getChannel('TEST_WEB'), 'en_US')));
     }
 
     #[Test]
     public function it_picks_the_version_in_force_at_the_moment_with_the_current_placement(): void
     {
-        $fashionWeb = self::getChannel('FASHION_WEB');
+        $testWeb = self::createChannel('TEST_WEB');
 
         // Version 1 holds en_US only, version 2 an hour later adds de_DE
-        $terms = self::createTerms('versioned', ['newsletter'], [$fashionWeb], ['en_US']);
+        $terms = self::createTerms('versioned', ['contact'], [$testWeb], ['en_US']);
         $this->clock->sleep(3600);
         $terms->addTranslation(self::createTermsTranslation('versioned', 'de_DE'));
         self::getEntityManager()->flush();
         $this->clock->sleep(60);
 
-        self::assertSame([1], self::versionNumbers($this->lookup('newsletter', $fashionWeb, 'en_US', '2026-11-16 12:59:59')));
-        self::assertSame([2], self::versionNumbers($this->lookup('newsletter', $fashionWeb, 'en_US', '2026-11-16 13:00:00')));
-        self::assertSame([2], self::versionNumbers($this->lookup('newsletter', $fashionWeb, 'en_US')), 'The moment defaults to now');
-        self::assertSame([], $this->lookup('newsletter', $fashionWeb, 'de_DE', '2026-11-16 12:59:59'));
-        self::assertSame([2], self::versionNumbers($this->lookup('newsletter', $fashionWeb, 'de_DE', '2026-11-16 13:00:00')));
+        self::assertSame([1], self::versionNumbers($this->lookup('contact', $testWeb, 'en_US', '2026-11-16 12:59:59')));
+        self::assertSame([2], self::versionNumbers($this->lookup('contact', $testWeb, 'en_US', '2026-11-16 13:00:00')));
+        self::assertSame([2], self::versionNumbers($this->lookup('contact', $testWeb, 'en_US')), 'The moment defaults to now');
+        self::assertSame([], $this->lookup('contact', $testWeb, 'de_DE', '2026-11-16 12:59:59'));
+        self::assertSame([2], self::versionNumbers($this->lookup('contact', $testWeb, 'de_DE', '2026-11-16 13:00:00')));
 
         // Placement isn't versioned: a Terms taken off the Form is gone from the lookup at every moment
         $terms->setForms([]);
         self::getEntityManager()->flush();
 
-        self::assertSame([], $this->lookup('newsletter', $fashionWeb, 'en_US', '2026-11-16 12:59:59'));
+        self::assertSame([], $this->lookup('contact', $testWeb, 'en_US', '2026-11-16 12:59:59'));
     }
 
     /**

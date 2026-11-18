@@ -17,6 +17,7 @@ return static function (ContainerConfigurator $container): void {
             service('setono_sylius_terms.repository.terms'),
             service('setono_sylius_terms.repository.terms_version'),
             service('clock'),
+            param('setono_sylius_terms.forms'),
         ])
     ;
 
