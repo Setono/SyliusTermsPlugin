@@ -588,6 +588,8 @@ a saved version throws a `LogicException`.
   creates no version.
 * A version is in force from the moment it is saved until the next version is saved. The plugin reads "now" from
   Symfony Clock.
+* A Terms upgraded from 2.x gets version 1 from `setono:sylius-terms:upgrade-from-2x`, in force from the moment the
+  command runs. Orders completed before then have no inferred version (see [UPGRADE.md](UPGRADE.md#upgrade-steps)).
 
 Admins see the versions of a Terms on its update page and open each one read-only (see
 [Version history](#version-history)).
@@ -996,6 +998,9 @@ setono_sylius_terms:
 $ php bin/console doctrine:migrations:diff
 $ php bin/console doctrine:migrations:migrate
 ```
+
+When upgrading from 2.x, run `php bin/console setono:sylius-terms:upgrade-from-2x` right after the migration, in the
+same deploy. Until it runs, no Terms checkboxes show. See [UPGRADE.md](UPGRADE.md#upgrade-steps).
 
 The Terms checkboxes render on checkout complete, registration and contact without any template change (see
 [Terms checkboxes](#terms-checkboxes)).

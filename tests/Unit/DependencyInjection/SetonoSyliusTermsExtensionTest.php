@@ -11,6 +11,7 @@ use Setono\SyliusTermsPlugin\Checker\RequiredTermsChecker;
 use Setono\SyliusTermsPlugin\Checker\RequiredTermsCheckerInterface;
 use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeChecker;
 use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeCheckerInterface;
+use Setono\SyliusTermsPlugin\Command\UpgradeFrom2xCommand;
 use Setono\SyliusTermsPlugin\Controller\Action\ShowTermsAction;
 use Setono\SyliusTermsPlugin\Converter\ContentConverter;
 use Setono\SyliusTermsPlugin\DependencyInjection\SetonoSyliusTermsExtension;
@@ -54,6 +55,10 @@ use Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent;
 use Setono\SyliusTermsPlugin\Twig\ContentRuntime;
 use Setono\SyliusTermsPlugin\Twig\TermsExtension;
 use Setono\SyliusTermsPlugin\Twig\TermsRuntime;
+use Setono\SyliusTermsPlugin\Upgrade\ContentCaseDetector;
+use Setono\SyliusTermsPlugin\Upgrade\FormClassMapper;
+use Setono\SyliusTermsPlugin\Upgrade\Upgrader;
+use Setono\SyliusTermsPlugin\Upgrade\UpgraderInterface;
 use Setono\SyliusTermsPlugin\Validator\Constraints\RequiredTermsTickedValidator;
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Sylius\Bundle\ShopBundle\Form\Type\CustomerRegistrationType;
@@ -134,6 +139,10 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         yield 'terms grid' => [TermsGrid::class];
         yield 'terms form component' => [TermsFormComponent::class];
         yield 'terms answered dispatcher' => [TermsAnsweredDispatcher::class];
+        yield 'form class mapper' => [FormClassMapper::class];
+        yield 'content case detector' => [ContentCaseDetector::class];
+        yield 'upgrader' => [Upgrader::class];
+        yield 'upgrade from 2.x command' => [UpgradeFrom2xCommand::class];
     }
 
     #[Test]
@@ -150,6 +159,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias(ContentRendererInterface::class, ContentRenderer::class);
         $this->assertContainerBuilderHasAlias(SlugGeneratorInterface::class, SlugGenerator::class);
         $this->assertContainerBuilderHasAlias(TermsAnsweredDispatcherInterface::class, TermsAnsweredDispatcher::class);
+        $this->assertContainerBuilderHasAlias(UpgraderInterface::class, Upgrader::class);
     }
 
     #[Test]
@@ -204,6 +214,17 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
 
         $this->assertContainerBuilderHasServiceDefinitionWithTag(CreateTermsVersionListener::class, 'doctrine.event_listener', ['event' => 'onFlush']);
         $this->assertContainerBuilderHasServiceDefinitionWithTag(PreventTermsVersionEditListener::class, 'doctrine.event_listener', ['event' => 'onFlush']);
+    }
+
+    #[Test]
+    public function it_registers_the_upgrade_from_2x_command_which_maps_to_the_enabled_forms(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithTag(UpgradeFrom2xCommand::class, 'console.command');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(UpgradeFrom2xCommand::class, 0, new Reference(UpgraderInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(FormClassMapper::class, 0, '%setono_sylius_terms.forms%');
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(Upgrader::class, 1, '%setono_sylius_terms.model.terms.class%');
     }
 
     #[Test]
