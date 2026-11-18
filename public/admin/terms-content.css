@@ -1,0 +1,78 @@
+/*
+ * Rendered Content in the admin of setono/sylius-terms-plugin, such as the Preview tab of the Terms version page. Only
+ * those pages load it, through their #stylesheets hook. Rendered Content has no class or style attributes, so its
+ * styling is scoped to the content wrapper, .setono-terms-content
+ */
+
+.setono-terms-content {
+    overflow-wrap: break-word;
+}
+
+.setono-terms-content > :first-child {
+    margin-top: 0;
+}
+
+.setono-terms-content > :last-child {
+    margin-bottom: 0;
+}
+
+.setono-terms-content h1,
+.setono-terms-content h2,
+.setono-terms-content h3,
+.setono-terms-content h4,
+.setono-terms-content h5,
+.setono-terms-content h6 {
+    margin: 1.5rem 0 .75rem;
+}
+
+/* The # permalink after each ## heading belongs to the Terms page. Here it would only jump within the admin page */
+.setono-terms-content h2 > a[title="Permalink"] {
+    display: none;
+}
+
+.setono-terms-content p,
+.setono-terms-content ul,
+.setono-terms-content ol,
+.setono-terms-content blockquote,
+.setono-terms-content pre,
+.setono-terms-content table {
+    margin-bottom: 1rem;
+}
+
+.setono-terms-content blockquote {
+    padding: .25rem 0 .25rem 1rem;
+    border-left: 4px solid var(--tblr-border-color);
+    color: var(--tblr-secondary-color);
+}
+
+/* Images stay within the card */
+.setono-terms-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* A wide table scrolls inside its own box instead of widening the card */
+.setono-terms-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+}
+
+.setono-terms-content th,
+.setono-terms-content td {
+    padding: .5rem .75rem;
+    border-bottom: 1px solid var(--tblr-border-color);
+    vertical-align: top;
+}
+
+/* A column aligned in the Markdown keeps its align attribute */
+.setono-terms-content th:not([align]),
+.setono-terms-content td:not([align]) {
+    text-align: start;
+}
+
+.setono-terms-content thead th {
+    border-bottom-width: 2px;
+    font-weight: 600;
+}

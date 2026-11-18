@@ -1,0 +1,51 @@
+{# The Terms' versions, newest first. Each row links to the version's read-only page #}
+
+{% set terms = hookable_metadata.context.resource %}
+{% set versions = terms.versions|sort((a, b) => b.number <=> a.number) %}
+
+<div class="container-xl">
+    <div class="card-body">
+        <div class="card mb-3" {{ sylius_test_html_attribute('terms-versions') }}>
+            <div class="card-header">
+                <div class="card-title">
+                    {{ 'setono_sylius_terms.ui.versions'|trans }}
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table card-table table-vcenter">
+                    <thead>
+                        <tr>
+                            <th>{{ 'setono_sylius_terms.ui.number'|trans }}</th>
+                            <th>{{ 'setono_sylius_terms.ui.in_force_from'|trans }}</th>
+                            <th>{{ 'sylius.ui.locales'|trans }}</th>
+                            <th class="w-1">{{ 'sylius.ui.actions'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for version in versions %}
+                            {% set url = path('setono_sylius_terms_admin_terms_version_show', {id: terms.id, number: version.number}) %}
+
+                            <tr {{ sylius_test_html_attribute('terms-version', version.number) }}>
+                                <td>
+                                    <a href="{{ url }}">{{ version.number }}</a>
+                                </td>
+                                <td>{{ version.inForceFrom|format_datetime('medium', 'short') }}</td>
+                                <td>{{ version.translations|map(translation => translation.locale|sylius_locale_name)|sort|join(', ') }}</td>
+                                <td>
+                                    <a class="btn btn-sm" href="{{ url }}" {{ sylius_test_html_attribute('show-terms-version', version.number) }}>
+                                        {{ ux_icon('tabler:eye') }}
+                                        {{ 'sylius.ui.show'|trans }}
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-body-secondary">{{ 'sylius.ui.no_results_to_display'|trans }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

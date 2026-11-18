@@ -39,6 +39,8 @@ Each Terms has its own page, with a table of contents and the Terms version in f
 
 ![Screenshot showing admin terms update page](docs/images/admin-terms-update.png)
 
+![Screenshot showing the read-only page of a Terms version in the admin](docs/images/admin-terms-version.png)
+
 ## Admin
 
 Terms are under **Configuration > Terms**. The index lists every Terms in position order, with the Forms and channels
@@ -61,8 +63,22 @@ A Terms can be placed on a Form code that isn't configured, for example after yo
 and the index flags it the same way. The shop ignores it, and it stays on the Terms until an admin unticks it and
 saves.
 
-Deleting a Terms also deletes its [versions](#terms-versions). To retire a Terms and keep its history, disable it
-instead.
+### Version history
+
+Below the form, the update page lists the Terms' [versions](#terms-versions), newest first, with the number, the
+moment each was in force from and the locales it has text in. Each opens a read-only page that shows the version's
+name, label and content in each locale, for example under "Version 3, In force since November 16, 2026". The content
+has two tabs: **Preview**, the content rendered as the Terms page renders it, and **Source**, the Markdown as it was
+saved. There is no diff between versions and no record of who saved one.
+
+Deleting a Terms also deletes its versions. To keep a Terms' history, disable the Terms instead of deleting it.
+
+### Show in shop
+
+The update page has a **Show in shop** button that opens the [Terms page](#terms-pages), as Sylius' View in store does
+for a product. A Terms in several channels gets a dropdown with one entry per channel. Each entry links to the page in
+the channel's default locale, on the channel's hostname. The button is disabled when the Terms is disabled or in no
+enabled channel, and an entry is disabled when the Terms has no slug in the channel's default locale.
 
 ### Changing the admin
 
@@ -74,9 +90,25 @@ The pages are Sylius' CRUD pages, and their hooks are under `setono_sylius_terms
 | `setono_sylius_terms.admin.terms.{create,update}.content.form.general`      | `code`, `enabled`, `required`, `position` |
 | `setono_sylius_terms.admin.terms.{create,update}.content.form.placement`    | `forms`, `channels`                       |
 | `setono_sylius_terms.admin.terms.{create,update}.content.form.translations` | `name`, `slug`, `label`, `content`        |
+| `setono_sylius_terms.admin.terms.update.content`                            | `versions`, below core's `form`           |
+| `setono_sylius_terms.admin.terms.update.content.header.title_block.actions` | `show_in_shop`, before core's buttons     |
 
 The form is the Live Component `setono_sylius_terms:admin:terms:form`
-(`Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent`).
+(`Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent`). The Versions card is outside it.
+
+The read-only version page, `setono_sylius_terms_admin_terms_version_show` at
+`/%sylius_admin.path_name%/terms/{id}/versions/{number}`, is Sylius' CRUD show page, with its hooks under
+`setono_sylius_terms.admin.terms_version`. Its hookables get the version as `resource`, and the hookables of each
+locale also get `translation` and `locale`:
+
+| Hook                                                                          | Hookables                    |
+|-------------------------------------------------------------------------------|------------------------------|
+| `setono_sylius_terms.admin.terms_version.show.content`                        | `sections`                   |
+| `setono_sylius_terms.admin.terms_version.show.content.sections`               | `translations`               |
+| `setono_sylius_terms.admin.terms_version.show.content.sections.translations`  | `name`, `label`, `content`   |
+| `setono_sylius_terms.admin.terms_version.show#stylesheets`                    | `terms_content`              |
+
+The `terms_content` hookable loads a small stylesheet for the rendered content in the Preview tabs.
 
 The index is the PHP grid `setono_sylius_terms_terms`. Change it with a grid mutator:
 
@@ -362,6 +394,9 @@ a saved version throws a `LogicException`.
 * A version is in force from the moment it is saved until the next version is saved. The plugin reads "now" from
   Symfony Clock.
 
+Admins see the versions of a Terms on its update page and open each one read-only (see
+[Version history](#version-history)).
+
 To find out which version of a Terms was in force at a given moment in a given locale, for example what a customer
 accepted when their checkout completed, ask the Terms version repository:
 
@@ -391,7 +426,9 @@ in that locale. There is no fallback to another locale.
 Every Terms has its own page in the shop, at `/{_locale}/terms/{slug}`, such as `/en_US/terms/terms-and-conditions`.
 The slug is set per locale, and the `terms` part of the path is the `routing.terms` option (see
 [Step 3: Import routing](#step-3-import-routing)). These addresses stay the same as long as the slug does, so link to
-them from your footer, your emails or anywhere else the customer should be able to read the terms.
+them from your footer, your emails or anywhere else the customer should be able to read the terms. To find a Terms'
+address, use the [Show in shop](#show-in-shop) button on its admin update page, or generate it with
+[`terms_path()`](#linking-to-a-terms-page).
 
 The page shows the Terms version in force: its name, its Content, and its number and the date it has been in force
 since, such as "Version 3, In force since November 16, 2026", with the date in the customer's locale. When the Content

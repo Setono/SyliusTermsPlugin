@@ -1,0 +1,34 @@
+{# The version's name, label and content per locale, in the accordion of the Terms form's Translations card #}
+
+{% import '@SyliusAdmin/shared/helper/translations.html.twig' as translations %}
+
+{% set version = hookable_metadata.context.resource %}
+{% set accordion_id = 'terms-version-translations' %}
+
+{# The admin's locale first, open, then the others by name #}
+{% set version_translations = version.translations|sort((a, b) =>
+    (b.locale == app.locale) <=> (a.locale == app.locale)
+    ?: a.locale|sylius_locale_name <=> b.locale|sylius_locale_name
+) %}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <div class="card-title">
+            {{ 'sylius.ui.translations'|trans }}
+        </div>
+    </div>
+    <div class="accordion accordion-flush" id="{{ accordion_id }}">
+        {% for translation in version_translations %}
+            {% set locale = translation.locale %}
+
+            <div class="accordion-item">
+                {{ translations.accordion_header(locale, accordion_id, loop.first) }}
+                <div id="translation-{{ accordion_id }}-{{ locale }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#{{ accordion_id }}">
+                    <div class="accordion-body row">
+                        {% hook 'translations' with { translation, locale } %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

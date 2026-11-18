@@ -18,6 +18,15 @@ setono_sylius_terms:
         on_this_page: På denne side
         version: Version %number%
         in_force_since: Gældende fra %date%
+
+        terms_versions: Versioner af betingelser
+        versions: Versioner
+        number: Nummer
+        in_force_from: Gældende fra
+        preview: Forhåndsvisning
+        source: Kilde
+        no_content: Intet indhold
+        show_in_shop: Vis i butikken
         
     menu:
         admin:

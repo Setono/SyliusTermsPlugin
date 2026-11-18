@@ -44,6 +44,7 @@ final class AddMenuSubscriberTest extends TestCase
             // The routing extension adds the item's own route after the ones the item sets
             ['route' => 'setono_sylius_terms_admin_terms_create'],
             ['route' => 'setono_sylius_terms_admin_terms_update'],
+            ['route' => 'setono_sylius_terms_admin_terms_version_show'],
             ['route' => 'setono_sylius_terms_admin_terms_index', 'parameters' => []],
         ], $terms->getExtra('routes'));
     }

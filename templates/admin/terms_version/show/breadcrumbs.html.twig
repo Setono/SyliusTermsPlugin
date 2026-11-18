@@ -1,0 +1,13 @@
+{# Dashboard / Terms / the Terms, linking to its update page / the version #}
+
+{% from '@SyliusAdmin/shared/helper/breadcrumbs.html.twig' import breadcrumbs %}
+
+{% set version = hookable_metadata.context.resource %}
+{% set terms = version.terms %}
+
+{{ breadcrumbs([
+    { name: 'sylius.ui.dashboard', url: path('sylius_admin_dashboard'), active: false },
+    { name: 'setono_sylius_terms.ui.terms', url: path('setono_sylius_terms_admin_terms_index'), active: false },
+    { name: terms.translations[app.locale].name|default(terms.code), url: path('setono_sylius_terms_admin_terms_update', {id: terms.id}), active: false },
+    { name: 'setono_sylius_terms.ui.version'|trans({'%number%': version.number}), active: true },
+]) }}

@@ -18,6 +18,15 @@ setono_sylius_terms:
         on_this_page: On this page
         version: Version %number%
         in_force_since: In force since %date%
+
+        terms_versions: Terms versions
+        versions: Versions
+        number: Number
+        in_force_from: In force from
+        preview: Preview
+        source: Source
+        no_content: No content
+        show_in_shop: Show in shop
         
     menu:
         admin:

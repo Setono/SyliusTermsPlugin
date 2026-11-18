@@ -165,6 +165,46 @@ final class TermsAdminTest extends PlaywrightTestCase
         expect($warning)->toContainText('disable the terms instead');
     }
 
+    #[Test]
+    public function changing_a_translated_text_adds_a_version_that_opens_read_only(): void
+    {
+        $terms = self::createTerms('cookie_policy');
+        self::getEntityManager()->clear();
+        $content = "## Cookies\n\nWe use **cookies** to remember your cart.";
+
+        $page = $this->open(sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
+        self::assertSame(['1'], self::getVersionNumbers($page));
+
+        $page->locator('[data-test-content="en_US"]')->fill($content);
+        self::changeAndWaitForRerender($page, 'document.querySelector(\'[data-test-content="en_US"]\').blur()');
+        $page->locator('[data-test-update-changes-button]')->click();
+        expect($page->locator('[data-test-sylius-flash-message-type="success"]'))->toBeVisible();
+
+        self::assertSame(['2', '1'], self::getVersionNumbers($page));
+
+        $page->locator('[data-test-show-terms-version="2"]')->click();
+        $page->waitForURL(sprintf('**/admin/terms/%d/versions/2', (int) $terms->getId()));
+        $page->waitForLoadState('networkidle');
+
+        expect($page->locator('h1.page-title'))->toHaveText('Version 2');
+        expect(self::getActiveMenuItem($page))->toBeAttached();
+        expect($page->locator('[data-test-update-changes-button]'))->toHaveCount(0);
+
+        // Preview is open by default, and Source shows the stored Markdown, read-only
+        expect($page->locator('[data-test-content-preview="en_US"] h2'))->toContainText('Cookies');
+        expect($page->locator('[data-test-content-preview="en_US"] strong'))->toHaveText('cookies');
+        $source = $page->locator('[data-test-content-source="en_US"]');
+        expect($source)->toBeHidden();
+
+        $page->locator('[data-test-content-source-tab="en_US"]')->click();
+        expect($source)->toBeVisible();
+        expect($source)->toHaveValue($content);
+        self::assertFalse($source->isEditable(), 'The source is read-only');
+        expect($page->locator('[data-test-content-preview="en_US"]'))->toBeHidden();
+
+        self::assertSame([], $page->pageErrors(), 'The Terms version page threw JavaScript errors');
+    }
+
     /**
      * Opens the page and waits until its scripts have set it up, so clicks reach Bootstrap and the Live components
      */
@@ -202,6 +242,19 @@ final class TermsAdminTest extends PlaywrightTestCase
     private static function getListedCodes(PageInterface $page): array
     {
         return self::getTexts($page, 'table tbody tr td:nth-child(2) code');
+    }
+
+    /**
+     * The numbers in the update page's Versions card, top to bottom
+     *
+     * @return list<string>
+     */
+    private static function getVersionNumbers(PageInterface $page): array
+    {
+        /** @var list<string> $numbers */
+        $numbers = $page->locator('[data-test-terms-versions] tbody tr')->evaluateAll('rows => rows.map(row => row.dataset.testTermsVersion)');
+
+        return $numbers;
     }
 
     /**

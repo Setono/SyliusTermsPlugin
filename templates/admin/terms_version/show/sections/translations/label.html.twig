@@ -1,0 +1,9 @@
+{# The Label as stored, Link placeholder included #}
+
+{% set translation = hookable_metadata.context.translation %}
+{% set locale = hookable_metadata.context.locale %}
+
+<div class="col-12 mb-3">
+    <div><strong>{{ 'setono_sylius_terms.form.terms.label'|trans }}</strong></div>
+    <div {{ sylius_test_html_attribute('label', locale) }}>{{ translation.label }}</div>
+</div>

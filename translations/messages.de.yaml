@@ -19,6 +19,15 @@ setono_sylius_terms:
     version: Version %number%
     in_force_since: In Kraft seit dem %date%
 
+    terms_versions: Versionen der Konditionen
+    versions: Versionen
+    number: Nummer
+    in_force_from: In Kraft seit
+    preview: Vorschau
+    source: Quelltext
+    no_content: Kein Inhalt
+    show_in_shop: Im Shop anzeigen
+
   menu:
     admin:
       main:

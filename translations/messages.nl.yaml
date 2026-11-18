@@ -19,6 +19,15 @@ setono_sylius_terms:
         version: Versie %number%
         in_force_since: Van kracht sinds %date%
 
+        terms_versions: Versies van de voorwaarden
+        versions: Versies
+        number: Nummer
+        in_force_from: Van kracht sinds
+        preview: Voorbeeld
+        source: Bron
+        no_content: Geen inhoud
+        show_in_shop: Bekijk in de winkel
+
     menu:
         admin:
             main:
