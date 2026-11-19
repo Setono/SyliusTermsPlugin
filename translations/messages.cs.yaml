@@ -1,0 +1,73 @@
+setono_sylius_terms:
+    ui:
+        terms: Podmínky
+        manage_terms: Spravujte podmínky, které zákazníci přijímají ve formulářích vašeho obchodu
+        new_terms: Nové podmínky
+        edit_terms: Upravit podmínky
+
+        code: Kód
+        name: Název
+        channels: Kanály
+        position: Pozice
+        forms: Formuláře
+        required: Povinné
+        enabled: Povoleno
+        placement: Umístění
+        delete_terms_warning: Smazáním podmínek se smažou i všechny jejich verze. Chcete-li zachovat historii verzí, podmínky místo smazání deaktivujte.
+
+        on_this_page: Na této stránce
+        version: Verze %number%
+        in_force_since: Platná od %date%
+
+        terms_versions: Verze podmínek
+        versions: Verze
+        number: Číslo
+        in_force_from: Platná od
+        preview: Náhled
+        source: Zdrojový kód
+        no_content: Žádný obsah
+        write: Úpravy
+        markdown_toolbar:
+            label: Formátování
+            heading: Nadpis
+            bold: Tučné
+            italic: Kurzíva
+            quote: Citace
+            link: Odkaz
+            image: Obrázek
+            bulleted_list: Odrážkový seznam
+            numbered_list: Číslovaný seznam
+
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Podmínky
+
+    form:
+        terms:
+            translations: Překlady
+            name: Název
+            name_help: Název slouží jako označení a také jako text odkazu při zobrazení odkazu na podmínky
+            code: Kód
+            slug: Slug
+            label: Text u zaškrtávacího políčka
+            label_help: Pomocí [link:Text odkazu] určete, kde v textu má být odkaz
+            content: Obsah
+            content_help: Pokud je obsah prázdný, text u zaškrtávacího políčka nebude mít odkaz
+            channels: Kanály
+            slug_help: Ponechte prázdné a slug se vytvoří z názvu. Změnou slugu se změní adresa stránky s podmínkami a stará adresa přestane fungovat.
+            generate_slug: Vytvořit slug z názvu
+            required: Povinné
+            required_help: Zákazníci musí povinné podmínky zaškrtnout, než mohou formulář odeslat. Nepovinné podmínky mohou zůstat nezaškrtnuté.
+            position: Pozice
+            position_help: Určuje pořadí podmínek ve všech formulářích, od nejnižší hodnoty. Ponechte prázdné a podmínky budou poslední.
+            unconfigured_form: "%code% (nenakonfigurováno)"
+            forms: Formuláře
+            term_form:
+                checkout_complete: Pokladna > Dokončit objednávku
+                registration: Účet > Registrace
+                contact: Kontakt
+
+    pdf:
+        version_line: Verze %number%, platná od %date%

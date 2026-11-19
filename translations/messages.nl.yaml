@@ -45,9 +45,6 @@ setono_sylius_terms:
                     terms: Voorwaarden
 
     form:
-        terms_accept:
-            label: Accepteer alle voorwaarden om de bestelling af te ronden
-            terms_should_be_accepted: "{{ name }} dient te worden geaccepteerd"
         terms:
             translations: Vertalingen
             name: Naam
@@ -59,7 +56,6 @@ setono_sylius_terms:
             content: Content
             content_help: Als de content leeg is, zal het etiket naast het selectievakje geen link bevatten
             channels: Kanalen
-            forms: Formulieren
             slug_help: Laat leeg om hem uit de naam te maken. Als je de slug wijzigt, wijzigt het adres van de voorwaardenpagina en werkt het oude adres niet meer.
             generate_slug: Slug uit de naam maken
             required: Verplicht
@@ -67,6 +63,7 @@ setono_sylius_terms:
             position: Positie
             position_help: Bepaalt de volgorde van de voorwaarden op elk formulier, laagste eerst. Laat leeg om de voorwaarden als laatste te plaatsen.
             unconfigured_form: "%code% (niet geconfigureerd)"
+            forms: Formulieren
             term_form:
                 checkout_complete: Afrekenen > Bestelling afronden
                 registration: Account > Registreren

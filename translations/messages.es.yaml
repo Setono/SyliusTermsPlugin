@@ -1,0 +1,73 @@
+setono_sylius_terms:
+    ui:
+        terms: Condiciones
+        manage_terms: Gestiona las condiciones que los clientes aceptan en los formularios de tu tienda
+        new_terms: Nuevas condiciones
+        edit_terms: Editar condiciones
+
+        code: Código
+        name: Nombre
+        channels: Canales
+        position: Posición
+        forms: Formularios
+        required: Obligatorio
+        enabled: Activado
+        placement: Ubicación
+        delete_terms_warning: Al eliminar las condiciones también se eliminan todas sus versiones. Para conservar el historial de versiones, desactiva las condiciones en lugar de eliminarlas.
+
+        on_this_page: En esta página
+        version: Versión %number%
+        in_force_since: En vigor desde el %date%
+
+        terms_versions: Versiones de las condiciones
+        versions: Versiones
+        number: Número
+        in_force_from: En vigor desde
+        preview: Vista previa
+        source: Código fuente
+        no_content: Sin contenido
+        write: Escribir
+        markdown_toolbar:
+            label: Formato
+            heading: Encabezado
+            bold: Negrita
+            italic: Cursiva
+            quote: Cita
+            link: Enlace
+            image: Imagen
+            bulleted_list: Lista con viñetas
+            numbered_list: Lista numerada
+
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Condiciones
+
+    form:
+        terms:
+            translations: Traducciones
+            name: Nombre
+            name_help: El nombre se usa como referencia y también como texto del enlace al mostrar el enlace a las condiciones
+            code: Código
+            slug: Slug
+            label: Texto de la casilla
+            label_help: Usa [link:Texto del enlace] para indicar dónde debe ir el enlace en el texto
+            content: Contenido
+            content_help: Si el contenido está vacío, el texto de la casilla no tendrá enlace
+            channels: Canales
+            slug_help: Déjalo vacío para generarlo a partir del nombre. Cambiar el slug cambia la dirección de la página de las condiciones, y la dirección anterior deja de funcionar.
+            generate_slug: Generar el slug a partir del nombre
+            required: Obligatorio
+            required_help: Los clientes deben marcar las condiciones obligatorias antes de poder enviar el formulario. Las condiciones opcionales pueden quedar sin marcar.
+            position: Posición
+            position_help: Ordena las condiciones en todos los formularios, de menor a mayor. Déjalo vacío para colocar las condiciones al final.
+            unconfigured_form: "%code% (sin configurar)"
+            forms: Formularios
+            term_form:
+                checkout_complete: Caja > Completar pedido
+                registration: Cuenta > Registro
+                contact: Contacto
+
+    pdf:
+        version_line: Versión %number%, en vigor desde el %date%

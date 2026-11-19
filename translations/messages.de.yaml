@@ -45,9 +45,6 @@ setono_sylius_terms:
           terms: Konditionen
 
   form:
-    terms_accept:
-      label: Akzeptieren Sie alle Konditionen um die Bestellung abzuschließen
-      terms_should_be_accepted: "{{ name }} muss akzeptiert werden"
     terms:
       translations: Übersetzungen
       name: Name
@@ -59,7 +56,6 @@ setono_sylius_terms:
       content: Inhalt
       content_help: Wenn der Inhalt leer ist, wird das Etikett neben dem Kontrollkästchen keinen Link enthalten
       channels: Kanäle
-      forms: Formulare
       slug_help: Leer lassen, um ihn aus dem Namen zu erzeugen. Eine Änderung des Slugs ändert die Adresse der Konditionen-Seite, und die alte Adresse funktioniert nicht mehr.
       generate_slug: Slug aus dem Namen erzeugen
       required: Erforderlich
@@ -67,6 +63,7 @@ setono_sylius_terms:
       position: Position
       position_help: Legt die Reihenfolge der Konditionen auf jedem Formular fest, die niedrigste zuerst. Leer lassen, um die Konditionen ans Ende zu setzen.
       unconfigured_form: "%code% (nicht konfiguriert)"
+      forms: Formulare
       term_form:
         checkout_complete: Kasse > Bestellung abschließen
         registration: Konto > Registrieren

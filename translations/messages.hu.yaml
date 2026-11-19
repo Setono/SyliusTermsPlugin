@@ -1,0 +1,73 @@
+setono_sylius_terms:
+    ui:
+        terms: Feltételek
+        manage_terms: Kezelje a feltételeket, amelyeket a vásárlók a webáruháza űrlapjain fogadnak el
+        new_terms: Új feltételek
+        edit_terms: Feltételek szerkesztése
+
+        code: Kód
+        name: Név
+        channels: Csatornák
+        position: Pozíció
+        forms: Űrlapok
+        required: Kötelező
+        enabled: Engedélyezve
+        placement: Elhelyezés
+        delete_terms_warning: A feltételek törlésével az összes verziójuk is törlődik. Ha meg szeretné őrizni a verzióelőzményeket, törlés helyett tiltsa le a feltételeket.
+
+        on_this_page: Ezen az oldalon
+        version: "%number%. verzió"
+        in_force_since: "Hatálybalépés: %date%"
+
+        terms_versions: Feltételek verziói
+        versions: Verziók
+        number: Szám
+        in_force_from: Hatálybalépés
+        preview: Előnézet
+        source: Forráskód
+        no_content: Nincs tartalom
+        write: Szerkesztés
+        markdown_toolbar:
+            label: Formázás
+            heading: Címsor
+            bold: Félkövér
+            italic: Dőlt
+            quote: Idézet
+            link: Hivatkozás
+            image: Kép
+            bulleted_list: Felsorolás
+            numbered_list: Számozott lista
+
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Feltételek
+
+    form:
+        terms:
+            translations: Fordítások
+            name: Név
+            name_help: A név azonosítóként, valamint a feltételekre mutató hivatkozás szövegeként is szolgál
+            code: Kód
+            slug: Slug
+            label: Jelölőnégyzet szövege
+            label_help: A [link:Hivatkozás szövege] jelöléssel adhatja meg, hol legyen a hivatkozás a szövegben
+            content: Tartalom
+            content_help: Ha a tartalom üres, a jelölőnégyzet szövegében nem lesz hivatkozás
+            channels: Csatornák
+            slug_help: Hagyja üresen, és a slug a névből jön létre. A slug módosítása megváltoztatja a feltételek oldalának címét, és a régi cím többé nem működik.
+            generate_slug: Slug létrehozása a névből
+            required: Kötelező
+            required_help: A vásárlóknak be kell jelölniük a kötelező feltételeket, mielőtt elküldhetik az űrlapot. A nem kötelező feltételek bejelöletlenül hagyhatók.
+            position: Pozíció
+            position_help: Meghatározza a feltételek sorrendjét minden űrlapon, a legkisebbtől kezdve. Hagyja üresen, és a feltételek a végére kerülnek.
+            unconfigured_form: "%code% (nincs beállítva)"
+            forms: Űrlapok
+            term_form:
+                checkout_complete: Pénztár > Rendelés leadása
+                registration: Fiók > Regisztráció
+                contact: Kapcsolat
+
+    pdf:
+        version_line: "%number%. verzió, hatálybalépés: %date%"

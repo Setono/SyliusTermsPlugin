@@ -45,9 +45,6 @@ setono_sylius_terms:
           terms: Conditions
 
   form:
-    terms_accept:
-      label: Veuillez accepter les conditions pour finaliser la commande
-      terms_should_be_accepted: "{{ name }} doit être accepté pour finaliser la commande"
     terms:
       translations: Traductions
       name: Nom
@@ -59,7 +56,6 @@ setono_sylius_terms:
       content: Contenu
       content_help: Si le contenu est vide, l'étiquette à côté de la case à cocher n'aura pas de lien
       channels: Canaux
-      forms: Formulaires
       slug_help: Laissez vide pour le générer à partir du nom. Modifier le slug modifie l'adresse de la page des conditions, et l'ancienne adresse ne fonctionne plus.
       generate_slug: Générer le slug à partir du nom
       required: Obligatoire
@@ -67,6 +63,7 @@ setono_sylius_terms:
       position: Position
       position_help: Ordonne les conditions sur chaque formulaire, la plus basse en premier. Laissez vide pour placer les conditions en dernier.
       unconfigured_form: "%code% (non configuré)"
+      forms: Formulaires
       term_form:
         checkout_complete: Commande > Finaliser la commande
         registration: Compte > Inscription

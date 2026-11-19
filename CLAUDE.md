@@ -87,7 +87,7 @@ symfony server:start                                            # https://127.0.
 
 ### Translations
 
-- When adding or updating translation keys, update every locale file in `translations/` (e.g. `messages.en.yaml`, `messages.da.yaml`, ...), not just English. Missing translations leak the raw key into the UI for non-English admins.
+- When adding or updating translation keys, update every locale file in `translations/` (e.g. `messages.en.yaml`, `messages.da.yaml`, ...), not just English. Missing translations leak the raw key into the UI for non-English admins. `tests/Unit/TranslationsTest.php` fails when a locale file's keys, their order or a message's placeholders differ from English.
 - Plugins should ship translations for these locales (source locale is English): Nordic — da, sv, no, fi; Large EU — de, fr, es, it, nl, pl; Other common Sylius locales — pt, cs, hu, ro, uk. Translation files live in `translations/` and follow Symfony's `<domain>.<locale>.<format>` naming.
 
 ### Tests

@@ -1,0 +1,73 @@
+setono_sylius_terms:
+    ui:
+        terms: Termos
+        manage_terms: Gerir os termos que os clientes aceitam nos formulários da sua loja
+        new_terms: Novos termos
+        edit_terms: Editar termos
+
+        code: Código
+        name: Nome
+        channels: Canais
+        position: Posição
+        forms: Formulários
+        required: Obrigatório
+        enabled: Ativado
+        placement: Posicionamento
+        delete_terms_warning: Eliminar os termos também elimina todas as suas versões. Para manter o histórico de versões, desative os termos em vez de os eliminar.
+
+        on_this_page: Nesta página
+        version: Versão %number%
+        in_force_since: Em vigor desde %date%
+
+        terms_versions: Versões dos termos
+        versions: Versões
+        number: Número
+        in_force_from: Em vigor desde
+        preview: Pré-visualizar
+        source: Código-fonte
+        no_content: Sem conteúdo
+        write: Escrever
+        markdown_toolbar:
+            label: Formatação
+            heading: Título
+            bold: Negrito
+            italic: Itálico
+            quote: Citação
+            link: Ligação
+            image: Imagem
+            bulleted_list: Lista com marcadores
+            numbered_list: Lista numerada
+
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Termos
+
+    form:
+        terms:
+            translations: Traduções
+            name: Nome
+            name_help: O nome é usado como referência e também como texto da ligação quando a ligação para os termos é apresentada
+            code: Código
+            slug: Slug
+            label: Texto da caixa de verificação
+            label_help: Use [link:Texto da ligação] para indicar onde a ligação deve ficar no texto
+            content: Conteúdo
+            content_help: Se o conteúdo estiver vazio, o texto da caixa de verificação não terá ligação
+            channels: Canais
+            slug_help: Deixe em branco para o gerar a partir do nome. Alterar o slug altera o endereço da página dos termos, e o endereço antigo deixa de funcionar.
+            generate_slug: Gerar o slug a partir do nome
+            required: Obrigatório
+            required_help: Os clientes têm de assinalar os termos obrigatórios antes de poderem enviar o formulário. Os termos opcionais podem ficar por assinalar.
+            position: Posição
+            position_help: Ordena os termos em todos os formulários, do mais baixo para o mais alto. Deixe em branco para colocar os termos em último lugar.
+            unconfigured_form: "%code% (não configurado)"
+            forms: Formulários
+            term_form:
+                checkout_complete: Finalizar compra > Concluir encomenda
+                registration: Conta > Registo
+                contact: Contacto
+
+    pdf:
+        version_line: Versão %number%, em vigor desde %date%

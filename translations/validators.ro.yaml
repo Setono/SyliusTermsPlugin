@@ -1,0 +1,10 @@
+setono_sylius_terms:
+    terms:
+        code:
+            regex: Codul poate conține doar litere, cifre, cratime și caractere de subliniere.
+            unique: Acest cod este deja folosit.
+            reserved: 'Codul "content" este rezervat pentru hook-urile paginii termenilor. Alegeți alt cod.'
+        slug:
+            unique: Slugul trebuie să fie unic.
+    terms_checkbox:
+        required: Trebuie să acceptați termenii pentru a continua.

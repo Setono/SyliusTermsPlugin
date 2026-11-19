@@ -1,0 +1,10 @@
+setono_sylius_terms:
+    terms:
+        code:
+            regex: A kód csak betűket, számokat, kötőjeleket és aláhúzásjeleket tartalmazhat.
+            unique: Ez a kód már használatban van.
+            reserved: 'A "content" kód a feltételek oldalának hookjai számára van fenntartva. Válasszon másik kódot.'
+        slug:
+            unique: A slugnak egyedinek kell lennie.
+    terms_checkbox:
+        required: A folytatáshoz el kell fogadnia a feltételeket.
