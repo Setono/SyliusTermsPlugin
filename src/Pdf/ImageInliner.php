@@ -28,7 +28,7 @@ final readonly class ImageInliner implements ImageInlinerInterface
         $document = $html5->loadHTML($html);
 
         // Copied to an array, because replacing an image removes it from the live node list
-        $images = [...$document->getElementsByTagName('img')];
+        $images = iterator_to_array($document->getElementsByTagName('img'));
 
         /** @var array<string, ResponseInterface> $responses */
         $responses = [];
