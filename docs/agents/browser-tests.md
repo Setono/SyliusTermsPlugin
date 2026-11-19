@@ -6,7 +6,7 @@ How to write browser tests (`tests/Browser/`) that pass every run. They use play
 
 The PHP process serves the page's requests only while it is inside a Playwright call. Wait through Playwright: `waitForLoadState()`, `waitForResponse()`, `waitForFunction()` and `expect()` from `Playwright\Testing`. A `usleep()` stalls the page, because nothing answers its requests while PHP sleeps.
 
-- After `visit()`, call `$page->waitForLoadState('networkidle')` before the first click, so Bootstrap and the Live components have bound their handlers.
+- After `visit()`, call `$page->waitForLoadState('networkidle')` before the first fill or click, so Bootstrap and the Live components have bound their handlers.
 - A changed field re-renders the Live form. Before a submit, wait for that re-render, or the submit's navigation can abort. Run the change inside the wait:
 
     ```php
@@ -14,7 +14,8 @@ The PHP process serves the page's requests only while it is inside a Playwright 
     $page->waitForFunction('() => null === document.querySelector("[data-controller~=live][busy]")');
     ```
 
-- After a submit, wait for its result, such as `expect($page->locator('[data-test-sylius-flash-message-type="success"]'))->toBeVisible()`.
+- A re-render keeps what was entered in a field only if the Live form saw the field's `input` or `change` event. A value set without them, such as by `$locator->evaluate('input => input.value = "Cookies"')` or by a `fill()` before the Live form had bound its handlers, is replaced by the server's, which is empty on the create form. Enter values with `fill()`, `pressSequentially()` or `check()`, after the wait above.
+- After a submit, wait for its result, such as `expect($page->locator('[data-test-sylius-flash-message-type="success"]'))->toBeVisible()`. A rejected form comes back on the same URL, and the Live form shows the errors of the fields it re-rendered before the submit. Wait for the page the server rejected it with, `$page->waitForFunction('() => 422 === performance.getEntriesByType("navigation")[0].responseStatus')`, so the checks don't pass on the page from before the submit.
 - Bootstrap scrolls smoothly to an anchor. After clicking a link to `#id`, wait until the target has arrived, such as `$page->waitForFunction('() => Math.abs(document.getElementById("content-delivery").getBoundingClientRect().top - 24) < 2')`.
 
 ## Data
