@@ -6,10 +6,16 @@ namespace Setono\SyliusTermsPlugin\Tests\Unit\Model;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusTermsPlugin\Model\Terms;
+use Setono\SyliusTermsPlugin\Model\TermsTranslation;
+use Setono\SyliusTermsPlugin\Model\TermsTranslationInterface;
+use Sylius\Resource\Model\TranslationInterface;
 
 final class TermsTest extends TestCase
 {
+    use ProphecyTrait;
+
     #[Test]
     public function a_terms_is_required_by_default(): void
     {
@@ -43,5 +49,33 @@ final class TermsTest extends TestCase
         $terms->setPosition(null);
 
         self::assertSame(-1, $terms->getPosition());
+    }
+
+    #[Test]
+    public function its_translations_are_terms_translations(): void
+    {
+        $terms = new Terms();
+        $terms->setFallbackLocale('en_US');
+
+        $translation = $terms->getTranslation('en_US');
+
+        self::assertInstanceOf(TermsTranslation::class, $translation);
+        self::assertSame($terms, $translation->getTranslatable());
+    }
+
+    #[Test]
+    public function it_throws_when_its_translation_is_not_a_terms_translation(): void
+    {
+        $terms = new Terms();
+
+        $translation = $this->prophesize(TranslationInterface::class);
+        $translation->getLocale()->willReturn('en_US');
+        $translation->setTranslatable($terms)->shouldBeCalled();
+        $terms->addTranslation($translation->reveal());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(TermsTranslationInterface::class);
+
+        $terms->getTranslation('en_US');
     }
 }

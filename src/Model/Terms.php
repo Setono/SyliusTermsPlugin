@@ -10,6 +10,7 @@ use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Resource\Model\TimestampableTrait;
 use Sylius\Resource\Model\ToggleableTrait;
 use Sylius\Resource\Model\TranslatableTrait;
+use Webmozart\Assert\Assert;
 
 class Terms implements TermsInterface
 {
@@ -208,8 +209,8 @@ class Terms implements TermsInterface
 
     public function getTranslation(?string $locale = null): TermsTranslationInterface
     {
-        /** @var TermsTranslationInterface $translation */
         $translation = $this->doGetTranslation($locale);
+        Assert::isInstanceOf($translation, TermsTranslationInterface::class);
 
         return $translation;
     }
