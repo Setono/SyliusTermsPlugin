@@ -43,7 +43,7 @@ final class AddMenuSubscriber implements EventSubscriberInterface
                 ]],
             ])
             ->setLabel('setono_sylius_terms.menu.admin.main.configuration.terms')
-            ->setLabelAttribute('icon', 'tabler:circle-check')
+            ->setLabelAttribute('icon', 'tabler:certificate')
         ;
     }
 }

@@ -1,7 +1,7 @@
 setono_sylius_terms:
     ui:
         terms: Terms
-        manage_terms: Manage terms
+        manage_terms: Manage the terms customers accept on your shop's forms
         new_terms: New terms
         edit_terms: Edit terms
 

@@ -1,7 +1,7 @@
 setono_sylius_terms:
     ui:
         terms: Betingelser
-        manage_terms: Administrer betingelser
+        manage_terms: Administrer de betingelser, kunderne accepterer på din butiks formularer
         new_terms: Opret betingelser
         edit_terms: Rediger betingelser
 

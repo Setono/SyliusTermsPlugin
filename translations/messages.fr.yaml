@@ -1,7 +1,7 @@
 setono_sylius_terms:
   ui:
     terms: Conditions
-    manage_terms: Gérer les conditions
+    manage_terms: Gérer les conditions que les clients acceptent dans les formulaires de votre boutique
     new_terms: Nouvelles conditions
     edit_terms: Modifier les conditions
 

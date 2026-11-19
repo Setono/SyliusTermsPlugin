@@ -39,7 +39,7 @@ final class AddMenuSubscriberTest extends TestCase
         self::assertInstanceOf(ItemInterface::class, $terms);
         self::assertSame('/admin/terms/', $terms->getUri());
         self::assertSame('setono_sylius_terms.menu.admin.main.configuration.terms', $terms->getLabel());
-        self::assertSame('tabler:circle-check', $terms->getLabelAttribute('icon'));
+        self::assertSame('tabler:certificate', $terms->getLabelAttribute('icon'));
         self::assertSame([
             // The routing extension adds the item's own route after the ones the item sets
             ['route' => 'setono_sylius_terms_admin_terms_create'],

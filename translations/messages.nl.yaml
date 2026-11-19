@@ -1,7 +1,7 @@
 setono_sylius_terms:
     ui:
         terms: Voorwaarden
-        manage_terms: Beheer voorwaarden
+        manage_terms: Beheer de voorwaarden die klanten accepteren op de formulieren van je winkel
         new_terms: Nieuwe voorwaarden
         edit_terms: Bewerk voorwaarden
 

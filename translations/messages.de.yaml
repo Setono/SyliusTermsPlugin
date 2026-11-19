@@ -1,7 +1,7 @@
 setono_sylius_terms:
   ui:
     terms: Konditionen
-    manage_terms: Verwalte Konditionen
+    manage_terms: Verwalte die Konditionen, die Kunden in den Formularen deines Shops akzeptieren
     new_terms: Neue Konditionen
     edit_terms: Bearbeite Konditionen
 
