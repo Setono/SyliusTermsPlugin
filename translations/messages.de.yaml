@@ -1,73 +1,73 @@
 setono_sylius_terms:
-  ui:
-    terms: Konditionen
-    manage_terms: Verwalte die Konditionen, die Kunden in den Formularen deines Shops akzeptieren
-    new_terms: Neue Konditionen
-    edit_terms: Bearbeite Konditionen
+    ui:
+        terms: Konditionen
+        manage_terms: Verwalte die Konditionen, die Kunden in den Formularen deines Shops akzeptieren
+        new_terms: Neue Konditionen
+        edit_terms: Bearbeite Konditionen
 
-    code: Code
-    name: Name
-    channels: Kanäle
-    position: Position
-    forms: Formulare
-    required: Erforderlich
-    enabled: Aktiviert
-    placement: Platzierung
-    delete_terms_warning: Beim Löschen der Konditionen werden auch alle ihre Versionen gelöscht. Um den Versionsverlauf zu behalten, deaktivieren Sie die Konditionen stattdessen.
+        code: Code
+        name: Name
+        channels: Kanäle
+        position: Position
+        forms: Formulare
+        required: Erforderlich
+        enabled: Aktiviert
+        placement: Platzierung
+        delete_terms_warning: Beim Löschen der Konditionen werden auch alle ihre Versionen gelöscht. Um den Versionsverlauf zu behalten, deaktivieren Sie die Konditionen stattdessen.
 
-    on_this_page: Auf dieser Seite
-    version: Version %number%
-    in_force_since: In Kraft seit dem %date%
+        on_this_page: Auf dieser Seite
+        version: Version %number%
+        in_force_since: In Kraft seit dem %date%
 
-    terms_versions: Versionen der Konditionen
-    versions: Versionen
-    number: Nummer
-    in_force_from: In Kraft seit
-    preview: Vorschau
-    source: Quelltext
-    no_content: Kein Inhalt
-    write: Schreiben
-    markdown_toolbar:
-      label: Formatierung
-      heading: Überschrift
-      bold: Fett
-      italic: Kursiv
-      quote: Zitat
-      link: Link
-      image: Bild
-      bulleted_list: Aufzählung
-      numbered_list: Nummerierte Liste
+        terms_versions: Versionen der Konditionen
+        versions: Versionen
+        number: Nummer
+        in_force_from: In Kraft seit
+        preview: Vorschau
+        source: Quelltext
+        no_content: Kein Inhalt
+        write: Schreiben
+        markdown_toolbar:
+            label: Formatierung
+            heading: Überschrift
+            bold: Fett
+            italic: Kursiv
+            quote: Zitat
+            link: Link
+            image: Bild
+            bulleted_list: Aufzählung
+            numbered_list: Nummerierte Liste
 
-  menu:
-    admin:
-      main:
-        configuration:
-          terms: Konditionen
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Konditionen
 
-  form:
-    terms:
-      translations: Übersetzungen
-      name: Name
-      name_help: Der Name wird sowohl als Referenz, als auch als Linktext verwendet, wenn der Konditionen-Link angezeigt wird
-      code: Code
-      slug: Slug
-      label: Etikett
-      label_help: Verwenden Sie [link:Link text], um anzugeben wo im Text der Link eingefügt werden muss
-      content: Inhalt
-      content_help: Wenn der Inhalt leer ist, wird das Etikett neben dem Kontrollkästchen keinen Link enthalten
-      channels: Kanäle
-      slug_help: Leer lassen, um ihn aus dem Namen zu erzeugen. Eine Änderung des Slugs ändert die Adresse der Konditionen-Seite, und die alte Adresse funktioniert nicht mehr.
-      generate_slug: Slug aus dem Namen erzeugen
-      required: Erforderlich
-      required_help: Kunden müssen erforderliche Konditionen ankreuzen, bevor sie das Formular absenden können. Optionale Konditionen dürfen leer bleiben.
-      position: Position
-      position_help: Legt die Reihenfolge der Konditionen auf jedem Formular fest, die niedrigste zuerst. Leer lassen, um die Konditionen ans Ende zu setzen.
-      unconfigured_form: "%code% (nicht konfiguriert)"
-      forms: Formulare
-      term_form:
-        checkout_complete: Kasse > Bestellung abschließen
-        registration: Konto > Registrieren
-        contact: Kontakt
+    form:
+        terms:
+            translations: Übersetzungen
+            name: Name
+            name_help: Der Name wird sowohl als Referenz, als auch als Linktext verwendet, wenn der Konditionen-Link angezeigt wird
+            code: Code
+            slug: Slug
+            label: Etikett
+            label_help: Verwenden Sie [link:Link text], um anzugeben wo im Text der Link eingefügt werden muss
+            content: Inhalt
+            content_help: Wenn der Inhalt leer ist, wird das Etikett neben dem Kontrollkästchen keinen Link enthalten
+            channels: Kanäle
+            slug_help: Leer lassen, um ihn aus dem Namen zu erzeugen. Eine Änderung des Slugs ändert die Adresse der Konditionen-Seite, und die alte Adresse funktioniert nicht mehr.
+            generate_slug: Slug aus dem Namen erzeugen
+            required: Erforderlich
+            required_help: Kunden müssen erforderliche Konditionen ankreuzen, bevor sie das Formular absenden können. Optionale Konditionen dürfen leer bleiben.
+            position: Position
+            position_help: Legt die Reihenfolge der Konditionen auf jedem Formular fest, die niedrigste zuerst. Leer lassen, um die Konditionen ans Ende zu setzen.
+            unconfigured_form: "%code% (nicht konfiguriert)"
+            forms: Formulare
+            term_form:
+                checkout_complete: Kasse > Bestellung abschließen
+                registration: Konto > Registrieren
+                contact: Kontakt
 
-  pdf:
-    version_line: Version %number%, in Kraft seit dem %date%
+    pdf:
+        version_line: Version %number%, in Kraft seit dem %date%
