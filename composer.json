@@ -55,10 +55,12 @@
         "webmozart/assert": "^1.11"
     },
     "require-dev": {
+        "api-platform/doctrine-orm": "^4.3",
         "api-platform/symfony": "^4.3.3",
         "dama/doctrine-test-bundle": "^8.6",
         "dompdf/dompdf": "^3.1.6",
         "gedmo/doctrine-extensions": "^3.22.2",
+        "knplabs/knp-menu-bundle": "^3.4.1",
         "payum/core": "^1.7.5",
         "playwright-php/playwright": "^1.6",
         "playwright-php/playwright-symfony": "^0.12",
