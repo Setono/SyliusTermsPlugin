@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\Model;
 
 use Sylius\Resource\Model\TranslatableTrait;
+use Webmozart\Assert\Assert;
 
 class TermsVersion implements TermsVersionInterface
 {
@@ -63,8 +64,8 @@ class TermsVersion implements TermsVersionInterface
 
     public function getTranslation(?string $locale = null): TermsVersionTranslationInterface
     {
-        /** @var TermsVersionTranslationInterface $translation */
         $translation = $this->doGetTranslation($locale);
+        Assert::isInstanceOf($translation, TermsVersionTranslationInterface::class);
 
         return $translation;
     }
