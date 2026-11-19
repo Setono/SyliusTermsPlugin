@@ -72,6 +72,7 @@
         "symfony/dotenv": "^6.4 || ^7.4",
         "symfony/http-client": "^6.4.50 || ^7.4.23",
         "symfony/intl": "^6.4 || ^7.4",
+        "symfony/mailer": "^6.4.44 || ^7.4.17",
         "symfony/property-info": "^6.4 || ^7.4",
         "symfony/serializer": "^6.4 || ^7.4",
         "symfony/var-exporter": "^6.4 || ^7.4",
