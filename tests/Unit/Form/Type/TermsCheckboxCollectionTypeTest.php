@@ -202,7 +202,7 @@ final class TermsCheckboxCollectionTypeTest extends TestCase
         $labelRenderer = $this->prophesize(LabelRendererInterface::class);
         $labelRenderer->render(Argument::type(TermsVersionTranslationInterface::class))->will(static function (array $arguments): string {
             $translation = $arguments[0];
-            \assert($translation instanceof TermsVersionTranslationInterface);
+            self::assertInstanceOf(TermsVersionTranslationInterface::class, $translation);
 
             return 'Rendered: ' . (string) $translation->getLabel();
         });
