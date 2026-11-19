@@ -1,73 +1,73 @@
 setono_sylius_terms:
-  ui:
-    terms: Conditions
-    manage_terms: Gérer les conditions que les clients acceptent dans les formulaires de votre boutique
-    new_terms: Nouvelles conditions
-    edit_terms: Modifier les conditions
+    ui:
+        terms: Conditions
+        manage_terms: Gérer les conditions que les clients acceptent dans les formulaires de votre boutique
+        new_terms: Nouvelles conditions
+        edit_terms: Modifier les conditions
 
-    code: Code
-    name: Nom
-    channels: Canaux
-    position: Position
-    forms: Formulaires
-    required: Obligatoire
-    enabled: Activé
-    placement: Emplacement
-    delete_terms_warning: Supprimer les conditions supprime aussi toutes leurs versions. Pour conserver l'historique des versions, désactivez plutôt les conditions.
+        code: Code
+        name: Nom
+        channels: Canaux
+        position: Position
+        forms: Formulaires
+        required: Obligatoire
+        enabled: Activé
+        placement: Emplacement
+        delete_terms_warning: Supprimer les conditions supprime aussi toutes leurs versions. Pour conserver l'historique des versions, désactivez plutôt les conditions.
 
-    on_this_page: Sur cette page
-    version: Version %number%
-    in_force_since: En vigueur depuis le %date%
+        on_this_page: Sur cette page
+        version: Version %number%
+        in_force_since: En vigueur depuis le %date%
 
-    terms_versions: Versions des conditions
-    versions: Versions
-    number: Numéro
-    in_force_from: En vigueur depuis
-    preview: Aperçu
-    source: Source
-    no_content: Aucun contenu
-    write: Écrire
-    markdown_toolbar:
-      label: Mise en forme
-      heading: Titre
-      bold: Gras
-      italic: Italique
-      quote: Citation
-      link: Lien
-      image: Image
-      bulleted_list: Liste à puces
-      numbered_list: Liste numérotée
+        terms_versions: Versions des conditions
+        versions: Versions
+        number: Numéro
+        in_force_from: En vigueur depuis
+        preview: Aperçu
+        source: Source
+        no_content: Aucun contenu
+        write: Écrire
+        markdown_toolbar:
+            label: Mise en forme
+            heading: Titre
+            bold: Gras
+            italic: Italique
+            quote: Citation
+            link: Lien
+            image: Image
+            bulleted_list: Liste à puces
+            numbered_list: Liste numérotée
 
-  menu:
-    admin:
-      main:
-        configuration:
-          terms: Conditions
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Conditions
 
-  form:
-    terms:
-      translations: Traductions
-      name: Nom
-      name_help: Le nom est utilisé à la fois comme référence, mais aussi comme texte de lien lors de l'affichage du lien des conditions
-      code: Code
-      slug: Slug
-      label: Étiquette
-      label_help: "Utiliser [link:Link text] pour indiquer l'endroit où le lien doit être placé dans le texte."
-      content: Contenu
-      content_help: Si le contenu est vide, l'étiquette à côté de la case à cocher n'aura pas de lien
-      channels: Canaux
-      slug_help: Laissez vide pour le générer à partir du nom. Modifier le slug modifie l'adresse de la page des conditions, et l'ancienne adresse ne fonctionne plus.
-      generate_slug: Générer le slug à partir du nom
-      required: Obligatoire
-      required_help: Les clients doivent cocher les conditions obligatoires avant de pouvoir envoyer le formulaire. Les conditions facultatives peuvent rester non cochées.
-      position: Position
-      position_help: Ordonne les conditions sur chaque formulaire, la plus basse en premier. Laissez vide pour placer les conditions en dernier.
-      unconfigured_form: "%code% (non configuré)"
-      forms: Formulaires
-      term_form:
-        checkout_complete: Commande > Finaliser la commande
-        registration: Compte > Inscription
-        contact: Contact
+    form:
+        terms:
+            translations: Traductions
+            name: Nom
+            name_help: Le nom est utilisé à la fois comme référence, mais aussi comme texte de lien lors de l'affichage du lien des conditions
+            code: Code
+            slug: Slug
+            label: Étiquette
+            label_help: "Utiliser [link:Link text] pour indiquer l'endroit où le lien doit être placé dans le texte."
+            content: Contenu
+            content_help: Si le contenu est vide, l'étiquette à côté de la case à cocher n'aura pas de lien
+            channels: Canaux
+            slug_help: Laissez vide pour le générer à partir du nom. Modifier le slug modifie l'adresse de la page des conditions, et l'ancienne adresse ne fonctionne plus.
+            generate_slug: Générer le slug à partir du nom
+            required: Obligatoire
+            required_help: Les clients doivent cocher les conditions obligatoires avant de pouvoir envoyer le formulaire. Les conditions facultatives peuvent rester non cochées.
+            position: Position
+            position_help: Ordonne les conditions sur chaque formulaire, la plus basse en premier. Laissez vide pour placer les conditions en dernier.
+            unconfigured_form: "%code% (non configuré)"
+            forms: Formulaires
+            term_form:
+                checkout_complete: Commande > Finaliser la commande
+                registration: Compte > Inscription
+                contact: Contact
 
-  pdf:
-    version_line: Version %number%, en vigueur depuis le %date%
+    pdf:
+        version_line: Version %number%, en vigueur depuis le %date%
