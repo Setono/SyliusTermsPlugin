@@ -11,10 +11,6 @@ parameters:
     bootstrapFiles:
         - tests/Application/config/bootstrap.php
 
-    # Symfony Configuration
-    symfony:
-        consoleApplicationLoader: tests/PHPStan/console_application.php
-
     # Doctrine Configuration
     doctrine:
         repositoryClass: Doctrine\ORM\EntityRepository

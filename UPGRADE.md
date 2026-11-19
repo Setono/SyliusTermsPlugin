@@ -14,12 +14,63 @@
 - The plugin requires `sylius/grid-bundle: ^1.16`, and `symfony/ux-live-component` and `symfony/ux-twig-component` (`^2.25`). Apps that install `sylius/sylius` already have them.
 - `twig/intl-extra` (`^3.26`, the oldest release without a known security advisory) is a new requirement, for the `format_date` filter on the Terms page and in the Terms PDF. Apps that install `sylius/sylius` already have it. The plugin doesn't register `Twig\Extra\Intl\IntlExtension`: Sylius' own templates need it too, so a Sylius app already registers it, as Sylius-Standard does (see the README's Installation section).
 - The plugin no longer has to be registered before `SyliusGridBundle` in `config/bundles.php`.
+- `setono/doctrine-orm-trait` (`^1.2`) is a new requirement. The plugin also requires `symfony/console` and `doctrine/persistence` (`^3.3`) now, which apps that install `sylius/sylius` already have.
+
+### Upgrade steps
+
+3.0 upgrades from 2.x only. A 1.x install (v1.1.0) has no `enabled` or `forms` columns and stores the label as `explanation`, so upgrade it to 2.x first.
+
+Upgrade in this order:
+
+1. Convert the `forms` config, see [`forms` is keyed by code and adds to the default Forms](#forms-is-keyed-by-code-and-adds-to-the-default-forms).
+2. Generate and run the schema migration. The plugin ships no migrations:
+
+    ```bash
+    php bin/console doctrine:migrations:diff
+    php bin/console doctrine:migrations:migrate
+    ```
+
+    Review the generated diff. It adds the `required` column with a database default of true, so every 2.x Terms stays required, the `position` column, and the Terms version tables, `setono_sylius_terms__terms_version` and `setono_sylius_terms__terms_version_translation`.
+3. Run the upgrade command in the same deploy, before traffic:
+
+    ```bash
+    php bin/console setono:sylius-terms:upgrade-from-2x
+    ```
+
+Run the command with `--dry-run` after the schema migration and before the real run, on staging or in the deploy. It prints everything the command would do and writes nothing. Until the command runs, no Terms checkboxes show, and checkouts complete without them. Nothing in the admin or at runtime warns you that it hasn't run.
+
+The command:
+
+- Gives each Terms version 1, made from its name, label and content in every locale, as they are. Version 1 is in force from the moment the command runs, because 2.x never recorded when a Terms' text changed. Orders completed before then have no inferred Terms version, and resending their confirmation email attaches no Terms PDFs.
+- Numbers the Terms' positions in id order, which is the order 2.x showed the checkboxes in.
+- Replaces the form type classes stored on each Terms with Form codes, see below.
+- Lists the Forms that aren't configured, and each Terms and locale whose Content may render differently, see [Content is Markdown that allows HTML](#content-is-markdown-that-allows-html-and-its-output-is-sanitised). It changes no Content.
+
+All writes happen in one transaction. The command treats only a Terms without a version as 2.x data, so it is safe to run again, for example after configuring a Form for a leftover form type class.
+
+Don't save Terms in the admin between the schema migration and the command. Saving a Terms gives it version 1 there and then, so the command leaves that Terms at the position the migration gave it, 0, and numbers the other Terms after it.
+
+#### Form type classes become Form codes
+
+The command replaces each form type class stored on a Terms with the code of the Form in your 3.0 `forms` config with that `type`. Failing that, a Sylius 1 form type becomes the code in this table. Anything else, such as your own form type, stays as it is, until you configure a Form with that type and run the command again. A class and its code on the same Terms become one code.
+
+| 2.x stored class                                                       | Code                       | Configured by default | Sylius 2 form type                                               |
+|------------------------------------------------------------------------|----------------------------|-----------------------|------------------------------------------------------------------|
+| `Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType`             | `checkout_complete`        | yes                   |                                                                  |
+| `Sylius\Bundle\CoreBundle\Form\Type\Customer\CustomerRegistrationType` | `registration`             | yes                   |                                                                  |
+| `Sylius\Bundle\CoreBundle\Form\Type\ContactType`                       | `contact`                  | yes                   |                                                                  |
+| `Sylius\Bundle\CoreBundle\Form\Type\Checkout\AddressType`              | `checkout_address`         | no                    | `Sylius\Bundle\ShopBundle\Form\Type\Checkout\AddressType`        |
+| `Sylius\Bundle\CoreBundle\Form\Type\Checkout\SelectShippingType`       | `checkout_select_shipping` | no                    | `Sylius\Bundle\ShopBundle\Form\Type\Checkout\SelectShippingType` |
+| `Sylius\Bundle\CoreBundle\Form\Type\Checkout\SelectPaymentType`        | `checkout_select_payment`  | no                    | `Sylius\Bundle\ShopBundle\Form\Type\Checkout\SelectPaymentType`  |
+| `Sylius\Bundle\CoreBundle\Form\Type\Product\ProductReviewType`         | `product_review`           | no                    | `Sylius\Bundle\ShopBundle\Form\Type\Product\ProductReviewType`   |
+
+A Terms on a Form that isn't configured shows on none of the shop's forms, and the admin shows that Form as "(not configured)", ticked, until an admin unticks it. For each of the four codes that aren't configured by default, either configure a Form with the code, its Sylius 2 form type and its hooks (see the README's "Adding a Form"), or untick it on the Terms in the admin.
 
 ### Default value and behaviour changes
 
 #### `forms` is keyed by code and adds to the default Forms
 
-In 2.x, `setono_sylius_terms.forms` was keyed by form type class, and setting it replaced the default (checkout complete only). In 3.0, each Form is keyed by a code, and the app's entries add to three default Forms: `checkout_complete`, `registration` and `contact`. A Terms stores the codes of its Forms instead of form type classes.
+In 2.x, `setono_sylius_terms.forms` was keyed by form type class, and setting it replaced the default (checkout complete only). In 3.0, each Form is keyed by a code, and the app's entries add to three default Forms: `checkout_complete`, `registration` and `contact`. A Terms stores the codes of its Forms instead of form type classes, and the upgrade command replaces the classes 2.x stored (see [Upgrade steps](#upgrade-steps)).
 
 ```yaml
 # 2.x
@@ -61,6 +112,8 @@ setono_sylius_terms:
 - A line indented by four spaces after a blank line becomes a code block.
 - Plain text that starts with `1.`, `-` or `#` becomes a list or a heading.
 - Styling held in `class` and `style` attributes is dropped.
+
+`setono:sylius-terms:upgrade-from-2x` lists each Terms and locale whose Content has one of these cases, and changes none of it. Check those Terms pages after the upgrade.
 
 Markdown headings in rendered Content now carry `id` attributes, such as `id="content-payment"` for `## Payment`. See the README's Content section to loosen or tighten the sanitizer.
 
@@ -139,6 +192,10 @@ final class TermsGridMutator implements GridMutatorInterface
 ```
 
 On Sylius ≥ 2.3, a same-named YAML grid replaces the plugin's grid wholesale.
+
+### Commands
+
+`setono:sylius-terms:upgrade-from-2x` is new. It upgrades a 2.x database to 3.0 (see [Upgrade steps](#upgrade-steps)). It is shipped in 3.0 and removed in 4.0.
 
 ### `Sylius\Resource` names
 
