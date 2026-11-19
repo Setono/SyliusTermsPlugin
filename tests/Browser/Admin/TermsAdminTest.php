@@ -66,6 +66,25 @@ final class TermsAdminTest extends PlaywrightTestCase
     }
 
     #[Test]
+    public function the_index_title_has_the_certificate_icon_a_subheader_and_a_documentation_link(): void
+    {
+        $page = $this->open('/admin/terms/');
+
+        expect($page->locator('h1.page-title'))->toHaveText('Terms');
+        expect($page->locator('h1.page-title + div'))->toHaveText('Manage the terms customers accept on your shop\'s forms');
+
+        // The certificate icon ships with Sylius, so it renders without a request to Iconify
+        expect($page->locator('div:has(+ div > h1.page-title) > svg path[d="M13 17.5V22l2-1.5l2 1.5v-4.5"]'))->toHaveCount(1);
+
+        $documentation = $page->locator('a[href="https://github.com/Setono/SyliusTermsPlugin#admin"]');
+        expect($documentation)->toBeVisible();
+        expect($documentation)->toHaveAttribute('target', '_blank');
+        expect($documentation)->toHaveAttribute('data-bs-title', 'View documentation');
+
+        self::assertSame([], $page->pageErrors(), 'The Terms index threw JavaScript errors');
+    }
+
+    #[Test]
     public function an_admin_creates_terms_through_the_three_cards(): void
     {
         $page = $this->open('/admin/terms/new');

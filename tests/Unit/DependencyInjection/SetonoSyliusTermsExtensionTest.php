@@ -465,7 +465,11 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
 
         self::assertSame([
             'template' => '@SyliusAdmin/shared/crud/common/content/header/title_block/title.html.twig',
-            'configuration' => ['icon' => 'tabler:circle-check', 'subheader' => 'setono_sylius_terms.ui.manage_terms'],
+            'configuration' => [
+                'icon' => 'tabler:certificate',
+                'subheader' => 'setono_sylius_terms.ui.manage_terms',
+                'documentation_url' => 'https://github.com/Setono/SyliusTermsPlugin#admin',
+            ],
             'priority' => 100,
         ], $hooks['setono_sylius_terms.admin.terms.index.content.header.title_block']['title']);
 

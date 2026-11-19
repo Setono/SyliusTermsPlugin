@@ -211,8 +211,9 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
                 'title' => [
                     'template' => '@SyliusAdmin/shared/crud/common/content/header/title_block/title.html.twig',
                     'configuration' => [
-                        'icon' => 'tabler:circle-check',
+                        'icon' => 'tabler:certificate',
                         'subheader' => 'setono_sylius_terms.ui.manage_terms',
+                        'documentation_url' => 'https://github.com/Setono/SyliusTermsPlugin#admin',
                     ],
                     'priority' => 100,
                 ],

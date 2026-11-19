@@ -34,7 +34,7 @@ Each Terms has its own page, with a table of contents and the Terms version in f
 
 ![Screenshot showing the shop Terms page](docs/images/shop-terms-page.png)
 
-### Admin
+### Admin screenshots
 
 ![Screenshot showing admin terms index page](docs/images/admin-terms-index.png)
 
