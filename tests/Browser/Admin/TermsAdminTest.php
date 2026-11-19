@@ -109,8 +109,10 @@ final class TermsAdminTest extends PlaywrightTestCase
 
         // Leaving the field re-renders the Live form. That has to finish first, or it races the submit
         self::changeAndWaitForRerender($page, 'document.querySelector(\'[data-test-label="de_DE"]\').blur()');
-        // A re-render leaves the slug blank: only saving fills it
+        // A re-render leaves the slug blank: only saving fills it. The names entered before the re-render stay
         expect($page->locator('[data-test-slug="de_DE"]'))->toHaveValue('');
+        expect($page->locator('[data-test-name="en_US"]'))->toHaveValue('Cookie Policy & Tracking');
+        expect($page->locator('[data-test-name="de_DE"]'))->toHaveValue('Datenschutzerklärung für Cookies');
 
         $page->getByRole('button', ['name' => 'Create', 'exact' => true])->click();
         expect($page->locator('[data-test-sylius-flash-message-type="success"]'))->toBeVisible();
@@ -125,9 +127,17 @@ final class TermsAdminTest extends PlaywrightTestCase
         self::assertTrue($terms->isRequired());
         self::assertSame(['registration'], $terms->getForms());
         self::assertSame(['FASHION_WEB'], array_values(array_map(static fn ($channel) => $channel->getCode(), $terms->getChannels()->toArray())));
-        self::assertSame('cookie-policy-and-tracking', $terms->getTranslation('en_US')->getSlug());
+
+        $english = $terms->getTranslation('en_US');
+        self::assertSame('Cookie Policy & Tracking', $english->getName());
+        self::assertSame('I accept the [link:cookie policy]', $english->getLabel());
+        self::assertSame('cookie-policy-and-tracking', $english->getSlug());
+
+        $german = $terms->getTranslation('de_DE');
+        self::assertSame('Datenschutzerklärung für Cookies', $german->getName());
+        self::assertSame('Ich akzeptiere die [link:Cookie-Richtlinie]', $german->getLabel());
         // Transliterated for the translation's locale
-        self::assertSame('datenschutzerklaerung-fuer-cookies', $terms->getTranslation('de_DE')->getSlug());
+        self::assertSame('datenschutzerklaerung-fuer-cookies', $german->getSlug());
     }
 
     #[Test]
@@ -141,9 +151,15 @@ final class TermsAdminTest extends PlaywrightTestCase
         self::changeAndWaitForRerender($page, 'document.querySelector(\'[data-test-label="en_US"]\').blur()');
 
         $page->getByRole('button', ['name' => 'Create', 'exact' => true])->click();
+        // The re-render already shows the code's error, so wait for the page the server rejected the form with
+        $page->waitForFunction('() => 422 === performance.getEntriesByType("navigation")[0].responseStatus');
         $page->waitForLoadState('networkidle');
 
         expect($page->locator('[data-test-code] ~ .invalid-feedback'))->toHaveText('The code "content" is reserved for the hooks of the Terms page. Choose another code.');
+        // The other fields keep what was entered, so the code's is the only error
+        expect($page->locator('[data-test-name="en_US"]'))->toHaveValue('Content');
+        expect($page->locator('[data-test-label="en_US"]'))->toHaveValue('I accept the [link:content]');
+        expect($page->locator('.invalid-feedback'))->toHaveCount(1);
         self::assertNull(self::getTermsRepository()->findOneBy(['code' => 'content']));
         self::assertSame([], $page->pageErrors(), 'The Terms form threw JavaScript errors');
     }

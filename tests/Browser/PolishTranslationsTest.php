@@ -74,6 +74,8 @@ final class PolishTranslationsTest extends PlaywrightTestCase
         $page->locator('[data-test-code]')->fill('content');
         self::changeAndWaitForRerender($page, 'document.querySelector(\'[data-test-code]\').blur()');
         $page->getByRole('button', ['name' => 'Utwórz', 'exact' => true])->click();
+        // The re-render already shows the code's error, so wait for the page the server rejected the form with
+        $page->waitForFunction('() => 422 === performance.getEntriesByType("navigation")[0].responseStatus');
         $page->waitForLoadState('networkidle');
 
         // The validators domain. The other fields' errors come from Sylius' and Symfony's translations
