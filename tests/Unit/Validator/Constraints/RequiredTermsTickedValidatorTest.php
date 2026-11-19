@@ -95,6 +95,26 @@ final class RequiredTermsTickedValidatorTest extends ConstraintValidatorTestCase
     }
 
     #[Test]
+    public function a_version_that_belongs_to_no_terms_raises_its_violation_at_the_field(): void
+    {
+        $translation = new TermsVersionTranslation();
+        $translation->setLocale('en_US');
+        $translation->setName('Terms and conditions');
+        (new TermsVersion())->addTranslation($translation);
+
+        $this->requiredTermsChecker->getUntickedRequiredTerms('checkout_complete', $this->channel, 'en_US', [])->willReturn([$translation]);
+
+        $this->validator->validate([], new RequiredTermsTicked(form: 'checkout_complete'));
+
+        $this->buildViolation('setono_sylius_terms.terms_checkbox.required')
+            ->atPath('property.path[]')
+            ->setParameter('{{ name }}', '"Terms and conditions"')
+            ->setCode(RequiredTermsTicked::NOT_TICKED_ERROR)
+            ->assertRaised()
+        ;
+    }
+
+    #[Test]
     public function it_uses_a_custom_message(): void
     {
         $this->requiredTermsChecker

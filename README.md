@@ -4,6 +4,7 @@
 [![Software License][ico-license]](LICENSE)
 [![Build Status][ico-github-actions]][link-github-actions]
 [![Code Coverage][ico-code-coverage]][link-code-coverage]
+[![Mutation testing][ico-infection]][link-infection]
 
 Adds terms checkboxes to shop forms, such as checkout complete, registration and contact, and a shop page per Terms.
 The customer has to tick the required terms before the form can be submitted, for example before placing an order.
@@ -1033,7 +1034,9 @@ The Terms checkboxes render on checkout complete, registration and contact witho
 [ico-license]: https://poser.pugx.org/setono/sylius-terms-plugin/license
 [ico-github-actions]: https://github.com/Setono/SyliusTermsPlugin/workflows/build/badge.svg
 [ico-code-coverage]: https://codecov.io/gh/Setono/SyliusTermsPlugin/graph/badge.svg
+[ico-infection]: https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FSetono%2FSyliusTermsPlugin%2F3.x
 
 [link-packagist]: https://packagist.org/packages/setono/sylius-terms-plugin
 [link-github-actions]: https://github.com/Setono/SyliusTermsPlugin/actions
 [link-code-coverage]: https://codecov.io/gh/Setono/SyliusTermsPlugin
+[link-infection]: https://dashboard.stryker-mutator.io/reports/github.com/Setono/SyliusTermsPlugin/3.x

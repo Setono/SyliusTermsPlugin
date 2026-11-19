@@ -83,6 +83,14 @@ jobs:
                     symfony: "${{ matrix.symfony }}"
                     testsuite: "functional"
 
+    mutation-tests:
+        runs-on: "ubuntu-latest"
+        steps:
+            # Runs Infection against the unit suite, see infection.json5
+            -   uses: "setono/sylius-plugin/mutation-tests@v2"
+                with:
+                    stryker-dashboard-api-key: "${{ secrets.STRYKER_DASHBOARD_API_KEY }}"
+
     browser-tests:
         runs-on: "ubuntu-latest"
         strategy:

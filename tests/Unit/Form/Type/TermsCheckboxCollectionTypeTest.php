@@ -178,6 +178,19 @@ final class TermsCheckboxCollectionTypeTest extends TestCase
     }
 
     #[Test]
+    public function it_fails_on_a_version_that_belongs_to_no_terms(): void
+    {
+        $translation = new TermsVersionTranslation();
+        $translation->setLocale('da_DK');
+        (new TermsVersion())->addTranslation($translation);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected a value other than null.');
+
+        $this->createForm([$translation]);
+    }
+
+    #[Test]
     public function it_has_a_block_prefix_of_its_own(): void
     {
         self::assertSame(

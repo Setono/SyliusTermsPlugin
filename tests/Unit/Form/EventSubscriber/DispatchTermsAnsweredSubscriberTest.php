@@ -27,6 +27,7 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\Forms;
@@ -86,6 +87,33 @@ final class DispatchTermsAnsweredSubscriberTest extends TestCase
             new Answer($this->newsletterConsent->getVersion(), false),
         ], $event->answers);
         self::assertSame($this->termsAndConditions->getVersion(), $event->answers[0]->version);
+    }
+
+    #[Test]
+    public function a_version_that_belongs_to_no_terms_is_answered_unticked(): void
+    {
+        $translation = new TermsVersionTranslation();
+        $translation->setLocale('en_US');
+        (new TermsVersion())->addTranslation($translation);
+
+        $termsField = $this->prophesize(FormInterface::class);
+        $termsField->getData()->willReturn(['terms_and_conditions']);
+
+        $form = $this->prophesize(FormInterface::class);
+        $form->isRoot()->willReturn(true);
+        $form->isValid()->willReturn(true);
+        $form->has('terms')->willReturn(true);
+        $form->get('terms')->willReturn($termsField->reveal());
+        $form->getData()->willReturn(null);
+
+        $this->termsAnsweredDispatcher
+            ->dispatch(new TermsAnsweredEvent('newsletter', null, $this->channel, 'en_US', [new Answer($translation->getVersion(), false)]))
+            ->shouldBeCalledOnce()
+        ;
+
+        (new DispatchTermsAnsweredSubscriber($this->termsAnsweredDispatcher->reveal(), 'newsletter', $this->channel, 'en_US', [$translation]))
+            ->dispatch(new FormEvent($form->reveal(), null))
+        ;
     }
 
     #[Test]

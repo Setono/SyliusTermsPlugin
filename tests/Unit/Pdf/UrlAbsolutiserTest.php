@@ -57,6 +57,7 @@ final class UrlAbsolutiserTest extends TestCase
     public static function provideUrls(): \Generator
     {
         yield 'path from the root' => ['/terms/privacy-policy', 'https://shop.example.com/terms/privacy-policy'];
+        yield 'path with a colon in its query' => ['/search?q=size:xl', 'https://shop.example.com/search?q=size:xl'];
         yield 'relative path' => ['media/logo.png', 'https://shop.example.com/media/logo.png'];
         yield 'relative path from the current directory' => ['./media/logo.png', 'https://shop.example.com/media/logo.png'];
         yield 'relative path from the parent directory' => ['../media/logo.png', 'https://shop.example.com/media/logo.png'];

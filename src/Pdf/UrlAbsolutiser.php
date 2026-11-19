@@ -32,7 +32,7 @@ final readonly class UrlAbsolutiser implements UrlAbsolutiserInterface
         $scheme = $this->unsecuredUrls ? 'http' : 'https';
         $baseUrl = sprintf('%s://%s', $scheme, $hostname);
 
-        $html5 = new HTML5(['disable_html_ns' => true]);
+        $html5 = new HTML5();
         $document = $html5->loadHTML($html);
 
         foreach (self::URL_ATTRIBUTES as $tagName => $attribute) {

@@ -24,11 +24,11 @@ final readonly class ImageInliner implements ImageInlinerInterface
 
     public function inline(string $html): InlinedHtml
     {
-        $html5 = new HTML5(['disable_html_ns' => true]);
+        $html5 = new HTML5();
         $document = $html5->loadHTML($html);
 
         // Copied to an array, because replacing an image removes it from the live node list
-        $images = iterator_to_array($document->getElementsByTagName('img'), false);
+        $images = [...$document->getElementsByTagName('img')];
 
         /** @var array<string, ResponseInterface> $responses */
         $responses = [];
@@ -70,7 +70,7 @@ final readonly class ImageInliner implements ImageInlinerInterface
             if (isset($dataUris[$url])) {
                 $image->setAttribute('src', $dataUris[$url]);
             } elseif (isset($failedImages[$url])) {
-                $image->parentNode?->replaceChild($document->createTextNode($image->getAttribute('alt')), $image);
+                $image->replaceWith($document->createTextNode($image->getAttribute('alt')));
             }
         }
 

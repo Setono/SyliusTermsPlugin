@@ -1,0 +1,72 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": ["src"]
+    },
+    "logs": {
+        "text": "php://stderr",
+        "github": true,
+        "stryker": {
+            "badge": "3.x"
+        }
+    },
+    // The mutation-tests job has no database, assets or browsers, so the initial run is limited to the unit suite.
+    // Infection applies --testsuite to the initial run only. Infection 0.34 deprecated this key in favour of
+    // testFrameworkExtraArgs, but vendor/bin/infection is 0.31 (from setono/sylius-plugin), which rejects the new key
+    "testFrameworkOptions": "--testsuite=unit",
+    // Without --with-uncovered, code that only the functional suite reaches gets no mutants, so neither score drops
+    "minMsi": 100.00,
+    "minCoveredMsi": 100.00,
+    // Only mutants that no test can tell apart from the code are ignored here, each by the line it changes. Infection
+    // matches a regex against the whole changed line, which 0.31 prints on one line for a whole statement and 0.32+
+    // prints as written, so each regex matches both
+    "mutators": {
+        "@default": true,
+        "CastString": {
+            "ignoreSourceCodeByRegex": [
+                // Configuration::resolveForms(): PHP stores a numeric Form code as an int key, and every use of the
+                // code works the same with the int
+                "\\$code = \\(string\\) \\$code;",
+                // VersionedTextChangeChecker: a null locale is the key '' with or without the cast
+                "\\$(current|versioned)Text\\[\\(string\\) \\$translation->getLocale\\(\\)\\] = self::text\\(\\$translation\\);",
+                // preg_replace() and preg_replace_callback() return null only when PCRE fails at runtime
+                ".*\\(string\\) preg_replace(_callback)?\\(.*",
+                // TermsCheckboxCollectionType: a Terms without a code fails either way. With the cast the form
+                // component rejects the empty name, without it PHP rejects null
+                "\\$code = \\(string\\) \\$terms->getCode\\(\\);"
+            ]
+        },
+        "ArrayItemRemoval": {
+            "ignoreSourceCodeByRegex": [
+                // ContentConverter: 'allow' is CommonMark's default, set to state that raw HTML passes through
+                ".*'html_input' => 'allow'.*"
+            ]
+        },
+        "DecrementInteger": {
+            "ignoreSourceCodeByRegex": [
+                // ContentConverter: any priority after the heading permalink processor's -100 works
+                ".*self::keepPermalinksOnSectionHeadings\\(\\.\\.\\.\\), -200\\);"
+            ]
+        },
+        "IncrementInteger": {
+            "ignoreSourceCodeByRegex": [
+                // ContentConverter: any priority after the heading permalink processor's -100 works
+                ".*self::keepPermalinksOnSectionHeadings\\(\\.\\.\\.\\), -200\\);"
+            ]
+        },
+        "GreaterThan": {
+            "ignoreSourceCodeByRegex": [
+                // Terms::getLatestVersion(): >= differs only for two versions with one number, which the unique
+                // constraint on terms_id and number rules out
+                "if \\(null === \\$latestVersion \\|\\| \\$version->getNumber\\(\\) > \\$latestVersion->getNumber\\(\\)\\) \\{"
+            ]
+        },
+        "MethodCallRemoval": {
+            "ignoreSourceCodeByRegex": [
+                // TermsGrid: DeleteAction::create() always returns an Action. The assertion narrows its declared
+                // ActionInterface for setTemplate()
+                "Assert::isInstanceOf\\(\\$delete, Action::class\\);"
+            ]
+        }
+    }
+}

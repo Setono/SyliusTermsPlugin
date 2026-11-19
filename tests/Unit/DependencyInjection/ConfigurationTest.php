@@ -11,6 +11,7 @@ use Setono\SyliusTermsPlugin\DependencyInjection\Configuration;
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Sylius\Bundle\CoreBundle\Form\Type\ContactType;
 use Sylius\Bundle\ShopBundle\Form\Type\CustomerRegistrationType;
+use Symfony\Component\Config\Definition\Dumper\YamlReferenceDumper;
 
 final class ConfigurationTest extends TestCase
 {
@@ -273,6 +274,17 @@ final class ConfigurationTest extends TestCase
             [['routing' => ['terms' => null]]],
             'The path "setono_sylius_terms.routing.terms" cannot contain an empty value',
         );
+    }
+
+    #[Test]
+    public function the_reference_shows_an_example_of_each_form_key(): void
+    {
+        $reference = (new YamlReferenceDumper())->dump(new Configuration());
+
+        self::assertStringContainsString('type:                 ~ # Example: App\Form\Type\NewsletterType', $reference);
+        self::assertStringContainsString('label:                ~ # Example: app.form.newsletter', $reference);
+        self::assertStringContainsString("# Example:\n                # app.newsletter.form: 50\n", $reference);
+        self::assertStringContainsString('saved_event:          ~ # Example: app.newsletter.post_subscribe', $reference);
     }
 
     #[Test]

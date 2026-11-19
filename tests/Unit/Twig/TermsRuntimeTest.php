@@ -170,10 +170,52 @@ final class TermsRuntimeTest extends TestCase
         self::assertNull($this->runtime->channelPath(new Terms(), $this->createChannel('en_US')));
     }
 
+    #[Test]
+    public function terms_channel_path_prints_the_channel_path(): void
+    {
+        $channel = $this->createChannel('en_US');
+        $translation = self::createTranslation('en_US');
+        $this->termsPageLookup->lookupByCode('terms_and_conditions', $channel, 'en_US')->willReturn($translation);
+
+        self::assertSame(
+            '<a href="/en_US/terms/terms-and-conditions">',
+            $this->render('<a href="{{ terms_channel_path(terms, channel) }}">', context: ['terms' => self::getTerms($translation), 'channel' => $channel]),
+        );
+    }
+
+    #[Test]
+    public function it_fails_when_the_terms_has_no_slug_in_the_locale_of_the_page(): void
+    {
+        $translation = self::createTranslation();
+        self::getTerms($translation)->getTranslation('de_DE')->setSlug(null);
+        $this->termsPageLookup->lookupByCode('no_slug', $this->channel, 'de_DE')->willReturn($translation);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected a value other than null.');
+
+        $this->runtime->path('no_slug');
+    }
+
+    #[Test]
+    public function it_fails_when_the_version_of_the_page_belongs_to_no_terms(): void
+    {
+        $translation = new TermsVersionTranslation();
+        $translation->setLocale('de_DE');
+        (new TermsVersion())->addTranslation($translation);
+        $this->termsPageLookup->lookupByCode('no_terms', $this->channel, 'de_DE')->willReturn($translation);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected a value other than null.');
+
+        $this->runtime->path('no_terms');
+    }
+
     /**
      * Renders the template with the plugin's templates, after the override, if given
+     *
+     * @param array<string, mixed> $context
      */
-    private function render(string $template, ?LoaderInterface $override = null): string
+    private function render(string $template, ?LoaderInterface $override = null, array $context = []): string
     {
         $plugin = new FilesystemLoader();
         $plugin->addPath(dirname(__DIR__, 3) . '/templates', 'SetonoSyliusTermsPlugin');
@@ -188,7 +230,7 @@ final class TermsRuntimeTest extends TestCase
             TermsRuntime::class => fn (): TermsRuntime => $this->runtime,
         ]));
 
-        return $twig->render('template');
+        return $twig->render('template', $context);
     }
 
     /**
