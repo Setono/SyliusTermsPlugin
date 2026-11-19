@@ -66,7 +66,7 @@
         "playwright-php/playwright-symfony": "^0.12",
         "setono/sylius-plugin": "^2.0",
         "sylius/pdf-generation-bundle": "^1.0",
-        "sylius/sylius": "~2.2.12",
+        "sylius/sylius": "~2.2.13",
         "symfony/css-selector": "^6.4 || ^7.4",
         "symfony/debug-bundle": "^6.4 || ^7.4",
         "symfony/dotenv": "^6.4 || ^7.4",
