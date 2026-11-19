@@ -1,0 +1,73 @@
+setono_sylius_terms:
+    ui:
+        terms: Ehdot
+        manage_terms: Hallitse ehtoja, jotka asiakkaat hyväksyvät kauppasi lomakkeilla
+        new_terms: Uudet ehdot
+        edit_terms: Muokkaa ehtoja
+
+        code: Koodi
+        name: Nimi
+        channels: Kanavat
+        position: Järjestys
+        forms: Lomakkeet
+        required: Pakollinen
+        enabled: Käytössä
+        placement: Sijoittelu
+        delete_terms_warning: Ehtojen poistaminen poistaa myös kaikki niiden versiot. Jos haluat säilyttää versiohistorian, poista ehdot käytöstä sen sijaan.
+
+        on_this_page: Tällä sivulla
+        version: Versio %number%
+        in_force_since: Voimassa %date% alkaen
+
+        terms_versions: Ehtojen versiot
+        versions: Versiot
+        number: Numero
+        in_force_from: Voimassa alkaen
+        preview: Esikatselu
+        source: Lähdekoodi
+        no_content: Ei sisältöä
+        write: Kirjoita
+        markdown_toolbar:
+            label: Muotoilu
+            heading: Otsikko
+            bold: Lihavointi
+            italic: Kursivointi
+            quote: Lainaus
+            link: Linkki
+            image: Kuva
+            bulleted_list: Luettelo
+            numbered_list: Numeroitu luettelo
+
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Ehdot
+
+    form:
+        terms:
+            translations: Käännökset
+            name: Nimi
+            name_help: Nimeä käytetään sekä tunnisteena että linkkitekstinä, kun ehtojen linkki näytetään
+            code: Koodi
+            slug: Slug
+            label: Valintaruudun teksti
+            label_help: Merkitse linkin paikka tekstissä muodossa [link:Linkkiteksti]
+            content: Sisältö
+            content_help: Jos sisältö on tyhjä, valintaruudun tekstissä ei ole linkkiä
+            channels: Kanavat
+            slug_help: Jätä tyhjäksi, niin slug muodostetaan nimestä. Slugin muuttaminen muuttaa ehtosivun osoitetta, eikä vanha osoite enää toimi.
+            generate_slug: Muodosta slug nimestä
+            required: Pakollinen
+            required_help: Asiakkaiden on valittava pakolliset ehdot ennen kuin he voivat lähettää lomakkeen. Valinnaiset ehdot voi jättää valitsematta.
+            position: Järjestys
+            position_help: Määrää ehtojen järjestyksen kaikilla lomakkeilla, pienin ensin. Jätä tyhjäksi, niin ehdot sijoitetaan viimeisiksi.
+            unconfigured_form: "%code% (ei määritetty)"
+            forms: Lomakkeet
+            term_form:
+                checkout_complete: Kassa > Viimeistele tilaus
+                registration: Tili > Rekisteröidy
+                contact: Yhteydenotto
+
+    pdf:
+        version_line: Versio %number%, voimassa %date% alkaen

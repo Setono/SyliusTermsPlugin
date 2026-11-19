@@ -1,0 +1,73 @@
+setono_sylius_terms:
+    ui:
+        terms: Vilkår
+        manage_terms: Administrer vilkårene kundene godtar i skjemaene i butikken din
+        new_terms: Nye vilkår
+        edit_terms: Rediger vilkår
+
+        code: Kode
+        name: Navn
+        channels: Kanaler
+        position: Posisjon
+        forms: Skjemaer
+        required: Påkrevd
+        enabled: Aktivert
+        placement: Plassering
+        delete_terms_warning: Når vilkårene slettes, slettes også alle versjonene deres. Deaktiver vilkårene i stedet hvis du vil beholde versjonshistorikken.
+
+        on_this_page: På denne siden
+        version: Versjon %number%
+        in_force_since: Gjelder fra %date%
+
+        terms_versions: Vilkårsversjoner
+        versions: Versjoner
+        number: Nummer
+        in_force_from: Gjelder fra
+        preview: Forhåndsvis
+        source: Kildekode
+        no_content: Intet innhold
+        write: Skriv
+        markdown_toolbar:
+            label: Formatering
+            heading: Overskrift
+            bold: Fet
+            italic: Kursiv
+            quote: Sitat
+            link: Lenke
+            image: Bilde
+            bulleted_list: Punktliste
+            numbered_list: Nummerert liste
+
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Vilkår
+
+    form:
+        terms:
+            translations: Oversettelser
+            name: Navn
+            name_help: Navnet brukes både som referanse og som lenketekst når lenken til vilkårene vises
+            code: Kode
+            slug: Slug
+            label: Tekst ved avkrysningsboksen
+            label_help: Bruk [link:Lenketekst] for å angi hvor lenken skal plasseres i teksten
+            content: Innhold
+            content_help: Hvis innholdet er tomt, får teksten ved avkrysningsboksen ingen lenke
+            channels: Kanaler
+            slug_help: La feltet stå tomt for å lage slugen fra navnet. Endrer du slugen, endres adressen til vilkårssiden, og den gamle adressen slutter å virke.
+            generate_slug: Lag slugen fra navnet
+            required: Påkrevd
+            required_help: Kundene må krysse av for påkrevde vilkår før de kan sende inn skjemaet. Valgfrie vilkår kan stå uten avkrysning.
+            position: Posisjon
+            position_help: Bestemmer rekkefølgen på vilkårene i alle skjemaer, lavest først. La feltet stå tomt for å plassere vilkårene sist.
+            unconfigured_form: "%code% (ikke konfigurert)"
+            forms: Skjemaer
+            term_form:
+                checkout_complete: Kasse > Fullfør bestilling
+                registration: Konto > Registrer deg
+                contact: Kontakt
+
+    pdf:
+        version_line: Versjon %number%, gjelder fra %date%

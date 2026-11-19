@@ -1,0 +1,73 @@
+setono_sylius_terms:
+    ui:
+        terms: Warunki
+        manage_terms: Zarządzaj warunkami, które klienci akceptują w formularzach Twojego sklepu
+        new_terms: Nowe warunki
+        edit_terms: Edytuj warunki
+
+        code: Kod
+        name: Nazwa
+        channels: Kanały
+        position: Pozycja
+        forms: Formularze
+        required: Wymagane
+        enabled: Włączone
+        placement: Umiejscowienie
+        delete_terms_warning: Usunięcie warunków usuwa również wszystkie ich wersje. Aby zachować historię wersji, wyłącz warunki zamiast je usuwać.
+
+        on_this_page: Na tej stronie
+        version: Wersja %number%
+        in_force_since: Obowiązuje od %date%
+
+        terms_versions: Wersje warunków
+        versions: Wersje
+        number: Numer
+        in_force_from: Obowiązuje od
+        preview: Podgląd
+        source: Źródło
+        no_content: Brak treści
+        write: Edycja
+        markdown_toolbar:
+            label: Formatowanie
+            heading: Nagłówek
+            bold: Pogrubienie
+            italic: Kursywa
+            quote: Cytat
+            link: Link
+            image: Obraz
+            bulleted_list: Lista punktowana
+            numbered_list: Lista numerowana
+
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Warunki
+
+    form:
+        terms:
+            translations: Tłumaczenia
+            name: Nazwa
+            name_help: Nazwa służy jako odniesienie, a także jako tekst linku przy wyświetlaniu linku do warunków
+            code: Kod
+            slug: Slug
+            label: Tekst przy polu wyboru
+            label_help: Użyj [link:Tekst linku], aby wskazać, w którym miejscu tekstu ma się znaleźć link
+            content: Treść
+            content_help: Jeśli treść jest pusta, tekst przy polu wyboru nie będzie zawierał linku
+            channels: Kanały
+            slug_help: Pozostaw puste, aby utworzyć slug z nazwy. Zmiana sluga zmienia adres strony warunków, a stary adres przestaje działać.
+            generate_slug: Utwórz slug z nazwy
+            required: Wymagane
+            required_help: Klienci muszą zaznaczyć wymagane warunki, zanim będą mogli wysłać formularz. Warunki opcjonalne mogą pozostać niezaznaczone.
+            position: Pozycja
+            position_help: Określa kolejność warunków w każdym formularzu, od najniższej wartości. Pozostaw puste, aby umieścić warunki na końcu.
+            unconfigured_form: "%code% (nieskonfigurowany)"
+            forms: Formularze
+            term_form:
+                checkout_complete: Kasa > Złóż zamówienie
+                registration: Konto > Rejestracja
+                contact: Kontakt
+
+    pdf:
+        version_line: Wersja %number%, obowiązuje od %date%

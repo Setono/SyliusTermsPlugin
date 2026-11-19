@@ -1,0 +1,73 @@
+setono_sylius_terms:
+    ui:
+        terms: Villkor
+        manage_terms: Hantera de villkor som kunderna godkänner i din butiks formulär
+        new_terms: Nya villkor
+        edit_terms: Redigera villkor
+
+        code: Kod
+        name: Namn
+        channels: Kanaler
+        position: Position
+        forms: Formulär
+        required: Obligatoriska
+        enabled: Aktiverade
+        placement: Placering
+        delete_terms_warning: När villkoren tas bort tas även alla deras versioner bort. Om du vill behålla versionshistoriken inaktiverar du villkoren i stället.
+
+        on_this_page: På den här sidan
+        version: Version %number%
+        in_force_since: Gäller från %date%
+
+        terms_versions: Villkorsversioner
+        versions: Versioner
+        number: Nummer
+        in_force_from: Gäller från
+        preview: Förhandsgranska
+        source: Källkod
+        no_content: Inget innehåll
+        write: Skriv
+        markdown_toolbar:
+            label: Formatering
+            heading: Rubrik
+            bold: Fetstil
+            italic: Kursiv
+            quote: Citat
+            link: Länk
+            image: Bild
+            bulleted_list: Punktlista
+            numbered_list: Numrerad lista
+
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Villkor
+
+    form:
+        terms:
+            translations: Översättningar
+            name: Namn
+            name_help: Namnet används både som referens och som länktext när länken till villkoren visas
+            code: Kod
+            slug: Slug
+            label: Text vid kryssrutan
+            label_help: Använd [link:Länktext] för att ange var länken ska placeras i texten
+            content: Innehåll
+            content_help: Om innehållet är tomt får texten vid kryssrutan ingen länk
+            channels: Kanaler
+            slug_help: Lämna fältet tomt för att skapa sluggen från namnet. Om du ändrar sluggen ändras adressen till villkorssidan, och den gamla adressen slutar fungera.
+            generate_slug: Skapa sluggen från namnet
+            required: Obligatoriska
+            required_help: Kunderna måste kryssa i obligatoriska villkor innan de kan skicka formuläret. Valfria villkor kan lämnas okryssade.
+            position: Position
+            position_help: Bestämmer villkorens ordning i alla formulär, lägst först. Lämna fältet tomt för att placera villkoren sist.
+            unconfigured_form: "%code% (inte konfigurerat)"
+            forms: Formulär
+            term_form:
+                checkout_complete: Kassa > Slutför beställningen
+                registration: Konto > Registrera
+                contact: Kontakt
+
+    pdf:
+        version_line: Version %number%, gäller från %date%

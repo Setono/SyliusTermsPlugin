@@ -1,0 +1,10 @@
+setono_sylius_terms:
+    terms:
+        code:
+            regex: Koden får bara innehålla bokstäver, siffror, bindestreck och understreck.
+            unique: Den här koden används redan.
+            reserved: 'Koden "content" är reserverad för hooks på villkorssidan. Välj en annan kod.'
+        slug:
+            unique: Sluggen måste vara unik.
+    terms_checkbox:
+        required: Du måste godkänna villkoren för att fortsätta.

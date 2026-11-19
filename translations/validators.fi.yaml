@@ -1,0 +1,10 @@
+setono_sylius_terms:
+    terms:
+        code:
+            regex: Koodi voi sisältää vain kirjaimia, numeroita, yhdysmerkkejä ja alaviivoja.
+            unique: Tämä koodi on jo käytössä.
+            reserved: 'Koodi "content" on varattu ehtosivun hookeille. Valitse toinen koodi.'
+        slug:
+            unique: Slugin on oltava yksilöllinen.
+    terms_checkbox:
+        required: Sinun on hyväksyttävä ehdot jatkaaksesi.

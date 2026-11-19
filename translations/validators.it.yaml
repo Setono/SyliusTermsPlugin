@@ -1,0 +1,10 @@
+setono_sylius_terms:
+    terms:
+        code:
+            regex: Il codice può contenere solo lettere, numeri, trattini e trattini bassi.
+            unique: Questo codice è già in uso.
+            reserved: 'Il codice "content" è riservato agli hook della pagina delle condizioni. Scegli un altro codice.'
+        slug:
+            unique: Lo slug deve essere univoco.
+    terms_checkbox:
+        required: Devi accettare le condizioni per continuare.

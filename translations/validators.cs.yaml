@@ -1,0 +1,10 @@
+setono_sylius_terms:
+    terms:
+        code:
+            regex: Kód může obsahovat pouze písmena, číslice, pomlčky a podtržítka.
+            unique: Tento kód se již používá.
+            reserved: 'Kód "content" je vyhrazen pro hooky stránky s podmínkami. Zvolte jiný kód.'
+        slug:
+            unique: Slug musí být jedinečný.
+    terms_checkbox:
+        required: Pro pokračování musíte přijmout podmínky.

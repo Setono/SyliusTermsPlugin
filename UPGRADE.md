@@ -224,6 +224,8 @@ At runtime each legacy name is an alias of its new name, so code that implements
 | `admin/grid/field/channels.html.twig` | Core's `@SyliusAdmin/shared/grid/field/channels.html.twig` |
 | `TermsRepositoryInterface::findByFormAndChannelAndLocale()`, which took a form type class | `TermsRepositoryInterface::findByFormAndChannel()`, which takes a Form code, or the Form lookup, `Setono\SyliusTermsPlugin\Lookup\FormTermsLookupInterface` |
 | The translation key `setono_sylius_terms.form.terms.term_form.complete` | `setono_sylius_terms.form.terms.term_form.checkout_complete` |
+| The translation key `setono_sylius_terms.form.terms_accept.label`, "Accept all terms below to complete an order" | Nothing. The `terms` field has no label, see [Terms checkboxes](#terms-checkboxes) |
+| The translation key `setono_sylius_terms.form.terms_accept.terms_should_be_accepted`, which 2.x didn't use either | Nothing. The error next to an unticked required checkbox is `setono_sylius_terms.terms_checkbox.required` in the `validators` domain |
 | `src/Resources/config/app/fixtures.yaml`, the demo suite with the EULA Terms, the `EU_WEB` and `UA_WEB` channels and UAH | Nothing. The plugin ships no fixture suite. If you imported it, copy what you need into your own suite (see the README's Fixtures section). |
 | The validation-group collector, the `PRE_SET_DATA` listener in `TermsCheckboxCollectionType` that gave each checkbox an `IsTrue` constraint in its parents' groups | The `terms` field's own validation group, `setono_sylius_terms_checkboxes`, with the `RequiredTermsTicked` constraint |
 | `TermsCheckboxCollectionType`'s `error_message` option | The `setono_sylius_terms.terms_checkbox.required` key in the `validators` translation domain, which `RequiredTermsTicked` uses |

@@ -20,6 +20,7 @@ The customer has to tick the required terms before the form can be submitted, fo
 * [Terms pages](#terms-pages)
 * [Terms in the order confirmation email](#terms-in-the-order-confirmation-email)
 * [Fixtures](#fixtures)
+* [Translations](#translations)
 * [Installation](#installation)
 
 ## Screenshots
@@ -926,6 +927,29 @@ sylius_fixtures:
   content is Markdown with two `##` sections.
 * Loading the fixture saves the Terms like any other save, so each Terms gets version 1, in force from the moment it
   is loaded. A Terms with the same code is updated instead, which creates its next version if its text changed.
+
+## Translations
+
+The plugin's own texts in the admin and the shop, such as field labels, the Terms page's "On this page" and the error
+next to an unticked required checkbox, ship in these languages:
+
+* English (`en`), the source
+* Danish (`da`), Swedish (`sv`), Norwegian (`no`) and Finnish (`fi`)
+* German (`de`), French (`fr`), Spanish (`es`), Italian (`it`), Dutch (`nl`) and Polish (`pl`)
+* Portuguese (`pt`, European Portuguese), Czech (`cs`), Hungarian (`hu`), Romanian (`ro`) and Ukrainian (`uk`)
+
+Symfony's translator picks the file by language, so `da_DK` uses `da`, `nb_NO` and `nn_NO` use `no`, and `pt_BR` uses
+`pt`. Other locales show the translator's fallback locale, English in a default Sylius app. To change a text, override
+its key in your app's translations, for example:
+
+```yaml
+# translations/messages.da.yaml
+setono_sylius_terms:
+    ui:
+        terms: Handelsbetingelser
+```
+
+The Terms' own name, label and content are entered per locale in the [admin](#admin).
 
 ## Installation
 

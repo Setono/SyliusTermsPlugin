@@ -1,0 +1,73 @@
+setono_sylius_terms:
+    ui:
+        terms: Termeni
+        manage_terms: Gestionați termenii pe care clienții îi acceptă în formularele magazinului dumneavoastră
+        new_terms: Termeni noi
+        edit_terms: Editează termenii
+
+        code: Cod
+        name: Nume
+        channels: Canale
+        position: Poziție
+        forms: Formulare
+        required: Obligatoriu
+        enabled: Activat
+        placement: Plasare
+        delete_terms_warning: Ștergerea termenilor șterge și toate versiunile acestora. Pentru a păstra istoricul versiunilor, dezactivați termenii în loc să îi ștergeți.
+
+        on_this_page: Pe această pagină
+        version: Versiunea %number%
+        in_force_since: În vigoare din %date%
+
+        terms_versions: Versiunile termenilor
+        versions: Versiuni
+        number: Număr
+        in_force_from: În vigoare din
+        preview: Previzualizare
+        source: Cod sursă
+        no_content: Fără conținut
+        write: Editare
+        markdown_toolbar:
+            label: Formatare
+            heading: Titlu
+            bold: Aldin
+            italic: Cursiv
+            quote: Citat
+            link: Link
+            image: Imagine
+            bulleted_list: Listă cu marcatori
+            numbered_list: Listă numerotată
+
+    menu:
+        admin:
+            main:
+                configuration:
+                    terms: Termeni
+
+    form:
+        terms:
+            translations: Traduceri
+            name: Nume
+            name_help: Numele este folosit atât ca referință, cât și ca text al linkului atunci când se afișează linkul către termeni
+            code: Cod
+            slug: Slug
+            label: Textul casetei de bifare
+            label_help: Folosiți [link:Textul linkului] pentru a indica unde trebuie plasat linkul în text
+            content: Conținut
+            content_help: Dacă conținutul este gol, textul casetei de bifare nu va avea link
+            channels: Canale
+            slug_help: Lăsați câmpul gol pentru a genera slugul din nume. Schimbarea slugului schimbă adresa paginii termenilor, iar adresa veche nu mai funcționează.
+            generate_slug: Generează slugul din nume
+            required: Obligatoriu
+            required_help: Clienții trebuie să bifeze termenii obligatorii înainte de a putea trimite formularul. Termenii opționali pot rămâne nebifați.
+            position: Poziție
+            position_help: Ordonează termenii în fiecare formular, de la cea mai mică valoare. Lăsați câmpul gol pentru a plasa termenii la final.
+            unconfigured_form: "%code% (neconfigurat)"
+            forms: Formulare
+            term_form:
+                checkout_complete: Finalizare comandă > Plasează comanda
+                registration: Cont > Înregistrare
+                contact: Contact
+
+    pdf:
+        version_line: Versiunea %number%, în vigoare din %date%
