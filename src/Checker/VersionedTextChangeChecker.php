@@ -37,10 +37,19 @@ final class VersionedTextChangeChecker implements VersionedTextChangeCheckerInte
     }
 
     /**
+     * Content is compared with LF line breaks. Both setters store it that way, but Content upgraded from 2.x keeps its
+     * CRLF line breaks until it is set again, because Doctrine loads it without the setter, while its version 1 has LF
+     *
      * @return array{string|null, string|null, string|null} name, label and content
      */
     private static function text(TermsTranslationInterface|TermsVersionTranslationInterface $translation): array
     {
-        return [$translation->getName(), $translation->getLabel(), $translation->getContent()];
+        $content = $translation->getContent();
+
+        return [
+            $translation->getName(),
+            $translation->getLabel(),
+            null === $content ? null : str_replace(["\r\n", "\r"], "\n", $content),
+        ];
     }
 }

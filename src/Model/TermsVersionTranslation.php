@@ -57,6 +57,6 @@ class TermsVersionTranslation extends AbstractTranslation implements TermsVersio
 
     public function setContent(?string $content): void
     {
-        $this->content = $content;
+        $this->content = null === $content ? null : str_replace(["\r\n", "\r"], "\n", $content);
     }
 }
