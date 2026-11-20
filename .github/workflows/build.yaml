@@ -11,8 +11,6 @@ jobs:
     backwards-compatibility:
         runs-on: "ubuntu-latest"
         if: "github.event_name == 'pull_request'"
-        # Most pull requests into 3.x break BC on purpose until 3.0 is released. The release-readiness slice (#121) removes this
-        continue-on-error: true
         steps:
             -   uses: "setono/sylius-plugin/backwards-compatibility@v2"
 

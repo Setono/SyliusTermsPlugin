@@ -1020,8 +1020,8 @@ setono_sylius_terms:
 ### Step 4: Update your database schema
 
 ```bash
-$ php bin/console doctrine:migrations:diff
-$ php bin/console doctrine:migrations:migrate
+php bin/console doctrine:migrations:diff
+php bin/console doctrine:migrations:migrate
 ```
 
 When upgrading from 2.x, run `php bin/console setono:sylius-terms:upgrade-from-2x` right after the migration, in the
