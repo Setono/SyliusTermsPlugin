@@ -13,7 +13,6 @@
 /docs                               export-ignore
 /ecs.php                            export-ignore
 /infection.json5                    export-ignore
-/node_modules                       export-ignore
 /phpstan.neon                       export-ignore
 /phpunit.xml.dist                   export-ignore
 /rector.php                         export-ignore
