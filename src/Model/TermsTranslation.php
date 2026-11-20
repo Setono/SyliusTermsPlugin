@@ -65,9 +65,7 @@ class TermsTranslation extends AbstractTranslation implements TermsTranslationIn
     }
 
     /**
-     * Stores the Content with LF line breaks, whoever sets it: the admin form, the fixtures or app code. Browsers submit
-     * a textarea's line breaks as CRLF, which symfony/form keeps before 6.4.31 and 7.4.3, and the check for a new Terms
-     * version compares Content byte for byte, so a CRLF save of unchanged Content would add a version
+     * Before 6.4.31 and 7.4.3, symfony/form keeps the CRLF line breaks browsers submit a textarea with
      */
     public function setContent(?string $content): void
     {

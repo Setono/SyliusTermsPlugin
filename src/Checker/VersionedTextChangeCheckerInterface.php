@@ -8,7 +8,8 @@ use Setono\SyliusTermsPlugin\Model\TermsInterface;
 
 /**
  * Versioned text is a Terms' name, label and content in every locale. Everything else on a Terms (slug, code,
- * channels, Forms, enabled) is not versioned
+ * channels, Forms, enabled) is not versioned. Content that differs only in its line breaks (CRLF, CR or LF) is the same
+ * text
  */
 interface VersionedTextChangeCheckerInterface
 {

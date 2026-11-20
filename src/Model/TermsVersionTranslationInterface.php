@@ -27,5 +27,8 @@ interface TermsVersionTranslationInterface extends ResourceInterface, Translatio
 
     public function getContent(): ?string;
 
+    /**
+     * Stores the Content with LF line breaks, like TermsTranslationInterface::setContent(). CRLF and CR become LF
+     */
     public function setContent(?string $content): void;
 }
