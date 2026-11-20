@@ -71,6 +71,7 @@ symfony server:start                                            # https://127.0.
 - Code coverage counts the unit and functional suites, not the browser suite, and is 100% of `src/` lines. Keep it there: every change covers all the lines it adds or modifies (Codecov's patch target is 100%), and the project's coverage may never drop below its base commit (`target: auto`). Check locally with `vendor/bin/phpunit --testsuite unit,functional --coverage-text` (needs pcov or Xdebug)
 - Mutation testing (Infection, the `mutation-tests` job) runs against the unit suite only, so code only the functional suite reaches gets no mutants. `minMsi` and `minCoveredMsi` in `infection.json5` are a floor that only goes up (90 for now): raise them when the score allows, never lower them, and don't add ignores to reach them. Kill an escaped mutant with a unit test, or remove the redundant code it points at. An equivalent mutant, which no test can tell apart from the code, stays escaped
 - A failing browser test fails the build like any other job. A flaky one gets fixed or deleted, never retried or marked `continue-on-error`
+- The `backwards-compatibility` job runs Roave's BC check against the pull request's base branch and fails on a break. A minor of a released line doesn't break BC: a break waits for the next major, with its UPGRADE.md entry
 
 ## Conventions
 

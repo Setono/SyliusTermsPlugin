@@ -151,6 +151,8 @@ The plugin follows the Sylius 2 plugin skeleton. `src/Resources/{config,translat
 
 Paths to plugin files drop `Resources/`. Template paths (`@SetonoSyliusTermsPlugin/...`) and overrides in `templates/bundles/SetonoSyliusTermsPlugin/` are unchanged.
 
+The XML service files are replaced by PHP: `config/services.php` imports one file per concern from `config/services/`. The service ids changed too, see [Removed classes, services, templates, files and translation keys](#removed-classes-services-templates-files-and-translation-keys).
+
 ### Routing
 
 - Route imports drop `Resources/`. Import `@SetonoSyliusTermsPlugin/config/routes.yaml`, or `@SetonoSyliusTermsPlugin/config/routes_no_locale.yaml` for non-localised stores:
