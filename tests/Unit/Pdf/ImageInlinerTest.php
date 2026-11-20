@@ -7,12 +7,18 @@ namespace Setono\SyliusTermsPlugin\Tests\Unit\Pdf;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusTermsPlugin\Pdf\ImageInliner;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 final class ImageInlinerTest extends TestCase
 {
+    use ProphecyTrait;
+
     private const PNG = "\x89PNG\r\n\x1a\nimage data";
 
     #[Test]
@@ -45,7 +51,7 @@ final class ImageInlinerTest extends TestCase
     public function it_keeps_only_the_media_type_of_the_content_type(): void
     {
         $httpClient = new MockHttpClient([
-            new MockResponse('<svg xmlns="http://www.w3.org/2000/svg"/>', ['response_headers' => ['content-type' => 'Image/SVG+XML; charset=utf-8']]),
+            new MockResponse('<svg xmlns="http://www.w3.org/2000/svg"/>', ['response_headers' => ['content-type' => 'Image/SVG+XML ; charset=utf-8']]),
         ]);
 
         $inlinedHtml = (new ImageInliner($httpClient))->inline(self::document('<img src="https://shop.example.com/logo.svg" alt="Logo">'));
@@ -67,6 +73,68 @@ final class ImageInlinerTest extends TestCase
 
         self::assertSame(5.0, $options['timeout'] ?? null);
         self::assertSame(5.0, $options['max_duration'] ?? null);
+    }
+
+    #[Test]
+    public function it_inlines_an_image_whose_source_has_surrounding_whitespace(): void
+    {
+        $httpClient = new MockHttpClient([
+            new MockResponse(self::PNG, ['response_headers' => ['content-type' => 'image/png']]),
+        ]);
+
+        $inlinedHtml = (new ImageInliner($httpClient))->inline(self::document('<img src=" https://shop.example.com/logo.png " alt="Logo">'));
+
+        self::assertStringContainsString(sprintf('<img src="data:image/png;base64,%s" alt="Logo">', base64_encode(self::PNG)), $inlinedHtml->html);
+    }
+
+    #[Test]
+    public function it_inlines_the_images_after_one_it_does_not_download(): void
+    {
+        $httpClient = new MockHttpClient([
+            new MockResponse(self::PNG, ['response_headers' => ['content-type' => 'image/png']]),
+        ]);
+
+        $inlinedHtml = (new ImageInliner($httpClient))->inline(self::document(
+            '<img src="/media/image/local.png" alt="Local"><img src="https://shop.example.com/logo.png" alt="Logo">',
+        ));
+
+        self::assertStringContainsString(sprintf(
+            '<body><img src="/media/image/local.png" alt="Local"><img src="data:image/png;base64,%s" alt="Logo"></body>',
+            base64_encode(self::PNG),
+        ), $inlinedHtml->html);
+    }
+
+    #[Test]
+    public function by_default_it_inlines_an_image_of_up_to_5_mib(): void
+    {
+        $cap = 5 * 1024 * 1024;
+        $httpClient = new MockHttpClient([
+            new MockResponse(str_repeat('x', $cap), ['response_headers' => ['content-type' => 'image/png']]),
+            new MockResponse(str_repeat('x', $cap + 1), ['response_headers' => ['content-type' => 'image/png']]),
+        ]);
+
+        $inlinedHtml = (new ImageInliner($httpClient))->inline(self::document(
+            '<img src="https://shop.example.com/5-mib.png" alt="5 MiB"><img src="https://shop.example.com/over-5-mib.png" alt="Over 5 MiB">',
+        ));
+
+        self::assertSame(['https://shop.example.com/over-5-mib.png' => 'The image is larger than 5242880 bytes'], $inlinedHtml->failedImages);
+        self::assertStringContainsString('<img src="data:image/png;base64,', $inlinedHtml->html);
+    }
+
+    #[Test]
+    public function it_cancels_the_download_of_a_response_that_is_not_an_image(): void
+    {
+        $response = $this->prophesize(ResponseInterface::class);
+        $response->getHeaders()->willReturn(['content-type' => ['text/html; charset=UTF-8']]);
+        $response->cancel()->shouldBeCalled();
+        $response->getContent()->shouldNotBeCalled();
+
+        $httpClient = $this->prophesize(HttpClientInterface::class);
+        $httpClient->request('GET', 'https://shop.example.com/logo.png', Argument::type('array'))->willReturn($response->reveal());
+
+        $inlinedHtml = (new ImageInliner($httpClient->reveal()))->inline(self::document('<img src="https://shop.example.com/logo.png" alt="Logo">'));
+
+        self::assertSame(['https://shop.example.com/logo.png' => 'The response is not an image, but "text/html"'], $inlinedHtml->failedImages);
     }
 
     #[Test]
@@ -145,6 +213,16 @@ final class ImageInlinerTest extends TestCase
     }
 
     #[Test]
+    public function it_replaces_each_of_two_adjacent_images_that_cannot_be_downloaded(): void
+    {
+        $inlinedHtml = (new ImageInliner(new MockHttpClient([new MockResponse('', ['http_code' => 404]), new MockResponse('', ['http_code' => 404])])))->inline(self::document(
+            '<img src="https://shop.example.com/logo.png" alt="Logo"><img src="https://shop.example.com/map.png" alt="Map">',
+        ));
+
+        self::assertStringContainsString('<body>LogoMap</body>', $inlinedHtml->html);
+    }
+
+    #[Test]
     public function an_image_without_alt_text_that_cannot_be_downloaded_is_removed(): void
     {
         $inlinedHtml = (new ImageInliner(new MockHttpClient([new MockResponse('', ['http_code' => 404])])))->inline(self::document(
@@ -190,6 +268,7 @@ final class ImageInlinerTest extends TestCase
     public static function provideSourcesThatAreNotDownloaded(): \Generator
     {
         yield 'relative' => ['/media/image/logo.png'];
+        yield 'relative with an absolute URL in its query' => ['/redirect?to=https://cdn.example.com/logo.png'];
         yield 'network-path reference' => ['//cdn.example.com/logo.png'];
         yield 'data' => ['data:image/png;base64,iVBORw0KGgo='];
         yield 'file' => ['file:///etc/passwd'];

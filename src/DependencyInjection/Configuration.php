@@ -137,9 +137,8 @@ final class Configuration implements ConfigurationInterface
         foreach (array_keys(self::DEFAULT_FORMS + $forms) as $code) {
             $code = (string) $code;
 
-            /** @var array{type?: string, label: string|null, hooks: array<string, int>, saved_event: string|null, enabled: bool} $form */
+            /** @var array{type?: string, label?: string|null, hooks: array<string, int>, saved_event: string|null, enabled: bool} $form */
             $form = ($forms[$code] ?? []) + (self::DEFAULT_FORMS[$code] ?? []) + [
-                'label' => null,
                 'hooks' => [],
                 'saved_event' => null,
                 'enabled' => true,

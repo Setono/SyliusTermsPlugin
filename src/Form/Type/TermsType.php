@@ -99,7 +99,7 @@ final class TermsType extends AbstractResourceType
 
         return [
             'label' => 'setono_sylius_terms.form.terms.forms',
-            'choices' => array_combine($codes, $codes),
+            'choices' => $codes,
             'choice_label' => fn (string $code): string => $this->formLabels[$code] ?? 'setono_sylius_terms.form.terms.unconfigured_form',
             'choice_translation_parameters' => fn (string $code): array => isset($this->formLabels[$code]) ? [] : ['%code%' => $code],
             'required' => false,

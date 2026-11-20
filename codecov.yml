@@ -7,8 +7,7 @@ coverage:
     status:
         project:
             default:
-                # A ratchet: a change may not lower coverage below its base commit. Most of the 2.x code is rewritten
-                # by the 3.0 slices, which bring the project up; the release-readiness slice (#121) sweeps what's left
+                # A ratchet: a change may not lower coverage below its base commit, which covers every line of src/
                 target: auto
                 threshold: 0%
         patch:

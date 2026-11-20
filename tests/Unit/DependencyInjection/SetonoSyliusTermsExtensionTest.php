@@ -482,16 +482,25 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
                 'priority' => 100,
             ], $hooks[$prefix . '.content.header.title_block']['title']);
 
-            self::assertSame([
-                'component' => 'setono_sylius_terms:admin:terms:form',
-                'props' => [
-                    'resource' => '@=_context.resource',
-                    'form' => '@=_context.form',
-                    'template' => '@SetonoSyliusTermsPlugin/admin/terms/form.html.twig',
+            $content = [
+                'form' => [
+                    'component' => 'setono_sylius_terms:admin:terms:form',
+                    'props' => [
+                        'resource' => '@=_context.resource',
+                        'form' => '@=_context.form',
+                        'template' => '@SetonoSyliusTermsPlugin/admin/terms/form.html.twig',
+                    ],
+                    'configuration' => ['render_rest' => false],
+                    'priority' => 0,
                 ],
-                'configuration' => ['render_rest' => false],
-                'priority' => 0,
-            ], $hooks[$prefix . '.content']['form']);
+            ];
+
+            // Only the update page lists the versions, below the form and above core's footer at -100
+            if ('update' === $page) {
+                $content['versions'] = ['template' => '@SetonoSyliusTermsPlugin/admin/terms/update/versions.html.twig', 'priority' => -50];
+            }
+
+            self::assertSame($content, $hooks[$prefix . '.content']);
 
             self::assertSame([
                 'general' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/general.html.twig', 'priority' => 200],
@@ -535,6 +544,116 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
             self::assertSame([
                 'terms_content' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/stylesheets.html.twig', 'priority' => -100],
             ], $hooks[$prefix . '#stylesheets']);
+        }
+
+        // Next to core's Cancel and Update buttons, before them like Sylius' View in store on the product page
+        self::assertSame([
+            'view_in_store' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/update/view_in_store.html.twig', 'priority' => 300],
+        ], $hooks['setono_sylius_terms.admin.terms.update.content.header.title_block.actions']);
+
+        $pageHooks = static fn (string $page): array => array_map(
+            static fn (string $hook): string => sprintf($hook, $page),
+            [
+                'setono_sylius_terms.admin.terms.%s.content.header.title_block',
+                'setono_sylius_terms.admin.terms.%s.content',
+                'setono_sylius_terms.admin.terms.%s.content.form',
+                'setono_sylius_terms.admin.terms.%s.content.form.general',
+                'setono_sylius_terms.admin.terms.%s.content.form.placement',
+                'setono_sylius_terms.admin.terms.%s.content.form.translations',
+                'setono_sylius_terms.admin.terms.%s.content.form.translations.content#write',
+                'setono_sylius_terms.admin.terms.%s.content.form.translations.content#preview',
+                'setono_sylius_terms.admin.terms.%s#javascripts',
+                'setono_sylius_terms.admin.terms.%s#stylesheets',
+            ],
+        );
+
+        self::assertSame(
+            [
+                'setono_sylius_terms.admin.terms.index.content.header.title_block',
+                ...$pageHooks('create'),
+                ...$pageHooks('update'),
+                'setono_sylius_terms.admin.terms.update.content.header.title_block.actions',
+            ],
+            array_keys(array_filter(
+                $hooks,
+                static fn (string $hook): bool => str_starts_with($hook, 'setono_sylius_terms.admin.terms.'),
+                \ARRAY_FILTER_USE_KEY,
+            )),
+            'Only these hooks of the admin Terms pages are prepended',
+        );
+    }
+
+    #[Test]
+    public function it_prepends_the_terms_version_page_hooks(): void
+    {
+        $this->load();
+
+        $config = $this->container->getExtensionConfig('sylius_twig_hooks');
+        self::assertCount(1, $config);
+
+        /** @var array<string, mixed> $hooks */
+        $hooks = $config[0]['hooks'];
+
+        $template = static fn (string $path): string => '@SetonoSyliusTermsPlugin/admin/terms_version/show/' . $path . '.html.twig';
+
+        self::assertSame([
+            'setono_sylius_terms.admin.terms_version.show#stylesheets' => [
+                'terms_content' => ['template' => $template('stylesheets'), 'priority' => -100],
+            ],
+            'setono_sylius_terms.admin.terms_version.show.content.header' => [
+                'breadcrumbs' => ['template' => $template('breadcrumbs'), 'priority' => 100],
+            ],
+            'setono_sylius_terms.admin.terms_version.show.content.header.title_block' => [
+                'title' => ['template' => $template('title'), 'priority' => 0],
+            ],
+            'setono_sylius_terms.admin.terms_version.show.content' => [
+                'sections' => ['template' => $template('sections'), 'priority' => 0],
+            ],
+            'setono_sylius_terms.admin.terms_version.show.content.sections' => [
+                'translations' => ['template' => $template('sections/translations'), 'priority' => 0],
+            ],
+            'setono_sylius_terms.admin.terms_version.show.content.sections.translations' => [
+                'name' => ['template' => $template('sections/translations/name'), 'priority' => 200],
+                'label' => ['template' => $template('sections/translations/label'), 'priority' => 100],
+                'content' => ['template' => $template('sections/translations/content'), 'priority' => 0],
+            ],
+        ], array_filter(
+            $hooks,
+            static fn (string $hook): bool => str_starts_with($hook, 'setono_sylius_terms.admin.terms_version'),
+            \ARRAY_FILTER_USE_KEY,
+        ));
+    }
+
+    /**
+     * Twig hooks render nothing for a hookable whose template is missing, so a wrong path fails silently
+     */
+    #[Test]
+    public function every_template_of_the_plugin_a_prepended_hookable_renders_exists(): void
+    {
+        $this->load();
+
+        $config = $this->container->getExtensionConfig('sylius_twig_hooks');
+        self::assertCount(1, $config);
+
+        /** @var array<string, array<string, array{template?: string, props?: array{template?: string}}>> $hooks */
+        $hooks = $config[0]['hooks'];
+
+        $templates = [];
+        foreach ($hooks as $hookables) {
+            foreach ($hookables as $hookable) {
+                $templates[] = $hookable['template'] ?? $hookable['props']['template'] ?? null;
+            }
+        }
+
+        $pluginTemplates = array_filter(
+            $templates,
+            static fn (?string $template): bool => null !== $template && str_starts_with($template, '@SetonoSyliusTermsPlugin/'),
+        );
+
+        self::assertNotEmpty($pluginTemplates);
+
+        foreach ($pluginTemplates as $template) {
+            self::assertFileExists(str_replace('@SetonoSyliusTermsPlugin', dirname(__DIR__, 3) . '/templates', $template));
         }
     }
 
@@ -581,16 +700,6 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
                 'content' => ['template' => $template('content/main/content'), 'priority' => 0],
             ],
         ], $termsPageHooks);
-
-        foreach ($termsPageHooks as $hookables) {
-            self::assertIsArray($hookables);
-
-            foreach ($hookables as $hookable) {
-                self::assertIsArray($hookable);
-                self::assertIsString($hookable['template']);
-                self::assertFileExists(str_replace('@SetonoSyliusTermsPlugin', dirname(__DIR__, 3) . '/templates', $hookable['template']));
-            }
-        }
     }
 
     #[Test]

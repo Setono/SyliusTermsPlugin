@@ -259,20 +259,24 @@ final class ContentRendererTest extends TestCase
 
             ## Scope
 
+            ##
+
             ### Who these terms apply to
 
             ## Payment *and* `delivery` <em>times</em>
 
+            ## Privacy <br>
+
             Returns &amp;
             refunds
             ---------
-
-            ##
             MARKDOWN;
 
+        // The empty heading is left out, and the outline goes on after it
         self::assertEquals([
             new OutlineHeading('content-scope', 'Scope'),
             new OutlineHeading('content-payment-and-delivery-times', 'Payment and delivery times'),
+            new OutlineHeading('content-privacy', 'Privacy'),
             new OutlineHeading('content-returns-refunds', 'Returns & refunds'),
         ], self::createRenderer()->render($content)->outline);
     }

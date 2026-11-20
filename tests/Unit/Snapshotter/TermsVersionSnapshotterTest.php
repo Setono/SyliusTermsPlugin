@@ -6,18 +6,24 @@ namespace Setono\SyliusTermsPlugin\Tests\Unit\Snapshotter;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusTermsPlugin\Model\Terms;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Model\TermsTranslation;
+use Setono\SyliusTermsPlugin\Model\TermsTranslationInterface;
 use Setono\SyliusTermsPlugin\Model\TermsVersion;
+use Setono\SyliusTermsPlugin\Model\TermsVersionInterface;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslation;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslationInterface;
 use Setono\SyliusTermsPlugin\Snapshotter\TermsVersionSnapshotter;
 use Sylius\Resource\Factory\Factory;
+use Sylius\Resource\Model\TranslationInterface;
 use Symfony\Component\Clock\MockClock;
 
 final class TermsVersionSnapshotterTest extends TestCase
 {
+    use ProphecyTrait;
+
     private MockClock $clock;
 
     private TermsVersionSnapshotter $snapshotter;
@@ -90,6 +96,44 @@ final class TermsVersionSnapshotterTest extends TestCase
         self::assertSame($terms, $version->getTerms());
         self::assertSame([$version], $terms->getVersions()->toArray());
         self::assertSame($version, $terms->getLatestVersion());
+    }
+
+    #[Test]
+    public function it_fails_when_the_version_factory_does_not_create_terms_versions(): void
+    {
+        $snapshotter = new TermsVersionSnapshotter(new Factory(TermsTranslation::class), new Factory(TermsVersionTranslation::class), $this->clock);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(TermsVersionInterface::class);
+
+        $snapshotter->snapshot(self::createTerms());
+    }
+
+    #[Test]
+    public function it_fails_when_the_version_translation_factory_does_not_create_terms_version_translations(): void
+    {
+        $snapshotter = new TermsVersionSnapshotter(new Factory(TermsVersion::class), new Factory(TermsTranslation::class), $this->clock);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(TermsVersionTranslationInterface::class);
+
+        $snapshotter->snapshot(self::createTerms());
+    }
+
+    #[Test]
+    public function it_fails_on_a_terms_translation_of_another_class(): void
+    {
+        $terms = new Terms();
+
+        $translation = $this->prophesize(TranslationInterface::class);
+        $translation->getLocale()->willReturn('en_US');
+        $translation->setTranslatable($terms)->shouldBeCalled();
+        $terms->addTranslation($translation->reveal());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(TermsTranslationInterface::class);
+
+        $this->snapshotter->snapshot($terms);
     }
 
     private static function createTerms(): TermsInterface

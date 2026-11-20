@@ -1,0 +1,21 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": ["src"]
+    },
+    "logs": {
+        "text": "php://stderr",
+        "github": true,
+        "stryker": {
+            "badge": "3.x"
+        }
+    },
+    // The mutation-tests job has no database, assets or browsers, so the initial run is limited to the unit suite.
+    // Infection applies --testsuite to the initial run only. Infection 0.34 deprecated this key in favour of
+    // testFrameworkExtraArgs, but vendor/bin/infection is 0.31 (from setono/sylius-plugin), which rejects the new key
+    "testFrameworkOptions": "--testsuite=unit",
+    // Without --with-uncovered, code that only the functional suite reaches gets no mutants, so the two scores are the
+    // same. A floor that only goes up: raise both when the scores allow, never lower them
+    "minMsi": 90.00,
+    "minCoveredMsi": 90.00
+}

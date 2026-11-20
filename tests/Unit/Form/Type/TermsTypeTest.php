@@ -99,6 +99,74 @@ final class TermsTypeTest extends TestCase
     }
 
     #[Test]
+    public function its_fields_are_labelled_and_explained_and_only_the_name_and_label_are_required(): void
+    {
+        $form = $this->createForm(new Terms());
+
+        self::assertFieldOptions(['label' => 'setono_sylius_terms.form.terms.code', 'required' => true], $form->get('code'));
+        self::assertFieldOptions(['label' => 'sylius.ui.enabled', 'required' => false], $form->get('enabled'));
+        self::assertFieldOptions([
+            'label' => 'setono_sylius_terms.form.terms.required',
+            'help' => 'setono_sylius_terms.form.terms.required_help',
+            'required' => false,
+        ], $form->get('required'));
+        self::assertFieldOptions([
+            'label' => 'setono_sylius_terms.form.terms.position',
+            'help' => 'setono_sylius_terms.form.terms.position_help',
+            'required' => false,
+        ], $form->get('position'));
+        self::assertFieldOptions([
+            'label' => 'setono_sylius_terms.form.terms.channels',
+            'required' => false,
+            'multiple' => true,
+            'expanded' => true,
+        ], $form->get('channels'));
+        self::assertFieldOptions([
+            'label' => 'setono_sylius_terms.form.terms.forms',
+            'required' => false,
+            'multiple' => true,
+            'expanded' => true,
+        ], $form->get('forms'));
+        self::assertFieldOptions(['label' => 'setono_sylius_terms.form.terms.translations'], $form->get('translations'));
+
+        $translation = $form->get('translations')->get('en_US');
+        self::assertSame('setono_sylius_terms_terms_translation', $translation->getConfig()->getType()->getBlockPrefix());
+
+        self::assertFieldOptions([
+            'label' => 'setono_sylius_terms.form.terms.name',
+            'help' => 'setono_sylius_terms.form.terms.name_help',
+            'required' => true,
+        ], $translation->get('name'));
+        self::assertFieldOptions([
+            'label' => 'setono_sylius_terms.form.terms.slug',
+            'help' => 'setono_sylius_terms.form.terms.slug_help',
+            'required' => false,
+        ], $translation->get('slug'));
+        self::assertFieldOptions([
+            'label' => 'setono_sylius_terms.form.terms.label',
+            'help' => 'setono_sylius_terms.form.terms.label_help',
+            'required' => true,
+        ], $translation->get('label'));
+        self::assertFieldOptions([
+            'label' => 'setono_sylius_terms.form.terms.content',
+            'help' => 'setono_sylius_terms.form.terms.content_help',
+            'required' => false,
+            'attr' => ['rows' => 12],
+        ], $translation->get('content'));
+    }
+
+    #[Test]
+    public function a_blank_slug_is_filled_from_the_name_on_submit(): void
+    {
+        $terms = self::createTerms([]);
+
+        $form = $this->createForm($terms);
+        $form->submit(self::getSubmittedData([], slug: ''));
+
+        self::assertSame('terms', $terms->getTranslation('en_US')->getSlug());
+    }
+
+    #[Test]
     public function required_is_ticked_for_new_terms(): void
     {
         self::assertTrue($this->createForm(new Terms())->get('required')->getData());
@@ -135,16 +203,28 @@ final class TermsTypeTest extends TestCase
      *
      * @return array<string, mixed>
      */
-    private static function getSubmittedData(array $forms): array
+    private static function getSubmittedData(array $forms, string $slug = 'terms'): array
     {
         return [
             'code' => 'terms',
             'enabled' => '1',
             'forms' => $forms,
             'translations' => [
-                'en_US' => ['name' => 'Terms', 'slug' => 'terms', 'label' => 'I accept the [link:terms]', 'content' => ''],
+                'en_US' => ['name' => 'Terms', 'slug' => $slug, 'label' => 'I accept the [link:terms]', 'content' => ''],
             ],
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $expected
+     */
+    private static function assertFieldOptions(array $expected, FormInterface $field): void
+    {
+        $actual = array_intersect_key($field->getConfig()->getOptions(), $expected);
+        ksort($actual);
+        ksort($expected);
+
+        self::assertSame($expected, $actual, sprintf('The options of the %s field', $field->getName()));
     }
 
     /**

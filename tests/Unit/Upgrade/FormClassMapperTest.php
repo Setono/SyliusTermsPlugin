@@ -95,8 +95,8 @@ final class FormClassMapperTest extends TestCase
             ['checkout_complete', 'contact'],
             (new FormClassMapper(self::DEFAULT_FORMS))->map([
                 'Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType',
-                'contact',
                 'checkout_complete',
+                'contact',
                 'Sylius\Bundle\CoreBundle\Form\Type\ContactType',
             ]),
         );

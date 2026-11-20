@@ -53,28 +53,54 @@ final class UpgradeFrom2xCommandTest extends TestCase
         $tester = $this->execute();
 
         $tester->assertCommandIsSuccessful();
-        $display = self::normalize($tester->getDisplay());
 
-        self::assertStringContainsString('Each gets version 1, in force from 2026-11-18 12:00:00 UTC, and a position.', $display);
-        self::assertStringContainsString('Terms Position', $display);
-        self::assertStringContainsString('terms_and_conditions 0 privacy_policy 1', $display);
-        self::assertStringNotContainsString('newsletter_consent 2', $display);
+        // newsletter_consent has a version, so it is in neither the versions nor the positions
+        $expected = sprintf(
+            <<<'DISPLAY'
+                Upgrading the Terms from 2.x
+                ============================
 
-        self::assertStringContainsString('These form type classes become Form codes.', $display);
-        self::assertStringContainsString(sprintf('terms_and_conditions %s checkout_complete terms_and_conditions %s checkout_address', self::COMPLETE_TYPE, self::ADDRESS_TYPE), $display);
+                Terms versions and positions
 
-        self::assertStringContainsString('The admin shows each as "(not configured)".', $display);
-        self::assertStringContainsString('terms_and_conditions checkout_address newsletter_consent App\Form\Type\NewsletterType', $display);
+                 These Terms have no version, so they are 2.x data. Each gets version 1, in force from 2026-11-18 12:00:00 UTC, and a position.
+                  Terms                  Position
+                  terms_and_conditions   0
+                  privacy_policy         1
 
-        self::assertStringContainsString('The command changes no Content.', $display);
-        self::assertStringContainsString(sprintf(
-            'terms_and_conditions de_DE %s terms_and_conditions de_DE %s terms_and_conditions en_US %s',
+                Forms
+
+                 These form type classes become Form codes.
+                  Terms                  Form type class   Form code
+                  terms_and_conditions   %1$s              checkout_complete
+                  terms_and_conditions   %2$s              checkout_address
+
+                Forms that aren't configured
+
+                 These Terms are placed on Forms that aren't configured, so they show on none of them. The admin shows each as "(not configured)".
+                 Configure a Form for each one in setono_sylius_terms.forms, or untick it on the Terms in the admin. For a form type class, configure a Form with that type, then run the command again to map it.
+                  Terms                  Form
+                  terms_and_conditions   checkout_address
+                  newsletter_consent     App\Form\Type\NewsletterType
+
+                Content that may render differently
+
+                 Content is Markdown that allows HTML in 3.0, so this Content of Terms from 2.x may render differently. Check it on the Terms pages, and edit it where needed.
+                 The command changes no Content.
+                  Terms                  Locale   Case
+                  terms_and_conditions   de_DE    %3$s
+                  terms_and_conditions   de_DE    %4$s
+                  terms_and_conditions   en_US    %5$s
+
+                 [OK] The Terms are upgraded.
+                DISPLAY,
+            self::COMPLETE_TYPE,
+            self::ADDRESS_TYPE,
             ContentCase::ListOrHeading->describe(),
             ContentCase::ClassOrStyle->describe(),
             ContentCase::IndentedCode->describe(),
-        ), $display);
+        );
 
-        self::assertStringContainsString('[OK] The Terms are upgraded.', $display);
+        self::assertSame(self::normalize($expected), self::normalize($tester->getDisplay()));
     }
 
     #[Test]
@@ -105,13 +131,31 @@ final class UpgradeFrom2xCommandTest extends TestCase
         $tester = $this->execute();
 
         $tester->assertCommandIsSuccessful();
-        $display = self::normalize($tester->getDisplay());
 
-        self::assertStringContainsString('Every Terms has a version already.', $display);
-        self::assertStringContainsString('No Terms is placed on a form type class that becomes a Form code.', $display);
-        self::assertStringContainsString('Every Terms is placed on configured Forms only.', $display);
-        self::assertStringContainsString('No Content of a Terms from 2.x may render differently.', $display);
-        self::assertStringContainsString('[OK] There is nothing to upgrade.', $display);
+        $expected = <<<'DISPLAY'
+            Upgrading the Terms from 2.x
+            ============================
+
+            Terms versions and positions
+
+             Every Terms has a version already.
+
+            Forms
+
+             No Terms is placed on a form type class that becomes a Form code.
+
+            Forms that aren't configured
+
+             Every Terms is placed on configured Forms only.
+
+            Content that may render differently
+
+             No Content of a Terms from 2.x may render differently.
+
+             [OK] There is nothing to upgrade.
+            DISPLAY;
+
+        self::assertSame(self::normalize($expected), self::normalize($tester->getDisplay()));
     }
 
     /**
@@ -156,10 +200,11 @@ final class UpgradeFrom2xCommandTest extends TestCase
     }
 
     /**
-     * Collapses the line breaks and padding of wrapped text and table cells into single spaces
+     * Drops the lines of dashes that underline the sections and border the tables, and collapses the line breaks and
+     * padding of wrapped text and table cells into single spaces
      */
     private static function normalize(string $display): string
     {
-        return (string) preg_replace('/\s+/', ' ', $display);
+        return trim((string) preg_replace('/\s+/', ' ', (string) preg_replace('/^[ -]*-[ -]*$/m', '', $display)));
     }
 }

@@ -12,13 +12,16 @@ use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeChecker;
 use Setono\SyliusTermsPlugin\Model\Terms;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Model\TermsTranslation;
+use Setono\SyliusTermsPlugin\Model\TermsTranslationInterface;
 use Setono\SyliusTermsPlugin\Model\TermsVersion;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslation;
+use Setono\SyliusTermsPlugin\Model\TermsVersionTranslationInterface;
 use Setono\SyliusTermsPlugin\Snapshotter\TermsVersionSnapshotter;
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Sylius\Bundle\CoreBundle\Form\Type\ContactType;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Resource\Factory\Factory;
+use Sylius\Resource\Model\TranslationInterface;
 use Symfony\Component\Clock\MockClock;
 
 final class VersionedTextChangeCheckerTest extends TestCase
@@ -110,6 +113,40 @@ final class VersionedTextChangeCheckerTest extends TestCase
         $terms->getTranslation('en_US')->setContent('Content');
 
         self::assertTrue($this->checker->hasChanged($terms));
+    }
+
+    #[Test]
+    public function it_fails_on_a_terms_translation_of_another_class(): void
+    {
+        $terms = self::createVersionedTerms();
+
+        $translation = $this->prophesize(TranslationInterface::class);
+        $translation->getLocale()->willReturn('da_DK');
+        $translation->setTranslatable($terms)->shouldBeCalled();
+        $terms->addTranslation($translation->reveal());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(TermsTranslationInterface::class);
+
+        $this->checker->hasChanged($terms);
+    }
+
+    #[Test]
+    public function it_fails_on_a_version_translation_of_another_class(): void
+    {
+        $terms = self::createVersionedTerms();
+        $version = $terms->getLatestVersion();
+        self::assertNotNull($version);
+
+        $translation = $this->prophesize(TranslationInterface::class);
+        $translation->getLocale()->willReturn('da_DK');
+        $translation->setTranslatable($version)->shouldBeCalled();
+        $version->addTranslation($translation->reveal());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(TermsVersionTranslationInterface::class);
+
+        $this->checker->hasChanged($terms);
     }
 
     private static function createVersionedTerms(): TermsInterface

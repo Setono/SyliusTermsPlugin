@@ -20,6 +20,7 @@ composer phpunit:functional                  # functional suite (boots tests/App
 composer phpunit:browser                     # browser suite (Chromium through playwright-symfony, needs MySQL)
 PLAYWRIGHT_HEADLESS=false composer phpunit:browser  # watch the browser while the suite runs
 vendor/bin/playwright-install chromium       # once per machine, before the first browser run
+vendor/bin/infection --threads=max           # mutation testing against the unit suite; --filter=src/Some/File.php for one file
 vendor/bin/rector process --dry-run          # check code modernization
 vendor/bin/composer-dependency-analyser      # check dependency usage
 ./tests/Application/bin/console <command>    # test application console, run from the repository root
@@ -67,8 +68,8 @@ symfony server:start                                            # https://127.0.
 - All tools skip `tests/Application/`
 - `declare(strict_types=1);` required in all PHP files
 - CI uses the `setono/sylius-plugin/*@v2` composite GitHub Actions
-- Code coverage counts the unit and functional suites, not the browser suite. Aim for as close to 100% as possible: every change covers all the lines it adds or modifies (Codecov's patch target is 100%), and the project's coverage may never drop below its base commit (`target: auto`). The release-readiness slice (#121) sweeps the code no slice touched. Check locally with `vendor/bin/phpunit --testsuite unit,functional --coverage-text` (needs pcov or Xdebug)
-- Mutation testing (Infection) is postponed to the release-readiness slice (#121): there is no `infection.json5` and no CI job until then, and slices don't chase mutation scores
+- Code coverage counts the unit and functional suites, not the browser suite, and is 100% of `src/` lines. Keep it there: every change covers all the lines it adds or modifies (Codecov's patch target is 100%), and the project's coverage may never drop below its base commit (`target: auto`). Check locally with `vendor/bin/phpunit --testsuite unit,functional --coverage-text` (needs pcov or Xdebug)
+- Mutation testing (Infection, the `mutation-tests` job) runs against the unit suite only, so code only the functional suite reaches gets no mutants. `minMsi` and `minCoveredMsi` in `infection.json5` are a floor that only goes up (90 for now): raise them when the score allows, never lower them, and don't add ignores to reach them. Kill an escaped mutant with a unit test, or remove the redundant code it points at. An equivalent mutant, which no test can tell apart from the code, stays escaped
 - A failing browser test fails the build like any other job. A flaky one gets fixed or deleted, never retried or marked `continue-on-error`
 
 ## Conventions

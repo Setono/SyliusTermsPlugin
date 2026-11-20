@@ -41,4 +41,20 @@ final class TermsTranslationTest extends TestCase
 
         self::assertNull($translation->getContent());
     }
+
+    #[Test]
+    public function a_new_translation_has_no_id(): void
+    {
+        self::assertNull((new TermsTranslation())->getId());
+    }
+
+    #[Test]
+    public function it_is_shown_by_its_name(): void
+    {
+        $translation = new TermsTranslation();
+        self::assertSame('', (string) $translation);
+
+        $translation->setName('Privacy policy');
+        self::assertSame('Privacy policy', (string) $translation);
+    }
 }

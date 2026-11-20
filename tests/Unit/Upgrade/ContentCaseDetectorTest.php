@@ -47,6 +47,7 @@ final class ContentCaseDetectorTest extends TestCase
 
         yield 'a class attribute' => ['<p class="lead">Terms</p>', ContentCase::ClassOrStyle];
         yield 'a style attribute' => ['<p style="color: red">Terms</p>', ContentCase::ClassOrStyle];
+        yield 'an upper case class attribute' => ['<P CLASS="lead">Terms</P>', ContentCase::ClassOrStyle];
         yield 'a style attribute on an inline element' => ['Pay <span style="color: red">now</span>.', ContentCase::ClassOrStyle];
         yield 'a class attribute on a later line of a tag' => ["<div\n  id=\"terms\"\n  class=\"terms\">Terms</div>", ContentCase::ClassOrStyle];
     }

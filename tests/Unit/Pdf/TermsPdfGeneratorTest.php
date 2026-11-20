@@ -187,12 +187,48 @@ final class TermsPdfGeneratorTest extends TestCase
     }
 
     #[Test]
+    public function an_incomplete_pdf_of_a_version_that_belongs_to_no_terms_yet_is_logged_without_a_terms_code(): void
+    {
+        $this->imageInliner->inline('<html>absolute</html>')->willReturn(new InlinedHtml('<html>inlined</html>', [
+            'https://cdn.example.com/map.png' => 'HTTP 404 returned for "https://cdn.example.com/map.png".',
+        ]));
+
+        $version = self::createVersion(id: null);
+        $version->setTerms(null);
+
+        $this->generator->generate($version, 'da_DK', $this->createChannel('FASHION_WEB'));
+
+        $this->logger->error(
+            'The image https://cdn.example.com/map.png could not be downloaded for the PDF of version 3 of the Terms "" (da_DK, FASHION_WEB), so its alt text is shown instead: HTTP 404 returned for "https://cdn.example.com/map.png".',
+            [
+                'image_url' => 'https://cdn.example.com/map.png',
+                'terms_code' => null,
+                'version' => 3,
+                'locale_code' => 'da_DK',
+                'channel_code' => 'FASHION_WEB',
+            ],
+        )->shouldHaveBeenCalledOnce();
+    }
+
+    #[Test]
     public function it_fails_for_a_locale_the_version_has_no_translation_in(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Version 3 of the Terms "terms_and_conditions" has no translation in the locale "fr_FR"');
 
         $this->generator->generate(self::createVersion(), 'fr_FR', $this->createChannel('FASHION_WEB'));
+    }
+
+    #[Test]
+    public function it_fails_for_a_locale_a_version_that_belongs_to_no_terms_yet_has_no_translation_in(): void
+    {
+        $version = self::createVersion(id: null);
+        $version->setTerms(null);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Version 3 of the Terms "" has no translation in the locale "fr_FR"');
+
+        $this->generator->generate($version, 'fr_FR', $this->createChannel('FASHION_WEB'));
     }
 
     /**

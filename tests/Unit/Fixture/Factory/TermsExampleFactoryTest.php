@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Tests\Unit\Fixture\Factory;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -154,6 +155,83 @@ final class TermsExampleFactoryTest extends TestCase
     }
 
     #[Test]
+    #[DataProvider('provideOptionsOfTheWrongType')]
+    public function it_fails_on_an_option_of_the_wrong_type(string $option, mixed $value): void
+    {
+        $this->expectException(InvalidOptionsException::class);
+        $this->expectExceptionMessage(sprintf('The option "%s"', $option));
+
+        // Without locales, the name, label and content are checked here only, not again for each translation
+        $this->createFactory()->create([$option => $value] + ['code' => 'eula', 'channels' => [], 'locales' => []]);
+    }
+
+    /**
+     * @return \Generator<string, array{string, mixed}>
+     */
+    public static function provideOptionsOfTheWrongType(): \Generator
+    {
+        yield 'name' => ['name', 1];
+        yield 'code' => ['code', 1];
+        yield 'slug' => ['slug', 1];
+        yield 'label' => ['label', 1];
+        yield 'content' => ['content', 1];
+        yield 'enabled' => ['enabled', 'yes'];
+        yield 'required' => ['required', 'yes'];
+        yield 'position' => ['position', 'last'];
+        yield 'forms' => ['forms', [1]];
+        yield 'channels' => ['channels', 'FASHION_WEB'];
+        yield 'locales' => ['locales', 'en_US'];
+        yield 'translations' => ['translations', 'en_US'];
+    }
+
+    #[Test]
+    public function it_gives_the_terms_its_forms_as_a_list(): void
+    {
+        $terms = new class() extends Terms {
+            /** @var array<array-key, string> */
+            public array $givenForms = [];
+
+            public function setForms(array $forms): void
+            {
+                $this->givenForms = $forms;
+
+                parent::setForms($forms);
+            }
+        };
+
+        $termsFactory = $this->prophesize(FactoryInterface::class);
+        $termsFactory->createNew()->willReturn($terms);
+
+        $this->createFactory($termsFactory->reveal())->create([
+            'code' => 'eula',
+            'channels' => [],
+            'locales' => ['en_US'],
+            'forms' => [3 => 'registration', 7 => 'contact'],
+        ]);
+
+        self::assertSame(['registration', 'contact'], $terms->givenForms);
+    }
+
+    #[Test]
+    public function an_extending_factory_can_change_how_a_translation_is_created(): void
+    {
+        $termsFactory = $this->prophesize(FactoryInterface::class);
+        $termsFactory->createNew()->willReturn(new Terms());
+
+        $factory = new class($termsFactory->reveal(), $this->termsRepository->reveal(), $this->prophesize(RepositoryInterface::class)->reveal(), $this->channelRepository->reveal(), []) extends TermsExampleFactory {
+            protected function createTranslation(TermsInterface $terms, string $localeCode, array $options = []): void
+            {
+                parent::createTranslation($terms, $localeCode, array_merge($options, ['label' => 'I accept the [link:EULA] of ' . $localeCode]));
+            }
+        };
+
+        $terms = $factory->create(['code' => 'eula', 'channels' => [], 'locales' => ['en_US', 'da_DK']]);
+
+        self::assertSame('I accept the [link:EULA] of en_US', $terms->getTranslation('en_US')->getLabel());
+        self::assertSame('I accept the [link:EULA] of da_DK', $terms->getTranslation('da_DK')->getLabel());
+    }
+
+    #[Test]
     public function it_fails_on_an_unknown_translation_option(): void
     {
         $this->expectException(UndefinedOptionsException::class);
@@ -172,13 +250,19 @@ final class TermsExampleFactoryTest extends TestCase
     }
 
     #[Test]
-    public function it_derives_the_code_from_a_faked_name(): void
+    public function it_derives_the_code_from_a_faked_name_of_three_words(): void
     {
-        $terms = $this->createFactory()->create(['channels' => [], 'locales' => ['en_US']]);
+        $factory = $this->createFactory();
 
-        // Three words, the first capitalised. Faker's words include one-letter ones such as "a", which becomes "A"
-        self::assertMatchesRegularExpression('/\A[A-Z][a-z]*( [a-z]+){2}\z/', (string) $terms->getTranslation('en_US')->getName());
-        self::assertNotEmpty($terms->getCode());
+        // Faker picks the words at random, so several names are checked: one with another number of words would get
+        // past a single check more than half the time
+        for ($i = 0; $i < 25; ++$i) {
+            $terms = $factory->create(['channels' => [], 'locales' => ['en_US']]);
+
+            // The first word capitalised. Faker's words include one-letter ones such as "a", which becomes "A"
+            self::assertMatchesRegularExpression('/\A[A-Z][a-z]*( [a-z]+){2}\z/', (string) $terms->getTranslation('en_US')->getName());
+            self::assertNotEmpty($terms->getCode());
+        }
     }
 
     #[Test]
@@ -192,16 +276,19 @@ final class TermsExampleFactoryTest extends TestCase
         self::assertFalse($existing->isRequired());
     }
 
-    private function createFactory(): TermsExampleFactory
+    private function createFactory(?FactoryInterface $termsFactory = null): TermsExampleFactory
     {
-        $termsFactory = $this->prophesize(FactoryInterface::class);
-        $termsFactory->createNew()->will(static fn (): TermsInterface => new Terms());
+        if (null === $termsFactory) {
+            $prophecy = $this->prophesize(FactoryInterface::class);
+            $prophecy->createNew()->will(static fn (): TermsInterface => new Terms());
+            $termsFactory = $prophecy->reveal();
+        }
 
         $localeRepository = $this->prophesize(RepositoryInterface::class);
         $localeRepository->findAll()->willReturn([self::locale('en_US'), self::locale('de_DE'), self::locale('fr_FR'), new Locale()]);
 
         return new TermsExampleFactory(
-            $termsFactory->reveal(),
+            $termsFactory,
             $this->termsRepository->reveal(),
             $localeRepository->reveal(),
             $this->channelRepository->reveal(),

@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusTermsPlugin\Model\Terms;
 use Setono\SyliusTermsPlugin\Model\TermsVersion;
+use Setono\SyliusTermsPlugin\Model\TermsVersionInterface;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslation;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslationInterface;
 use Sylius\Resource\Model\TranslationInterface;
@@ -60,6 +61,36 @@ final class TermsVersionTest extends TestCase
         $this->expectExceptionMessage(TermsVersionTranslationInterface::class);
 
         $version->getTranslation('en_US');
+    }
+
+    #[Test]
+    public function an_extending_model_can_create_its_own_translations(): void
+    {
+        $version = new class() extends TermsVersion {
+            protected function createTranslation(): TermsVersionTranslationInterface
+            {
+                $translation = new TermsVersionTranslation();
+                $translation->setLabel('I accept');
+
+                return $translation;
+            }
+        };
+        $version->setFallbackLocale('en_US');
+
+        self::assertSame('I accept', $version->getTranslation('en_US')->getLabel());
+    }
+
+    #[Test]
+    public function a_translation_of_something_other_than_a_version_throws_when_asked_for_its_version(): void
+    {
+        $translation = new TermsVersionTranslation();
+        $translation->setLocale('en_US');
+        $translation->setTranslatable(new Terms());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(TermsVersionInterface::class);
+
+        $translation->getVersion();
     }
 
     private static function createVersion(int $number): TermsVersion

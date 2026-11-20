@@ -37,11 +37,9 @@ final class TermsAnsweredDispatcher implements TermsAnsweredDispatcherInterface,
 
         if (null === $savedEvent) {
             $this->eventDispatcher->dispatch($event);
-
-            return;
+        } else {
+            $this->waiting[$savedEvent][] = $event;
         }
-
-        $this->waiting[$savedEvent][] = $event;
     }
 
     /**

@@ -52,6 +52,27 @@ final class TermsFormComponentTest extends TestCase
         self::assertSame(['translations' => ['de_DE' => ['slug' => '']]], $component->formValues);
     }
 
+    #[Test]
+    public function it_hydrates_the_terms_by_its_id_and_a_new_terms_from_nothing(): void
+    {
+        $terms = new Terms();
+
+        $repository = $this->prophesize(RepositoryInterface::class);
+        $repository->find(7)->willReturn($terms);
+
+        $component = new TermsFormComponent(
+            $repository->reveal(),
+            $this->prophesize(FormFactoryInterface::class)->reveal(),
+            Terms::class,
+            TermsType::class,
+            $this->prophesize(SlugGeneratorInterface::class)->reveal(),
+        );
+
+        self::assertSame($terms, $component->hydrateResource(7));
+        self::assertInstanceOf(Terms::class, $component->hydrateResource(null));
+        self::assertNotSame($terms, $component->hydrateResource(null));
+    }
+
     private function createComponent(SlugGeneratorInterface $slugGenerator): TermsFormComponent
     {
         return new TermsFormComponent(
