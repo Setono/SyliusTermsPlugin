@@ -15,6 +15,7 @@
 - `twig/intl-extra` (`^3.26`, the oldest release without a known security advisory) is a new requirement, for the `format_date` filter on the Terms page and in the Terms PDF. Apps that install `sylius/sylius` already have it. The plugin doesn't register `Twig\Extra\Intl\IntlExtension`: Sylius' own templates need it too, so a Sylius app already registers it, as Sylius-Standard does (see the README's Installation section).
 - The plugin no longer has to be registered before `SyliusGridBundle` in `config/bundles.php`.
 - `setono/doctrine-orm-trait` (`^1.2`) is a new requirement. The plugin also requires `symfony/console` and `doctrine/persistence` (`^3.3`) now, which apps that install `sylius/sylius` already have.
+- `league/flysystem` (`^3.35.3`, the oldest release without a known security advisory) and `league/flysystem-bundle` (`^3.7`, the first that takes the `local:` storage format) are new requirements, for the storage of Uploaded images. Apps that install `sylius/sylius` already have both, but Sylius 2.2 allows `league/flysystem-bundle` from `3.3`, so an app on `3.3`–`3.6` has to update it. The plugin also requires `symfony/security-csrf` and `symfony/translation-contracts` now, which apps that install `sylius/sylius` already have.
 
 ### Upgrade steps
 
