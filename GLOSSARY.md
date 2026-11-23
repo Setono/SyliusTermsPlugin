@@ -12,6 +12,10 @@ _Avoid_: Term, condition, policy, document
 The full text of a Terms in one locale, as its author wrote it, shown on the terms page.
 _Avoid_: Body, text, description
 
+**Uploaded image**:
+An image an admin uploaded into Content, which the plugin stores and serves. It is never deleted, because Terms versions keep pointing at it.
+_Avoid_: Attachment, media, file, content image
+
 **Terms version**:
 An immutable, numbered snapshot of a Terms' name, label and content in every locale, made each time any of them changes. It is in force from that moment until the next version, and records what a Terms said, not where it was shown.
 _Avoid_: Revision, edition
