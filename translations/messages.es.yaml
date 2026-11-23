@@ -37,6 +37,13 @@ setono_sylius_terms:
             image: Imagen
             bulleted_list: Lista con viñetas
             numbered_list: Lista numerada
+        uploaded_image:
+            hint: Arrastra o pega imágenes, o %choose%
+            choose: elige una
+            not_an_image: "%name% no es una imagen PNG, JPEG, GIF o WebP."
+            too_large: "%name% supera los 5 MB."
+            too_large_for_server: "%name% supera el tamaño que admite el servidor."
+            upload_failed: No se ha podido subir %name%.
 
     menu:
         admin:

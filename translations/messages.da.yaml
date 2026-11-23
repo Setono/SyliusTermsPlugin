@@ -37,6 +37,13 @@ setono_sylius_terms:
             image: Billede
             bulleted_list: Punktopstilling
             numbered_list: Nummereret liste
+        uploaded_image:
+            hint: Træk eller indsæt billeder, eller %choose%
+            choose: vælg et
+            not_an_image: "%name% er ikke et PNG-, JPEG-, GIF- eller WebP-billede."
+            too_large: "%name% er større end 5 MB."
+            too_large_for_server: "%name% er større, end serveren tillader."
+            upload_failed: "%name% kunne ikke uploades."
         
     menu:
         admin:

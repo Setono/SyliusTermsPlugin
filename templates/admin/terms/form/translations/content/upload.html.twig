@@ -1,0 +1,44 @@
+{#
+    The textarea's drop zone, for uploading images into the Content. GitHub's <file-attachment> element
+    (https://github.com/github/file-attachment-element) around the textarea turns images dropped on it, pasted into it or
+    picked through the "choose one" link below it into an event. The plugin's upload-images.js then uploads each image to
+    the setono_sylius_terms_admin_upload_image route and puts its Markdown in the textarea. The markdown_toolbar hookable
+    on the page's #javascripts hook loads both scripts.
+
+    This hookable renders the textarea, inside the element. When it is disabled, admin/terms/form/translations/
+    content.html.twig renders the textarea instead
+#}
+
+{% set form = hookable_metadata.context.form %}
+{% set locale = hookable_metadata.context.locale %}
+{% set input_id = form.content.vars.id ~ '-upload' %}
+
+<file-attachment
+    class="setono-terms-upload d-block"
+    input="{{ input_id }}"
+    data-upload-url="{{ path('setono_sylius_terms_admin_upload_image') }}"
+    data-csrf-token="{{ csrf_token(constant('Setono\\SyliusTermsPlugin\\Controller\\Action\\UploadImageAction::CSRF_TOKEN_ID')) }}"
+    data-upload-failed="{{ 'setono_sylius_terms.ui.uploaded_image.upload_failed'|trans }}"
+    {{ sylius_test_html_attribute('content-upload', locale) }}
+>
+    {{ form_widget(form.content, sylius_test_form_attribute('content', locale)) }}
+
+    {% set choose %}
+        <label class="setono-terms-upload-choose link-primary" for="{{ input_id }}" {{ sylius_test_html_attribute('content-upload-choose', locale) }}>{{ 'setono_sylius_terms.ui.uploaded_image.choose'|trans }}</label>
+    {% endset %}
+    <div class="setono-terms-upload-hint form-hint mt-1" {{ sylius_test_html_attribute('content-upload-hint', locale) }}>
+        {# The hint is escaped before the link goes in its place #}
+        {{ 'setono_sylius_terms.ui.uploaded_image.hint'|trans|e|replace({ '%choose%': choose|trim })|raw }}
+    </div>
+    <input
+        type="file"
+        id="{{ input_id }}"
+        class="visually-hidden"
+        accept="image/png,image/jpeg,image/gif,image/webp"
+        multiple
+        {{ sylius_test_html_attribute('content-upload-input', locale) }}
+    >
+
+    {# upload-images.js adds an error here for each image it couldn't upload #}
+    <div class="setono-terms-upload-errors" {{ sylius_test_html_attribute('content-upload-errors', locale) }}></div>
+</file-attachment>

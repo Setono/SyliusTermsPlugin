@@ -7,6 +7,7 @@ namespace Setono\SyliusTermsPlugin\DependencyInjection;
 use Setono\SyliusTermsPlugin\Dispatcher\TermsAnsweredDispatcher;
 use Setono\SyliusTermsPlugin\Pdf\TermsPdfGenerator;
 use Setono\SyliusTermsPlugin\Sanitizer\HeadingIdAttributeSanitizer;
+use Setono\SyliusTermsPlugin\Uploader\ImageUploader;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 use Sylius\PdfGenerationBundle\SyliusPdfGenerationBundle;
@@ -85,6 +86,19 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
                         // The default of 20,000 characters would cut off long terms
                         'max_input_length' => -1,
                     ],
+                ],
+            ],
+        ]);
+
+        // Uploaded images are stored here and kept for good (ADR 0009). An app moves them, to S3 for example, by defining
+        // a storage of the same name in its own config, which replaces this one. Content holds the URLs it gives
+        $container->prependExtensionConfig('flysystem', [
+            'storages' => [
+                ImageUploader::STORAGE => [
+                    'local' => ['directory' => '%kernel.project_dir%/public/media/terms'],
+                    // Readable by the web server, as Sylius' own sylius.storage
+                    'directory_visibility' => 'public',
+                    'public_url' => '/media/terms',
                 ],
             ],
         ]);
@@ -269,9 +283,10 @@ final class SetonoSyliusTermsExtension extends AbstractResourceExtension impleme
             $hooks[sprintf('%s.%s.content.form.placement', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/placement', ['forms', 'channels']);
             $hooks[sprintf('%s.%s.content.form.translations', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/translations', ['name', 'slug', 'label', 'content']);
 
-            // The content editor's three parts, each its own hookable so apps can disable or replace it: the Markdown
-            // toolbar above the textarea, the Write and Preview tabs, and the script that defines the toolbar's elements
-            $hooks[sprintf('%s.%s.content.form.translations.content#write', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/translations/content', ['toolbar']);
+            // The content editor's four parts, each its own hookable so apps can disable or replace it: the Markdown
+            // toolbar above the textarea, the textarea's drop zone for uploading images, the Write and Preview tabs, and
+            // the scripts that define the toolbar's and the drop zone's elements
+            $hooks[sprintf('%s.%s.content.form.translations.content#write', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/translations/content', ['toolbar', 'upload']);
             $hooks[sprintf('%s.%s.content.form.translations.content#preview', $prefix, $page)] = self::getHookables('@SetonoSyliusTermsPlugin/admin/terms/form/translations/content', ['preview']);
             $hooks[sprintf('%s.%s#javascripts', $prefix, $page)] = [
                 'markdown_toolbar' => [

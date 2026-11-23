@@ -2,7 +2,33 @@
  * Rendered Content in the admin of setono/sylius-terms-plugin: the Preview tabs of the Terms form and of the Terms
  * version page. Only those pages load it, through their #stylesheets hook. Rendered Content has no class or style
  * attributes, so its styling is scoped to the content wrapper, .setono-terms-content
+ *
+ * It also styles the Terms form's drop zone for uploading images into the Content, .setono-terms-upload
  */
+
+/*
+ * Without the element's script, such as when an app disabled the markdown_toolbar hookable, which loads it, dropping,
+ * pasting and picking do nothing, so the hint doesn't show
+ */
+file-attachment:not(:defined) .setono-terms-upload-hint {
+    display: none;
+}
+
+/* The <file-attachment> element sets the hover attribute while files are dragged over the textarea */
+.setono-terms-upload[hover] textarea {
+    border-color: var(--tblr-primary);
+    box-shadow: 0 0 0 .25rem rgba(var(--tblr-primary-rgb), .25);
+}
+
+/* The "choose one" link is the label of a visually hidden file input, which keeps the keyboard focus */
+.setono-terms-upload-choose {
+    cursor: pointer;
+}
+
+.setono-terms-upload:has(input[type="file"]:focus-visible) .setono-terms-upload-choose {
+    outline: 2px solid var(--tblr-primary);
+    outline-offset: 2px;
+}
 
 /* The Terms form's Preview tab keeps about the height of the textarea it replaces */
 .setono-terms-content-preview {

@@ -1,2 +1,10 @@
-{# GitHub's <markdown-toolbar> element, version 2.2.3, vendored with its MIT notice. Defining the elements is all it does #}
+{#
+    The content editor's scripts:
+    - GitHub's <markdown-toolbar> element, version 2.2.3, and GitHub's <file-attachment> element, version 3.2.0, each
+      vendored with its MIT notice. Defining the elements is all they do
+    - upload-images.js, which uploads the images the <file-attachment> elements accept and puts their Markdown in the
+      Content
+#}
 <script type="module" src="{{ asset('bundles/setonosyliustermsplugin/admin/markdown-toolbar-element-2.2.3/index.js') }}" {{ sylius_test_html_attribute('markdown-toolbar-script') }}></script>
+<script type="module" src="{{ asset('bundles/setonosyliustermsplugin/admin/file-attachment-element-3.2.0/index.js') }}" {{ sylius_test_html_attribute('file-attachment-script') }}></script>
+<script type="module" src="{{ asset('bundles/setonosyliustermsplugin/admin/upload-images.js') }}" {{ sylius_test_html_attribute('upload-images-script') }}></script>

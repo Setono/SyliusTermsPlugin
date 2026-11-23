@@ -2,7 +2,8 @@
     The Content field of one locale. Its two hooks hold the editor's parts, so apps can disable or replace each one:
     - content#preview: the Write and Preview tabs and the Preview tab's pane. The Write tab shows the pane below, whose
       id is the textarea's id followed by -write. Without this hook's hookables there are no tabs, only the Write pane
-    - content#write: what sits above the textarea in the Write pane, the Markdown toolbar
+    - content#write: the Markdown toolbar above the textarea, and the drop zone for uploading images, which renders the
+      textarea inside it. Without the drop zone, the textarea is rendered here
 #}
 
 {% set form = hookable_metadata.context.form %}
@@ -17,7 +18,9 @@
         <div class="tab-pane show active" id="{{ form.content.vars.id }}-write">
             {% hook 'content#write' %}
 
-            {{ form_widget(form.content, sylius_test_form_attribute('content', locale)) }}
+            {% if not form.content.rendered %}
+                {{ form_widget(form.content, sylius_test_form_attribute('content', locale)) }}
+            {% endif %}
         </div>
     </div>
 

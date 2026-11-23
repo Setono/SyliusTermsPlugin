@@ -37,6 +37,13 @@ setono_sylius_terms:
             image: Imagine
             bulleted_list: Listă cu marcatori
             numbered_list: Listă numerotată
+        uploaded_image:
+            hint: Trageți sau lipiți imagini, sau %choose%
+            choose: alegeți una
+            not_an_image: Fișierul %name% nu este o imagine PNG, JPEG, GIF sau WebP.
+            too_large: Fișierul %name% depășește 5 MB.
+            too_large_for_server: Fișierul %name% depășește dimensiunea acceptată de server.
+            upload_failed: Fișierul %name% nu a putut fi încărcat.
 
     menu:
         admin:

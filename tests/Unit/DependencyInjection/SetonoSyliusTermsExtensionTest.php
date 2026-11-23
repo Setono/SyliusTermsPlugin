@@ -13,6 +13,7 @@ use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeChecker;
 use Setono\SyliusTermsPlugin\Checker\VersionedTextChangeCheckerInterface;
 use Setono\SyliusTermsPlugin\Command\UpgradeFrom2xCommand;
 use Setono\SyliusTermsPlugin\Controller\Action\ShowTermsAction;
+use Setono\SyliusTermsPlugin\Controller\Action\UploadImageAction;
 use Setono\SyliusTermsPlugin\Converter\ContentConverter;
 use Setono\SyliusTermsPlugin\DependencyInjection\SetonoSyliusTermsExtension;
 use Setono\SyliusTermsPlugin\Dispatcher\TermsAnsweredDispatcher;
@@ -59,6 +60,8 @@ use Setono\SyliusTermsPlugin\Upgrade\ContentCaseDetector;
 use Setono\SyliusTermsPlugin\Upgrade\FormClassMapper;
 use Setono\SyliusTermsPlugin\Upgrade\Upgrader;
 use Setono\SyliusTermsPlugin\Upgrade\UpgraderInterface;
+use Setono\SyliusTermsPlugin\Uploader\ImageUploader;
+use Setono\SyliusTermsPlugin\Uploader\ImageUploaderInterface;
 use Setono\SyliusTermsPlugin\Validator\Constraints\RequiredTermsTickedValidator;
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Sylius\Bundle\ShopBundle\Form\Type\CustomerRegistrationType;
@@ -143,6 +146,8 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         yield 'content case detector' => [ContentCaseDetector::class];
         yield 'upgrader' => [Upgrader::class];
         yield 'upgrade from 2.x command' => [UpgradeFrom2xCommand::class];
+        yield 'upload image action' => [UploadImageAction::class];
+        yield 'image uploader' => [ImageUploader::class];
     }
 
     #[Test]
@@ -160,6 +165,7 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias(SlugGeneratorInterface::class, SlugGenerator::class);
         $this->assertContainerBuilderHasAlias(TermsAnsweredDispatcherInterface::class, TermsAnsweredDispatcher::class);
         $this->assertContainerBuilderHasAlias(UpgraderInterface::class, Upgrader::class);
+        $this->assertContainerBuilderHasAlias(ImageUploaderInterface::class, ImageUploader::class);
     }
 
     #[Test]
@@ -318,6 +324,38 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
                 ],
             ],
         ]], $this->container->getExtensionConfig('framework'));
+    }
+
+    /**
+     * Local, in the app's public/media/terms, and served from /media/terms (ADR 0009)
+     */
+    #[Test]
+    public function it_prepends_the_uploaded_image_storage(): void
+    {
+        $this->load();
+
+        self::assertSame([[
+            'storages' => [
+                'setono_sylius_terms.uploaded_image_storage' => [
+                    'local' => ['directory' => '%kernel.project_dir%/public/media/terms'],
+                    'directory_visibility' => 'public',
+                    'public_url' => '/media/terms',
+                ],
+            ],
+        ]], $this->container->getExtensionConfig('flysystem'));
+    }
+
+    #[Test]
+    public function the_image_uploader_stores_in_the_uploaded_image_storage_and_detects_types_with_symfonys_mime_types(): void
+    {
+        $this->load();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(ImageUploader::class, 0, new Reference('setono_sylius_terms.uploaded_image_storage'));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(ImageUploader::class, 1, new Reference('mime_types'));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(UploadImageAction::class, 0, new Reference(ImageUploaderInterface::class));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(UploadImageAction::class, 1, new Reference('security.csrf.token_manager'));
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(UploadImageAction::class, 2, new Reference('translator'));
+        self::assertTrue($this->container->getDefinition(UploadImageAction::class)->isPublic(), 'The controller is public');
     }
 
     #[Test]
@@ -528,9 +566,11 @@ final class SetonoSyliusTermsExtensionTest extends AbstractExtensionTestCase
                 'content' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/content.html.twig', 'priority' => 0],
             ], $hooks[$prefix . '.content.form.translations']);
 
-            // The content editor's three parts are separate hookables, so apps can disable or replace each one
+            // The content editor's four parts are separate hookables, so apps can disable or replace each one. The upload
+            // hookable renders the textarea inside its drop zone, below the toolbar
             self::assertSame([
-                'toolbar' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/content/toolbar.html.twig', 'priority' => 0],
+                'toolbar' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/content/toolbar.html.twig', 'priority' => 100],
+                'upload' => ['template' => '@SetonoSyliusTermsPlugin/admin/terms/form/translations/content/upload.html.twig', 'priority' => 0],
             ], $hooks[$prefix . '.content.form.translations.content#write']);
 
             self::assertSame([

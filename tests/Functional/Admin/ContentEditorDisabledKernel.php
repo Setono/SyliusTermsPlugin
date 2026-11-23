@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 
 /**
- * The test application, with the content editor's three hookables disabled as the README's WYSIWYG recipe disables them
+ * The test application, with the content editor's four hookables disabled as the README's WYSIWYG recipe disables them
  */
 final class ContentEditorDisabledKernel extends BaseKernel
 {
@@ -36,7 +36,7 @@ final class ContentEditorDisabledKernel extends BaseKernel
             $prefix = 'setono_sylius_terms.admin.terms.' . $page;
 
             $hooks[$prefix . '#javascripts'] = ['markdown_toolbar' => ['enabled' => false]];
-            $hooks[$prefix . '.content.form.translations.content#write'] = ['toolbar' => ['enabled' => false]];
+            $hooks[$prefix . '.content.form.translations.content#write'] = ['toolbar' => ['enabled' => false], 'upload' => ['enabled' => false]];
             $hooks[$prefix . '.content.form.translations.content#preview'] = ['preview' => ['enabled' => false]];
         }
 

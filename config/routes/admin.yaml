@@ -12,6 +12,13 @@ setono_sylius_terms_admin_terms:
                 hook_prefix: setono_sylius_terms.admin.terms
     type: sylius.resource
 
+# Stores an image dropped, pasted or picked in the Content editor and answers with its URL, see UploadImageAction
+setono_sylius_terms_admin_upload_image:
+    path: /terms/uploaded-images
+    methods: [POST]
+    defaults:
+        _controller: Setono\SyliusTermsPlugin\Controller\Action\UploadImageAction
+
 # The read-only page of one Terms version, found by its Terms and its number
 setono_sylius_terms_admin_terms_version_show:
     path: /terms/{id}/versions/{number}

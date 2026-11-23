@@ -37,6 +37,13 @@ setono_sylius_terms:
             image: Bilde
             bulleted_list: Punktliste
             numbered_list: Nummerert liste
+        uploaded_image:
+            hint: Dra inn eller lim inn bilder, eller %choose%
+            choose: velg ett
+            not_an_image: "%name% er ikke et PNG-, JPEG-, GIF- eller WebP-bilde."
+            too_large: "%name% er større enn 5 MB."
+            too_large_for_server: "%name% er større enn serveren tillater."
+            upload_failed: "%name% kunne ikke lastes opp."
 
     menu:
         admin:

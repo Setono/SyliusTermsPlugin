@@ -37,6 +37,13 @@ setono_sylius_terms:
             image: Obrázek
             bulleted_list: Odrážkový seznam
             numbered_list: Číslovaný seznam
+        uploaded_image:
+            hint: Přetáhněte nebo vložte obrázky, nebo %choose%
+            choose: vyberte jeden
+            not_an_image: Soubor %name% není obrázek PNG, JPEG, GIF ani WebP.
+            too_large: Soubor %name% je větší než 5 MB.
+            too_large_for_server: Soubor %name% je větší, než server povoluje.
+            upload_failed: Soubor %name% se nepodařilo nahrát.
 
     menu:
         admin:

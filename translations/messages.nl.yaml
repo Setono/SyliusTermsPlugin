@@ -37,6 +37,13 @@ setono_sylius_terms:
             image: Afbeelding
             bulleted_list: Opsommingslijst
             numbered_list: Genummerde lijst
+        uploaded_image:
+            hint: Sleep of plak afbeeldingen, of %choose%
+            choose: kies er een
+            not_an_image: "%name% is geen PNG-, JPEG-, GIF- of WebP-afbeelding."
+            too_large: "%name% is groter dan 5 MB."
+            too_large_for_server: "%name% is groter dan de server toestaat."
+            upload_failed: "%name% kon niet worden geüpload."
 
     menu:
         admin:
