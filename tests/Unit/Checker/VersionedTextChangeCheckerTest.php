@@ -160,7 +160,7 @@ final class VersionedTextChangeCheckerTest extends TestCase
 
         $version = $terms->getLatestVersion();
         self::assertNotNull($version);
-        self::loadVersionContent($version->getTranslation('en_US'), $content);
+        self::loadContent($version->getTranslation('en_US'), $content);
 
         self::assertFalse($this->checker->hasChanged($terms));
     }
@@ -266,17 +266,9 @@ final class VersionedTextChangeCheckerTest extends TestCase
     /**
      * Sets the Content past the setter, as Doctrine loads it
      */
-    private static function loadContent(TermsTranslationInterface $translation, string $content): void
+    private static function loadContent(TermsTranslationInterface|TermsVersionTranslationInterface $translation, string $content): void
     {
-        (new \ReflectionProperty(TermsTranslation::class, 'content'))->setValue($translation, $content);
-    }
-
-    /**
-     * Sets the version's Content past the setter, as Doctrine loads it
-     */
-    private static function loadVersionContent(TermsVersionTranslationInterface $translation, string $content): void
-    {
-        (new \ReflectionProperty(TermsVersionTranslation::class, 'content'))->setValue($translation, $content);
+        (new \ReflectionProperty($translation, 'content'))->setValue($translation, $content);
     }
 
     private static function createVersionedTerms(): TermsInterface
