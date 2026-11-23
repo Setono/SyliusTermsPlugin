@@ -37,6 +37,13 @@ setono_sylius_terms:
             image: Kép
             bulleted_list: Felsorolás
             numbered_list: Számozott lista
+        uploaded_image:
+            hint: Húzzon ide vagy illesszen be képeket, vagy %choose%
+            choose: válasszon egyet
+            not_an_image: "%name% nem PNG, JPEG, GIF vagy WebP kép."
+            too_large: "%name% nagyobb, mint 5 MB."
+            too_large_for_server: "%name% nagyobb, mint amit a szerver elfogad."
+            upload_failed: "%name% feltöltése nem sikerült."
 
     menu:
         admin:

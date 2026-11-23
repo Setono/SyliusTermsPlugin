@@ -60,7 +60,7 @@ The form has three cards:
 * **Placement:** the [Forms](#forms) the Terms shows on, each listed by its label, and the channels.
 * **Translations:** the name, slug, label and content in each locale. The `Label` is the text next to the checkbox. Use
   a Link placeholder (`[link:Link text]`) to tell where the link to the Terms page goes. The content is Markdown, with a
-  toolbar and a preview (see [Writing Content](#writing-content)).
+  toolbar, image upload and a preview (see [Writing Content](#writing-content)).
 
 The wand button next to a slug makes the slug from the name in that locale. A slug left blank is made from the name
 when the Terms is saved. Slugs stay editable: changing one changes the address of the Terms page, and the old address
@@ -79,18 +79,101 @@ the cursor. They insert through the browser's editing commands, so undo and redo
 
 * The heading button inserts `## `, a second-level heading, because the Terms page shows the Terms' name as its `<h1>`.
   The `##` headings make up the page's table of contents.
-* Images are inserted by URL; there is no upload. Select the image's alt text and click the image button to get
+* The image button inserts an image by its URL. Select the image's alt text and click the button to get
   `![alt text](url)` with `url` selected, then type or paste the image's URL. If you select a URL instead, it goes in
-  place of `url`.
+  place of `url`. An image that isn't online yet can be uploaded instead (see [Uploading images](#uploading-images)).
 
 The **Preview** tab shows the content as the Terms page renders it, sanitised, including edits that aren't saved yet.
 The server renders it, through the same `ContentRendererInterface` as the Terms page, each time the form re-renders,
 for example when you click the tab.
 
-The toolbar is GitHub's [`<markdown-toolbar>` element](https://github.com/github/markdown-toolbar-element) 2.2.3. The
-plugin ships its prebuilt file, with its MIT license, in `public/admin/markdown-toolbar-element-2.2.3/`, and loads it as
-a module script on the Terms create and update pages only. Your app needs no npm install and no rebuild:
-`assets:install` copies it to your `public/` directory along with the other bundles' assets.
+The toolbar is GitHub's [`<markdown-toolbar>` element](https://github.com/github/markdown-toolbar-element) 2.2.3, and
+the drop zone for uploading images is GitHub's [`<file-attachment>` element](https://github.com/github/file-attachment-element)
+3.2.0. The plugin ships their prebuilt files, each with its MIT license, in `public/admin/markdown-toolbar-element-2.2.3/`
+and `public/admin/file-attachment-element-3.2.0/`, next to its own `public/admin/upload-images.js`, which uploads the
+images. It loads the three as module scripts on the Terms create and update pages only. Your app needs no npm install
+and no rebuild: `assets:install` copies them to your `public/` directory along with the other bundles' assets.
+
+#### Uploading images
+
+Drop images on the textarea, paste one into it (a screenshot, for example), or pick them through **choose one** in the
+hint below it: "Drop or paste images, or choose one". Pasting takes a PNG, JPEG or GIF image, as the `<file-attachment>`
+element does, so drop or pick a WebP image. Each image goes up at once. `![Uploading cookie.png…]()` goes in at the
+cursor, and becomes `![cookie](/media/terms/<hash>.png)` when the upload is done, with the file's name, without its
+extension, as the alt text. Images that go in together get a placeholder each, in order, separated by blank lines.
+
+The edits go through the browser's editing commands, so undo takes each one back. The exception is an upload that
+finishes while its locale is collapsed or its Preview tab is open: the textarea can't take the focus then, so its
+placeholder is replaced directly, and that edit can't be undone.
+
+Only PNG, JPEG, GIF and WebP images of at most 5 MB are accepted, judged by their content, not by their name. SVG isn't,
+since it can hold scripts. A file that isn't accepted leaves nothing in the content, and an error that names it shows
+below the textarea. PHP's own limits come first. An image larger than `upload_max_filesize` gets an error that says it
+is larger than the server accepts, and one larger than `post_max_size` gets an error that says it couldn't be uploaded.
+PHP's defaults are `2M` and `8M`, so set `upload_max_filesize` to at least `5M`, and `post_max_size` a bit higher.
+
+An image is stored as it was uploaded: it isn't resized or re-encoded, and its metadata, such as a photo's EXIF
+location, is kept. Strip what shouldn't be public before uploading. Each image is named after a hash of its bytes, so
+the same image uploaded twice is stored once, at the same URL. Uploaded images are never deleted, not even ones the
+content no longer uses, because the [Terms versions](#terms-versions) that showed them keep showing them (ADR
+[0009](docs/adr/0009-uploaded-images-are-kept-for-good-in-the-plugins-own-storage.md)). An unused image can be deleted
+by hand.
+
+Any logged-in admin can upload. The images go to the admin route `setono_sylius_terms_admin_upload_image`
+(`POST /%sylius_admin.path_name%/terms/uploaded-images`), with a CSRF token, and its name is what Sylius Plus' RBAC
+restricts.
+
+##### Where Uploaded images are stored
+
+The plugin stores them in the Flysystem storage `setono_sylius_terms.uploaded_image_storage`, which it defines as:
+
+```yaml
+flysystem:
+    storages:
+        setono_sylius_terms.uploaded_image_storage:
+            local:
+                directory: '%kernel.project_dir%/public/media/terms'
+            directory_visibility: public
+            public_url: /media/terms
+```
+
+The content holds the URL the storage's `publicUrl()` gives: relative with this storage, which works on every
+channel's hostname. In a [Terms PDF](#terms-in-the-order-confirmation-email), a relative image shows only when the
+channel has a hostname (see [Setting the channel hostname](#setting-the-channel-hostname)).
+
+To store them elsewhere, for example on S3 behind a CDN, define a storage of the same name in your own config. It
+replaces the plugin's, and the content gets the URLs it gives:
+
+```yaml
+# config/packages/flysystem.yaml
+flysystem:
+    storages:
+        setono_sylius_terms.uploaded_image_storage:
+            aws:
+                client: aws_client_service
+                bucket: your-bucket
+                prefix: terms
+            public_url: https://cdn.example.com/terms
+```
+
+Images uploaded before the move keep their old URLs, in the content and in every Terms version, so keep those URLs
+working, for example by copying the files along.
+
+##### Turning upload off
+
+Disable the `upload` hookable on both pages. The textarea, the toolbar and the preview stay as they are:
+
+```yaml
+# config/packages/sylius_twig_hooks.yaml
+sylius_twig_hooks:
+    hooks:
+        'setono_sylius_terms.admin.terms.create.content.form.translations.content#write':
+            upload: { enabled: false }
+        'setono_sylius_terms.admin.terms.update.content.form.translations.content#write':
+            upload: { enabled: false }
+```
+
+That takes the drop zone and the hint off the form. The route stays, for logged-in admins only.
 
 ### Version history
 
@@ -116,26 +199,28 @@ default locale, or `null` when there is no page there.
 
 The pages are Sylius' CRUD pages, and their hooks are under `setono_sylius_terms.admin.terms`:
 
-| Hook                                                                                        | Hookables                                 |
-|---------------------------------------------------------------------------------------------|-------------------------------------------|
-| `setono_sylius_terms.admin.terms.{create,update}.content.form`                              | `general`, `placement`, `translations`    |
-| `setono_sylius_terms.admin.terms.{create,update}.content.form.general`                      | `code`, `enabled`, `required`, `position` |
-| `setono_sylius_terms.admin.terms.{create,update}.content.form.placement`                    | `forms`, `channels`                       |
-| `setono_sylius_terms.admin.terms.{create,update}.content.form.translations`                 | `name`, `slug`, `label`, `content`        |
-| `setono_sylius_terms.admin.terms.{create,update}.content.form.translations.content#write`   | `toolbar`, above the textarea             |
-| `setono_sylius_terms.admin.terms.{create,update}.content.form.translations.content#preview` | `preview`, the Write and Preview tabs     |
-| `setono_sylius_terms.admin.terms.{create,update}#javascripts`                               | `markdown_toolbar`, the toolbar's script  |
-| `setono_sylius_terms.admin.terms.{create,update}#stylesheets`                               | `terms_content`, the preview's stylesheet |
-| `setono_sylius_terms.admin.terms.update.content`                                            | `versions`, below core's `form`           |
-| `setono_sylius_terms.admin.terms.update.content.header.title_block.actions`                 | `view_in_store`, before core's buttons    |
+| Hook                                                                                        | Hookables                                               |
+|---------------------------------------------------------------------------------------------|---------------------------------------------------------|
+| `setono_sylius_terms.admin.terms.{create,update}.content.form`                              | `general`, `placement`, `translations`                  |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.general`                      | `code`, `enabled`, `required`, `position`               |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.placement`                    | `forms`, `channels`                                     |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.translations`                 | `name`, `slug`, `label`, `content`                      |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.translations.content#write`   | `toolbar`, then `upload`, the textarea in its drop zone |
+| `setono_sylius_terms.admin.terms.{create,update}.content.form.translations.content#preview` | `preview`, the Write and Preview tabs                   |
+| `setono_sylius_terms.admin.terms.{create,update}#javascripts`                               | `markdown_toolbar`, the editor's scripts                |
+| `setono_sylius_terms.admin.terms.{create,update}#stylesheets`                               | `terms_content`, the preview's stylesheet               |
+| `setono_sylius_terms.admin.terms.update.content`                                            | `versions`, below core's `form`                         |
+| `setono_sylius_terms.admin.terms.update.content.header.title_block.actions`                 | `view_in_store`, before core's buttons                  |
 
 The form is the Live Component `setono_sylius_terms:admin:terms:form`
 (`Setono\SyliusTermsPlugin\Twig\Component\TermsFormComponent`). The Versions card is outside it.
 
-The content editor's three parts, `toolbar`, `preview` and `markdown_toolbar`, are separate hookables, so you can
-disable or replace each one. The `toolbar` and `preview` hookables get the locale's translation form as `form`, and
-`locale`. Without `preview` there are no tabs, and the textarea shows on its own. The Write tab shows the element whose
-id is the textarea's id followed by `-write`, so a replacement `preview` has to keep pointing there.
+The content editor's four parts, `toolbar`, `upload`, `preview` and `markdown_toolbar`, are separate hookables, so you
+can disable or replace each one. The `toolbar`, `upload` and `preview` hookables get the locale's translation form as
+`form`, and `locale`. `upload` renders the textarea inside its `<file-attachment>` element. Without it, the textarea is
+rendered in its place, below the toolbar. Without `preview` there are no tabs, and the textarea shows on its own. The
+Write tab shows the element whose id is the textarea's id followed by `-write`, so a replacement `preview` has to keep
+pointing there.
 
 The read-only version page, `setono_sylius_terms_admin_terms_version_show` at
 `/%sylius_admin.path_name%/terms/{id}/versions/{number}`, is Sylius' CRUD show page, with its hooks under
@@ -204,7 +289,7 @@ To write Content with an HTML editor instead of the Markdown toolbar:
    it has to fire a bubbling `change` event on that field when it writes to it, or a re-render brings back the old
    value.
 
-2. Disable the three hookables, on both pages:
+2. Disable the four hookables, on both pages:
 
     ```yaml
     # config/packages/sylius_twig_hooks.yaml
@@ -212,8 +297,10 @@ To write Content with an HTML editor instead of the Markdown toolbar:
         hooks:
             'setono_sylius_terms.admin.terms.create.content.form.translations.content#write':
                 toolbar: { enabled: false }
+                upload: { enabled: false }
             'setono_sylius_terms.admin.terms.update.content.form.translations.content#write':
                 toolbar: { enabled: false }
+                upload: { enabled: false }
             'setono_sylius_terms.admin.terms.create.content.form.translations.content#preview':
                 preview: { enabled: false }
             'setono_sylius_terms.admin.terms.update.content.form.translations.content#preview':

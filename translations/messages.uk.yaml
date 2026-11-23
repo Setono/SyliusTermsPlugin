@@ -37,6 +37,13 @@ setono_sylius_terms:
             image: Зображення
             bulleted_list: Маркований список
             numbered_list: Нумерований список
+        uploaded_image:
+            hint: Перетягніть або вставте зображення, або %choose%
+            choose: виберіть одне
+            not_an_image: Файл %name% не є зображенням PNG, JPEG, GIF або WebP.
+            too_large: Файл %name% більший за 5 МБ.
+            too_large_for_server: Файл %name% більший, ніж дозволяє сервер.
+            upload_failed: Не вдалося завантажити файл %name%.
 
     menu:
         admin:

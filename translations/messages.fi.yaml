@@ -37,6 +37,13 @@ setono_sylius_terms:
             image: Kuva
             bulleted_list: Luettelo
             numbered_list: Numeroitu luettelo
+        uploaded_image:
+            hint: Vedä tai liitä kuvia, tai %choose%
+            choose: valitse kuva
+            not_an_image: "%name% ei ole PNG-, JPEG-, GIF- tai WebP-kuva."
+            too_large: "%name% on suurempi kuin 5 Mt."
+            too_large_for_server: "%name% on suurempi kuin palvelin sallii."
+            upload_failed: Tiedoston %name% lataaminen epäonnistui.
 
     menu:
         admin:

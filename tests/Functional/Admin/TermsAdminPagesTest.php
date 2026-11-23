@@ -71,7 +71,7 @@ final class TermsAdminPagesTest extends WebTestCase
             self::assertSame(['code', 'enabled', 'required', 'position'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.general'))));
             self::assertSame(['forms', 'channels'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.placement'))));
             self::assertSame(['name', 'slug', 'label', 'content'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.translations'))));
-            self::assertSame(['toolbar'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.translations.content#write'))));
+            self::assertSame(['toolbar', 'upload'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.translations.content#write'))));
             self::assertSame(['preview'], self::getHookableNames($registry->getEnabledFor($prefixes('content.form.translations.content#preview'))));
 
             // The page's own hooks, such as update#javascripts, have no dot after the page
@@ -477,19 +477,28 @@ final class TermsAdminPagesTest extends WebTestCase
     }
 
     #[Test]
-    public function the_form_pages_load_the_markdown_toolbar_script_and_the_content_stylesheet(): void
+    public function the_form_pages_load_the_editors_scripts_and_the_content_stylesheet(): void
     {
         $client = self::createAdminClient();
         $terms = self::findTerms('terms_and_conditions');
+        $scripts = [
+            'markdown-toolbar-script' => '/bundles/setonosyliustermsplugin/admin/markdown-toolbar-element-2.2.3/index.js',
+            'file-attachment-script' => '/bundles/setonosyliustermsplugin/admin/file-attachment-element-3.2.0/index.js',
+            'upload-images-script' => '/bundles/setonosyliustermsplugin/admin/upload-images.js',
+        ];
 
         foreach (['/admin/terms/new', sprintf('/admin/terms/%d/edit', (int) $terms->getId())] as $path) {
             $crawler = $client->request('GET', $path);
 
             self::assertResponseIsSuccessful();
-            $script = $crawler->filter('script[data-test-markdown-toolbar-script]');
-            self::assertCount(1, $script, $path);
-            self::assertSame('module', $script->attr('type'));
-            self::assertSame('/bundles/setonosyliustermsplugin/admin/markdown-toolbar-element-2.2.3/index.js', $script->attr('src'));
+
+            foreach ($scripts as $name => $src) {
+                $script = $crawler->filter(sprintf('script[data-test-%s]', $name));
+                self::assertCount(1, $script, $path);
+                self::assertSame('module', $script->attr('type'));
+                self::assertSame($src, $script->attr('src'));
+            }
+
             self::assertSame('/bundles/setonosyliustermsplugin/admin/terms-content.css', $crawler->filter('link[data-test-terms-content-stylesheet]')->attr('href'));
         }
 
@@ -497,8 +506,58 @@ final class TermsAdminPagesTest extends WebTestCase
         $crawler = $client->request('GET', '/admin/terms/');
 
         self::assertResponseIsSuccessful();
-        self::assertCount(0, $crawler->filter('script[data-test-markdown-toolbar-script]'));
+
+        foreach (array_keys($scripts) as $name) {
+            self::assertCount(0, $crawler->filter(sprintf('script[data-test-%s]', $name)));
+        }
         self::assertCount(0, $crawler->filter('link[data-test-terms-content-stylesheet]'));
+    }
+
+    /**
+     * The upload hookable renders the textarea inside a <file-attachment> element, with the hint and the picker below it
+     */
+    #[Test]
+    public function each_locales_textarea_is_inside_its_drop_zone_for_uploading_images(): void
+    {
+        $client = self::createAdminClient();
+        $terms = self::createTerms('cookie_policy', localeCodes: ['en_US', 'de_DE']);
+        self::getEntityManager()->clear();
+
+        foreach (['/admin/terms/new', sprintf('/admin/terms/%d/edit', (int) $terms->getId())] as $path) {
+            $crawler = $client->request('GET', $path);
+
+            self::assertResponseIsSuccessful();
+
+            foreach (['en_US', 'de_DE'] as $localeCode) {
+                $dropZone = $crawler->filter(sprintf('file-attachment[data-test-content-upload="%s"]', $localeCode));
+                self::assertCount(1, $dropZone, $path);
+
+                $textarea = $dropZone->filter('textarea');
+                self::assertCount(1, $textarea, 'The textarea is inside the drop zone');
+                self::assertSame($localeCode, $textarea->attr('data-test-content'));
+                self::assertCount(1, $crawler->filter(sprintf('textarea[data-test-content="%s"]', $localeCode)), 'The textarea is rendered once');
+                $id = (string) $textarea->attr('id');
+                self::assertSame($id . '-write', $dropZone->ancestors()->filter('.tab-pane')->attr('id'), 'The drop zone is in the Write pane');
+
+                self::assertSame('/admin/terms/uploaded-images', $dropZone->attr('data-upload-url'));
+                self::assertNotEmpty($dropZone->attr('data-csrf-token'));
+                self::assertSame("%name% couldn't be uploaded.", $dropZone->attr('data-upload-failed'));
+
+                $input = $dropZone->filter('input[type="file"]');
+                self::assertSame($id . '-upload', $input->attr('id'));
+                self::assertSame($input->attr('id'), $dropZone->attr('input'), 'The element takes files from this input only');
+                self::assertSame('image/png,image/jpeg,image/gif,image/webp', $input->attr('accept'));
+                self::assertNotNull($input->attr('multiple'));
+                self::assertNull($input->attr('name'), 'The input is not submitted with the form, nor bound by the Live form');
+
+                $hint = $dropZone->filter(sprintf('[data-test-content-upload-hint="%s"]', $localeCode));
+                self::assertSame('Drop or paste images, or choose one', trim((string) preg_replace('/\s+/', ' ', $hint->text())));
+                self::assertSame($id . '-upload', $hint->filter('label')->attr('for'), '"choose one" opens the picker');
+                self::assertSame('choose one', $hint->filter('label')->text());
+
+                self::assertCount(1, $dropZone->filter(sprintf('[data-test-content-upload-errors="%s"]', $localeCode)));
+            }
+        }
     }
 
     #[Test]

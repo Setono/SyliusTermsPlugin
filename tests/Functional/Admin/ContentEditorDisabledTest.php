@@ -29,7 +29,7 @@ final class ContentEditorDisabledTest extends WebTestCase
     }
 
     #[Test]
-    public function the_form_pages_have_no_script_toolbar_or_tabs(): void
+    public function the_form_pages_have_no_scripts_toolbar_drop_zone_or_tabs(): void
     {
         $client = self::createClient();
 
@@ -48,8 +48,9 @@ final class ContentEditorDisabledTest extends WebTestCase
             $crawler = $client->request('GET', $path);
 
             self::assertResponseIsSuccessful();
-            self::assertCount(0, $crawler->filter('script[data-test-markdown-toolbar-script]'), $path);
+            self::assertCount(0, $crawler->filter('script[data-test-markdown-toolbar-script], script[data-test-file-attachment-script], script[data-test-upload-images-script]'), $path);
             self::assertCount(0, $crawler->filter('markdown-toolbar'), $path);
+            self::assertCount(0, $crawler->filter('file-attachment, [data-test-content-upload-hint], input[type="file"]'), $path);
             self::assertCount(0, $crawler->filter('[data-test-content-preview-tab], [data-test-content-preview]'), $path);
 
             // The textarea is left, in the only pane, which is shown

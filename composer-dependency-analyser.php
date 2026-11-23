@@ -9,6 +9,8 @@ $configuration = (new Configuration())
     ->addPathToExclude(__DIR__ . '/tests')
     // The plugin type-hints Psr\Clock\ClockInterface and injects the 'clock' service, which symfony/clock provides
     ->ignoreErrorsOnPackage('symfony/clock', [ErrorType::UNUSED_DEPENDENCY])
+    // The extension prepends the storage of Uploaded images to the flysystem config, which league/flysystem-bundle reads
+    ->ignoreErrorsOnPackage('league/flysystem-bundle', [ErrorType::UNUSED_DEPENDENCY])
     // The admin templates render Twig components ({% component %}), which symfony/ux-twig-component provides
     ->ignoreErrorsOnPackage('symfony/ux-twig-component', [ErrorType::UNUSED_DEPENDENCY])
     // The Terms page and the Terms PDF template format dates with format_date, which twig/intl-extra provides
