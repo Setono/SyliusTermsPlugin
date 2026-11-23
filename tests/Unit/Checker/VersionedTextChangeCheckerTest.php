@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusTermsPlugin\Tests\Unit\Checker;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -17,6 +18,7 @@ use Setono\SyliusTermsPlugin\Model\TermsVersion;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslation;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslationInterface;
 use Setono\SyliusTermsPlugin\Snapshotter\TermsVersionSnapshotter;
+use Setono\SyliusTermsPlugin\Tests\Unit\ContentWhitespaceCases;
 use Sylius\Bundle\CoreBundle\Form\Type\Checkout\CompleteType;
 use Sylius\Bundle\CoreBundle\Form\Type\ContactType;
 use Sylius\Component\Channel\Model\ChannelInterface;
@@ -129,6 +131,80 @@ final class VersionedTextChangeCheckerTest extends TestCase
         yield 'mixed' => ["## Cookies\r\n\rWe use cookies.\n"];
     }
 
+    /**
+     * Content from 2.x keeps its whitespace, while its version is stored without the whitespace Markdown ignores
+     */
+    #[Test]
+    #[DataProviderExternal(ContentWhitespaceCases::class, 'provideContentWithWhitespaceMarkdownIgnores')]
+    public function content_that_differs_from_the_version_only_in_the_whitespace_markdown_ignores_has_not_changed(string $content, string $stored): void
+    {
+        $terms = self::createTerms();
+        $terms->getTranslation('en_US')->setContent($stored);
+        self::snapshot($terms);
+
+        self::loadContent($terms->getTranslation('en_US'), $content);
+
+        self::assertFalse($this->checker->hasChanged($terms));
+    }
+
+    /**
+     * A version stored before its setter dropped the whitespace Markdown ignores is compared the same way
+     */
+    #[Test]
+    #[DataProviderExternal(ContentWhitespaceCases::class, 'provideContentWithWhitespaceMarkdownIgnores')]
+    public function a_version_whose_content_differs_only_in_the_whitespace_markdown_ignores_has_not_changed(string $content, string $stored): void
+    {
+        $terms = self::createTerms();
+        $terms->getTranslation('en_US')->setContent($stored);
+        self::snapshot($terms);
+
+        $version = $terms->getLatestVersion();
+        self::assertNotNull($version);
+        self::loadContent($version->getTranslation('en_US'), $content);
+
+        self::assertFalse($this->checker->hasChanged($terms));
+    }
+
+    #[Test]
+    #[DataProviderExternal(ContentWhitespaceCases::class, 'provideContentThatIsOnlyWhitespace')]
+    public function content_that_is_only_whitespace_has_not_changed_from_a_version_without_content(string $content): void
+    {
+        $terms = self::createTerms();
+        $terms->getTranslation('en_US')->setContent(null);
+        self::snapshot($terms);
+
+        self::loadContent($terms->getTranslation('en_US'), $content);
+
+        self::assertFalse($this->checker->hasChanged($terms));
+    }
+
+    /**
+     * Markdown gives meaning to the whitespace from the first non-blank line's indentation to the last non-blank
+     * character
+     */
+    #[Test]
+    #[DataProvider('provideWhitespaceChangesMarkdownSees')]
+    public function changing_whitespace_that_markdown_sees_counts_as_a_change(string $content): void
+    {
+        $terms = self::createTerms();
+        $terms->getTranslation('en_US')->setContent("We use cookies.\nNo tracking.");
+        self::snapshot($terms);
+
+        self::loadContent($terms->getTranslation('en_US'), $content);
+
+        self::assertTrue($this->checker->hasChanged($terms));
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function provideWhitespaceChangesMarkdownSees(): iterable
+    {
+        yield 'the first line indented into a code block' => ["    We use cookies.\nNo tracking."];
+        yield 'a hard line break at the end of an inner line' => ["We use cookies.  \nNo tracking."];
+        yield 'a blank line between the lines' => ["We use cookies.\n\nNo tracking."];
+    }
+
     #[Test]
     public function changed_content_with_crlf_line_breaks_counts_as_a_change(): void
     {
@@ -190,9 +266,9 @@ final class VersionedTextChangeCheckerTest extends TestCase
     /**
      * Sets the Content past the setter, as Doctrine loads it
      */
-    private static function loadContent(TermsTranslationInterface $translation, string $content): void
+    private static function loadContent(TermsTranslationInterface|TermsVersionTranslationInterface $translation, string $content): void
     {
-        (new \ReflectionProperty(TermsTranslation::class, 'content'))->setValue($translation, $content);
+        (new \ReflectionProperty($translation, 'content'))->setValue($translation, $content);
     }
 
     private static function createVersionedTerms(): TermsInterface

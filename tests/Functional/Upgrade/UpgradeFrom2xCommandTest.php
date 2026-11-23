@@ -49,9 +49,9 @@ final class UpgradeFrom2xCommandTest extends WebTestCase
         'fr_FR' => ['CLUF', 'J’accepte le [link:CLUF]', null],
     ];
 
-    /** The TEXTS as their version holds them, with LF line breaks */
+    /** The TEXTS as their version holds them, with LF line breaks and without the whitespace Markdown ignores */
     private const VERSIONED_TEXTS = [
-        'en_US' => ['EULA', 'I accept the [link:EULA]', "<p class=\"lead\">The licence</p>\n\n    <p>Indented</p>\n"],
+        'en_US' => ['EULA', 'I accept the [link:EULA]', "<p class=\"lead\">The licence</p>\n\n    <p>Indented</p>"],
         'de_DE' => ['EULA (de)', 'Ich akzeptiere die [link:EULA]', "# Lizenz\n- Punkt"],
         'fr_FR' => ['CLUF', 'J’accepte le [link:CLUF]', null],
     ];
@@ -112,18 +112,19 @@ final class UpgradeFrom2xCommandTest extends WebTestCase
     }
 
     /**
-     * Version 1 has LF line breaks, while the Terms keeps the CRLF line breaks of 2.x until the admin saves it. Neither
-     * the command's own flush nor that save counts as a change of text
+     * Version 1 has LF line breaks and none of the whitespace Markdown ignores, while the Terms keeps the Content of 2.x
+     * until the admin saves it. Neither the command's own flush nor that save counts as a change of text
      */
     #[Test]
-    public function a_terms_from_2x_with_crlf_content_gets_only_version_1_and_an_admin_save_of_the_same_text_adds_no_version(): void
+    public function a_terms_from_2x_with_crlf_content_and_surrounding_whitespace_gets_only_version_1_and_an_admin_save_of_the_same_text_adds_no_version(): void
     {
-        $content = "# Licence\r\n\r\nThe licence\r\nin two lines";
+        $content = "\r\n  \r\n# Licence\r\n\r\nThe licence\r\nin two lines \r\n\r\n";
         $id = self::insert2xTerms('eula', [self::COMPLETE_TYPE], ['en_US' => ['EULA', 'I accept the [link:EULA]', $content]]);
 
         self::runCommand();
 
         self::assertSame([[1, self::NOW]], self::fetchVersions()['eula']);
+        self::assertSame(['en_US' => "# Licence\n\nThe licence\nin two lines"], self::fetchVersionContents($id, 1));
         self::assertSame(['en_US' => $content], self::fetchContents($id), 'The command changes no Content');
 
         self::ensureKernelShutdown();
@@ -437,6 +438,24 @@ final class UpgradeFrom2xCommandTest extends WebTestCase
         $contents = self::getConnection()->fetchAllKeyValue(
             'SELECT locale, content FROM setono_sylius_terms__terms_translation WHERE translatable_id = ? ORDER BY locale',
             [$id],
+        );
+
+        return $contents;
+    }
+
+    /**
+     * Read with DBAL, past the entity manager
+     *
+     * @return array<string, string|null> the Content of the Terms' version by locale
+     *
+     * @phpstan-impure
+     */
+    private static function fetchVersionContents(int $id, int $number): array
+    {
+        /** @var array<string, string|null> $contents */
+        $contents = self::getConnection()->fetchAllKeyValue(
+            'SELECT translation.locale, translation.content FROM setono_sylius_terms__terms_version_translation translation INNER JOIN setono_sylius_terms__terms_version version ON version.id = translation.translatable_id WHERE version.terms_id = ? AND version.number = ? ORDER BY translation.locale',
+            [$id, $number],
         );
 
         return $contents;

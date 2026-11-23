@@ -606,7 +606,7 @@ $termsVersionRepository = $container->get('setono_sylius_terms.repository.terms_
 $translation = $termsVersionRepository->findOneInForce($terms, $order->getCheckoutCompletedAt(), $order->getLocaleCode());
 
 $translation?->getVersion()->getNumber(); // 3
-$translation?->getContent();              // the content in the order's locale, as entered
+$translation?->getContent();              // the content's Markdown in the order's locale, not rendered
 ```
 
 It returns `null` when the moment is before the Terms' first version, or when the version in force has no translation

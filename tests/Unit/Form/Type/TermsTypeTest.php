@@ -166,6 +166,30 @@ final class TermsTypeTest extends TestCase
         self::assertSame('terms', $terms->getTranslation('en_US')->getSlug());
     }
 
+    /**
+     * Trimming the Content would drop the leading spaces of an indented code block. The setter drops only the
+     * whitespace Markdown ignores
+     */
+    #[Test]
+    public function the_content_is_not_trimmed_on_submit_and_the_other_texts_are(): void
+    {
+        $terms = self::createTerms([]);
+
+        $form = $this->createForm($terms);
+        $form->submit(array_replace_recursive(self::getSubmittedData([]), ['translations' => ['en_US' => [
+            'name' => ' Terms ',
+            'slug' => ' terms ',
+            'label' => ' I accept the [link:terms] ',
+            'content' => "    composer require\n\nWe use cookies.\n",
+        ]]]));
+
+        $translation = $terms->getTranslation('en_US');
+        self::assertSame("    composer require\n\nWe use cookies.", $translation->getContent());
+        self::assertSame('Terms', $translation->getName());
+        self::assertSame('terms', $translation->getSlug());
+        self::assertSame('I accept the [link:terms]', $translation->getLabel());
+    }
+
     #[Test]
     public function required_is_ticked_for_new_terms(): void
     {

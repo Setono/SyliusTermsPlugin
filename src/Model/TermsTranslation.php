@@ -69,6 +69,6 @@ class TermsTranslation extends AbstractTranslation implements TermsTranslationIn
      */
     public function setContent(?string $content): void
     {
-        $this->content = null === $content ? null : str_replace(["\r\n", "\r"], "\n", $content);
+        $this->content = ContentNormalizer::normalize($content);
     }
 }
