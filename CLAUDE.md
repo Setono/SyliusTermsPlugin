@@ -101,6 +101,7 @@ symfony server:start                                            # https://127.0.
   - `functional` (`tests/Functional/`): boots `tests/Application` against MySQL with `WebTestCase` / `KernelTestCase`, and UX's `InteractsWithLiveComponents` for Live re-renders. Call `restore_exception_handler()` in `tearDown()`.
   - `browser` (`tests/Browser/`): tests extend `Playwright\Symfony\Test\PlaywrightTestCase` and drive Chromium. Pages are handled by the test's own kernel, with no web server, so they see the data the test creates. Read `docs/agents/browser-tests.md` before writing or debugging one.
 - `dama/doctrine-test-bundle` runs every test in a transaction that is rolled back afterwards. Find the baseline Terms (`terms_and_conditions`, `privacy_policy`, defined in `tests/Application/config/packages/sylius_fixtures.yaml`) by code, and create every other case inline with the plugin's factories. No Foundry.
+- The storage of Uploaded images, the test app's `public/media/terms`, isn't rolled back. A test that uploads an image deletes what it stored, with `tests/Functional/StoresImageFixturesTrait.php`.
 - Elements a test needs get a hook through `{{ sylius_test_html_attribute('name', value) }}`, never a raw `data-test-*` attribute.
 - Tests never touch the network. Time comes from Symfony Clock, and tests control it with `ClockSensitiveTrait` / `MockClock`.
 - playwright-symfony breaks BC in minors, so its constraint pins the minor (`^0.12`). Read its CHANGELOG before moving it.

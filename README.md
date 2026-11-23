@@ -141,6 +141,9 @@ The content holds the URL the storage's `publicUrl()` gives: relative with this 
 channel's hostname. In a [Terms PDF](#terms-in-the-order-confirmation-email), a relative image shows only when the
 channel has a hostname (see [Setting the channel hostname](#setting-the-channel-hostname)).
 
+With this storage, the images live in your app's `public/media/terms`, and Terms versions point at them for good. Keep
+that directory across deploys, as you keep Sylius' `public/media/image`, for example as a shared directory.
+
 To store them elsewhere, for example on S3 behind a CDN, define a storage of the same name in your own config. It
 replaces the plugin's, and the content gets the URLs it gives:
 
@@ -574,8 +577,8 @@ $termsAnsweredDispatcher->dispatch(new TermsAnsweredEvent('checkout_complete', $
 
 The Content of a Terms is Markdown ([CommonMark](https://commonmark.org/) plus GitHub's tables and autolinks) that
 allows raw HTML, so Content written as HTML works too. Every rendering of Content is sanitised: scripts, event
-handlers, unsafe URLs and `class` and `style` attributes are removed. Admins write it with a Markdown toolbar and a
-preview (see [Writing Content](#writing-content)).
+handlers, unsafe URLs and `class` and `style` attributes are removed. Admins write it with a Markdown toolbar, image
+upload and a preview (see [Writing Content](#writing-content)).
 
 Print Content with the `terms_content` filter, never with `|raw`:
 
