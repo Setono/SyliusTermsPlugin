@@ -7,6 +7,7 @@ namespace Setono\SyliusTermsPlugin\Tests\Functional\Admin;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
+use Setono\SyliusTermsPlugin\Model\TermsVersionInterface;
 use Setono\SyliusTermsPlugin\Renderer\ContentRendererInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Tests\Functional\CreatesTermsTrait;
@@ -413,6 +414,51 @@ final class TermsAdminPagesTest extends WebTestCase
     }
 
     #[Test]
+    #[DataProvider('provideBaselineTermsCodes')]
+    public function saving_a_baseline_terms_without_changing_it_adds_no_version(string $code): void
+    {
+        $client = self::createAdminClient();
+        $terms = self::findTerms($code);
+        $versionNumbers = self::getVersionNumbers($terms);
+        $contents = self::getContents($terms);
+
+        self::submitUnchangedUpdateForm($client, $terms);
+
+        $terms = self::findTerms($code);
+        self::assertSame($versionNumbers, self::getVersionNumbers($terms));
+        self::assertSame($contents, self::getContents($terms));
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function provideBaselineTermsCodes(): iterable
+    {
+        yield 'terms_and_conditions' => ['terms_and_conditions'];
+        yield 'privacy_policy' => ['privacy_policy'];
+    }
+
+    /**
+     * The form doesn't trim the Content, which would turn the code block into a paragraph
+     */
+    #[Test]
+    public function saving_a_terms_whose_content_opens_with_an_indented_code_block_without_changing_it_keeps_the_indentation_and_adds_no_version(): void
+    {
+        $client = self::createAdminClient();
+        $content = "    composer require setono/sylius-terms-plugin\n\nWe use cookies.";
+        $terms = self::createTerms('cookie_policy');
+        $terms->getTranslation('en_US')->setContent($content);
+        self::getEntityManager()->flush();
+        self::assertSame([1, 2], self::getVersionNumbers($terms));
+
+        self::submitUnchangedUpdateForm($client, $terms);
+
+        $terms = self::findTerms('cookie_policy');
+        self::assertSame([1, 2], self::getVersionNumbers($terms));
+        self::assertSame($content, $terms->getTranslation('en_US')->getContent());
+    }
+
+    #[Test]
     public function the_wand_fills_the_slug_from_the_name(): void
     {
         $client = self::createAdminClient();
@@ -584,6 +630,44 @@ final class TermsAdminPagesTest extends WebTestCase
     private static function normalizeHtml(string $html): string
     {
         return trim((new Crawler('<div id="normalized">' . $html . '</div>'))->filter('#normalized')->html());
+    }
+
+    /**
+     * Opens the Terms' update page and saves the form as the page fills it
+     */
+    private static function submitUnchangedUpdateForm(KernelBrowser $client, TermsInterface $terms): void
+    {
+        $id = (int) $terms->getId();
+        self::getEntityManager()->clear();
+
+        $crawler = $client->request('GET', sprintf('/admin/terms/%d/edit', $id));
+        $client->submit($crawler->filter('form[name="setono_sylius_terms_terms"]')->form());
+
+        self::assertResponseRedirects(sprintf('/admin/terms/%d/edit', $id));
+    }
+
+    /**
+     * @return list<int|null> in number order
+     */
+    private static function getVersionNumbers(TermsInterface $terms): array
+    {
+        return array_values(array_map(
+            static fn (TermsVersionInterface $version): ?int => $version->getNumber(),
+            $terms->getVersions()->toArray(),
+        ));
+    }
+
+    /**
+     * @return array<string, string|null> by locale
+     */
+    private static function getContents(TermsInterface $terms): array
+    {
+        $contents = [];
+        foreach ($terms->getTranslations()->getKeys() as $localeCode) {
+            $contents[(string) $localeCode] = $terms->getTranslation((string) $localeCode)->getContent();
+        }
+
+        return $contents;
     }
 
     private static function createAdminClient(): KernelBrowser

@@ -240,6 +240,31 @@ final class TermsAdminTest extends PlaywrightTestCase
         self::assertSame([], $page->pageErrors(), 'The Terms version page threw JavaScript errors');
     }
 
+    /**
+     * The browser submits the textarea's line breaks as CRLF, and the form doesn't trim the code block's indentation
+     */
+    #[Test]
+    public function saving_a_terms_whose_content_opens_with_an_indented_code_block_without_changing_it_adds_no_version(): void
+    {
+        $content = "    composer require setono/sylius-terms-plugin\n\nWe use cookies.";
+        $terms = self::createTerms('cookie_policy');
+        $terms->getTranslation('en_US')->setContent($content);
+        self::getEntityManager()->flush();
+        self::getEntityManager()->clear();
+
+        $page = $this->open(sprintf('/admin/terms/%d/edit', (int) $terms->getId()));
+        self::assertSame(['2', '1'], self::getVersionNumbers($page));
+        expect($page->locator('[data-test-content="en_US"]'))->toHaveValue($content);
+
+        $page->locator('[data-test-update-changes-button]')->click();
+        expect($page->locator('[data-test-sylius-flash-message-type="success"]'))->toBeVisible();
+
+        self::assertSame(['2', '1'], self::getVersionNumbers($page));
+        expect($page->locator('[data-test-content="en_US"]'))->toHaveValue($content);
+        self::assertSame($content, self::reloadTerms($terms)->getTranslation('en_US')->getContent());
+        self::assertSame([], $page->pageErrors(), 'The Terms form threw JavaScript errors');
+    }
+
     #[Test]
     public function the_toolbar_inserts_markdown_at_the_cursor_and_the_saved_terms_holds_it(): void
     {

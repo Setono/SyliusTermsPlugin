@@ -41,7 +41,7 @@ Run the command with `--dry-run` after the schema migration and before the real 
 
 The command:
 
-- Gives each Terms version 1, made from its name, label and content in every locale, as they are, except that the content's CRLF line breaks become LF. Version 1 is in force from the moment the command runs, because 2.x never recorded when a Terms' text changed. Orders completed before then have no inferred Terms version, and resending their confirmation email attaches no Terms PDFs.
+- Gives each Terms version 1, made from its name, label and content in every locale, as they are, except that the content's CRLF line breaks become LF and its leading blank lines and trailing whitespace are dropped, which Markdown ignores. Content that is only whitespace becomes no content. Version 1 is in force from the moment the command runs, because 2.x never recorded when a Terms' text changed. Orders completed before then have no inferred Terms version, and resending their confirmation email attaches no Terms PDFs.
 - Numbers the Terms' positions in id order, which is the order 2.x showed the checkboxes in.
 - Replaces the form type classes stored on each Terms with Form codes, see below.
 - Lists the Forms that aren't configured, and each Terms and locale whose Content may render differently, see [Content is Markdown that allows HTML](#content-is-markdown-that-allows-html-and-its-output-is-sanitised). It changes no Content.

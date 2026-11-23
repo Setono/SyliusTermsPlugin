@@ -43,6 +43,9 @@ final class TermsTranslationType extends AbstractResourceType
             ])
             ->add('content', TextareaType::class, [
                 'required' => false,
+                // Trimming would drop the leading spaces of an indented code block. setContent() drops only the
+                // whitespace Markdown ignores
+                'trim' => false,
                 'label' => 'setono_sylius_terms.form.terms.content',
                 'help' => 'setono_sylius_terms.form.terms.content_help',
                 'attr' => [

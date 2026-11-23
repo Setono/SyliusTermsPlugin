@@ -8,8 +8,8 @@ use Sylius\Resource\Model\ResourceInterface;
 use Sylius\Resource\Model\TranslationInterface;
 
 /**
- * A Terms version's name, label and content in one locale, stored as entered: Content is the source text, never
- * rendered HTML
+ * A Terms version's name, label and content in one locale, stored as entered, except for the Content's line breaks and
+ * the whitespace Markdown ignores (see setContent()). Content is the source text, never rendered HTML
  */
 interface TermsVersionTranslationInterface extends ResourceInterface, TranslationInterface
 {
@@ -28,7 +28,8 @@ interface TermsVersionTranslationInterface extends ResourceInterface, Translatio
     public function getContent(): ?string;
 
     /**
-     * Stores the Content with LF line breaks, like TermsTranslationInterface::setContent(). CRLF and CR become LF
+     * Stores the Content like TermsTranslationInterface::setContent(): with LF line breaks, without the whitespace
+     * Markdown ignores, and as null when it is only whitespace
      */
     public function setContent(?string $content): void;
 }

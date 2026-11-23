@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusTermsPlugin\Checker;
 
+use Setono\SyliusTermsPlugin\Model\ContentNormalizer;
 use Setono\SyliusTermsPlugin\Model\TermsInterface;
 use Setono\SyliusTermsPlugin\Model\TermsTranslationInterface;
 use Setono\SyliusTermsPlugin\Model\TermsVersionTranslationInterface;
@@ -37,19 +38,18 @@ final class VersionedTextChangeChecker implements VersionedTextChangeCheckerInte
     }
 
     /**
-     * Content is compared with LF line breaks. Both setters store it that way, but Content upgraded from 2.x keeps its
-     * CRLF line breaks until it is set again, because Doctrine loads it without the setter, while its version 1 has LF
+     * Content is compared as both setters store it: with LF line breaks and without the whitespace Markdown ignores.
+     * Content upgraded from 2.x keeps its CRLF line breaks and its surrounding whitespace until it is set again, because
+     * Doctrine loads it without the setter, while its version 1 has neither
      *
      * @return array{string|null, string|null, string|null} name, label and content
      */
     private static function text(TermsTranslationInterface|TermsVersionTranslationInterface $translation): array
     {
-        $content = $translation->getContent();
-
         return [
             $translation->getName(),
             $translation->getLabel(),
-            null === $content ? null : str_replace(["\r\n", "\r"], "\n", $content),
+            ContentNormalizer::normalize($translation->getContent()),
         ];
     }
 }
