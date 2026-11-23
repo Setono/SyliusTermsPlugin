@@ -12,9 +12,11 @@ use Setono\SyliusTermsPlugin\Model\TermsVersionTranslationInterface;
 use Setono\SyliusTermsPlugin\Repository\TermsRepositoryInterface;
 use Setono\SyliusTermsPlugin\Tests\Functional\CreatesTermsTrait;
 use Setono\SyliusTermsPlugin\Upgrade\ContentCase;
+use Sylius\Component\Core\Model\AdminUserInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\User\Repository\UserRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -24,7 +26,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
  * The Terms from 2.x are inserted with DBAL as the 3.0 schema migration leaves them: form type classes in forms, no
  * version, position 0 and required at its database default. The baseline Terms have versions, at positions 0 and 1
  */
-final class UpgradeFrom2xCommandTest extends KernelTestCase
+final class UpgradeFrom2xCommandTest extends WebTestCase
 {
     use ClockSensitiveTrait;
     use CreatesTermsTrait;
@@ -44,6 +46,13 @@ final class UpgradeFrom2xCommandTest extends KernelTestCase
     private const TEXTS = [
         'en_US' => ['EULA', 'I accept the [link:EULA]', "<p class=\"lead\">The licence</p>\r\n\r\n    <p>Indented</p>\r\n"],
         'de_DE' => ['EULA (de)', 'Ich akzeptiere die [link:EULA]', "# Lizenz\r\n- Punkt"],
+        'fr_FR' => ['CLUF', 'J’accepte le [link:CLUF]', null],
+    ];
+
+    /** The TEXTS as their version holds them, with LF line breaks */
+    private const VERSIONED_TEXTS = [
+        'en_US' => ['EULA', 'I accept the [link:EULA]', "<p class=\"lead\">The licence</p>\n\n    <p>Indented</p>\n"],
+        'de_DE' => ['EULA (de)', 'Ich akzeptiere die [link:EULA]', "# Lizenz\n- Punkt"],
         'fr_FR' => ['CLUF', 'J’accepte le [link:CLUF]', null],
     ];
 
@@ -67,14 +76,14 @@ final class UpgradeFrom2xCommandTest extends KernelTestCase
     }
 
     #[Test]
-    public function every_terms_from_2x_enabled_or_not_gets_version_1_at_the_clocks_time_holding_every_locales_text_verbatim(): void
+    public function every_terms_from_2x_enabled_or_not_gets_version_1_at_the_clocks_time_holding_every_locales_text_with_lf_line_breaks(): void
     {
         $enabledId = self::insert2xTerms('eula', [self::COMPLETE_TYPE], self::TEXTS);
         $disabledId = self::insert2xTerms('withdrawal', [], ['en_US' => self::TEXTS['en_US']], enabled: false);
 
         self::runCommand();
 
-        foreach ([$enabledId => self::TEXTS, $disabledId => ['en_US' => self::TEXTS['en_US']]] as $id => $texts) {
+        foreach ([$enabledId => self::VERSIONED_TEXTS, $disabledId => ['en_US' => self::VERSIONED_TEXTS['en_US']]] as $id => $texts) {
             $versions = self::reloadTermsById($id)->getVersions();
 
             self::assertCount(1, $versions);
@@ -100,6 +109,34 @@ final class UpgradeFrom2xCommandTest extends KernelTestCase
             static fn (array $row): bool => $row['required'],
             array_intersect_key(self::fetchTermsRows(), ['eula' => true, 'withdrawal' => true]),
         ));
+    }
+
+    /**
+     * Version 1 has LF line breaks, while the Terms keeps the CRLF line breaks of 2.x until the admin saves it. Neither
+     * the command's own flush nor that save counts as a change of text
+     */
+    #[Test]
+    public function a_terms_from_2x_with_crlf_content_gets_only_version_1_and_an_admin_save_of_the_same_text_adds_no_version(): void
+    {
+        $content = "# Licence\r\n\r\nThe licence\r\nin two lines";
+        $id = self::insert2xTerms('eula', [self::COMPLETE_TYPE], ['en_US' => ['EULA', 'I accept the [link:EULA]', $content]]);
+
+        self::runCommand();
+
+        self::assertSame([[1, self::NOW]], self::fetchVersions()['eula']);
+        self::assertSame(['en_US' => $content], self::fetchContents($id), 'The command changes no Content');
+
+        self::ensureKernelShutdown();
+        $client = self::createClient();
+        $client->loginUser(self::getAdmin(), 'admin');
+        $this->clock->sleep(60);
+
+        $crawler = $client->request('GET', sprintf('/admin/terms/%d/edit', $id));
+        $client->submit($crawler->filter('form[name="setono_sylius_terms_terms"]')->form());
+
+        self::assertResponseRedirects(sprintf('/admin/terms/%d/edit', $id));
+        self::assertSame(['en_US' => "# Licence\n\nThe licence\nin two lines"], self::fetchContents($id));
+        self::assertSame([[1, self::NOW]], self::fetchVersions()['eula']);
     }
 
     #[Test]
@@ -385,6 +422,35 @@ final class UpgradeFrom2xCommandTest extends KernelTestCase
         }
 
         return $versions;
+    }
+
+    /**
+     * Read with DBAL, past the entity manager
+     *
+     * @return array<string, string|null> the Terms' Content by locale
+     *
+     * @phpstan-impure
+     */
+    private static function fetchContents(int $id): array
+    {
+        /** @var array<string, string|null> $contents */
+        $contents = self::getConnection()->fetchAllKeyValue(
+            'SELECT locale, content FROM setono_sylius_terms__terms_translation WHERE translatable_id = ? ORDER BY locale',
+            [$id],
+        );
+
+        return $contents;
+    }
+
+    private static function getAdmin(): AdminUserInterface
+    {
+        /** @var UserRepositoryInterface<AdminUserInterface> $repository */
+        $repository = self::getContainer()->get('sylius.repository.admin_user');
+
+        $admin = $repository->findOneBy(['username' => 'sylius']);
+        self::assertInstanceOf(AdminUserInterface::class, $admin);
+
+        return $admin;
     }
 
     /**

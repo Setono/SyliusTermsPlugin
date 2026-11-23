@@ -103,6 +103,44 @@ final class VersionedTextChangeCheckerTest extends TestCase
         yield 'enabled' => [static fn (TermsInterface $terms) => $terms->setEnabled(false)];
     }
 
+    /**
+     * Content upgraded from 2.x keeps the line breaks it was saved with, while its version has LF line breaks
+     */
+    #[Test]
+    #[DataProvider('provideContentWithOtherLineBreaks')]
+    public function content_that_differs_from_the_version_only_in_its_line_breaks_has_not_changed(string $content): void
+    {
+        $terms = self::createTerms();
+        $terms->getTranslation('en_US')->setContent("## Cookies\n\nWe use cookies.\n");
+        self::snapshot($terms);
+
+        self::loadContent($terms->getTranslation('en_US'), $content);
+
+        self::assertFalse($this->checker->hasChanged($terms));
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function provideContentWithOtherLineBreaks(): iterable
+    {
+        yield 'CRLF' => ["## Cookies\r\n\r\nWe use cookies.\r\n"];
+        yield 'CR' => ["## Cookies\r\rWe use cookies.\r"];
+        yield 'mixed' => ["## Cookies\r\n\rWe use cookies.\n"];
+    }
+
+    #[Test]
+    public function changed_content_with_crlf_line_breaks_counts_as_a_change(): void
+    {
+        $terms = self::createTerms();
+        $terms->getTranslation('en_US')->setContent("## Cookies\n\nWe use cookies.\n");
+        self::snapshot($terms);
+
+        self::loadContent($terms->getTranslation('en_US'), "## Cookies\r\n\r\nWe use no cookies.\r\n");
+
+        self::assertTrue($this->checker->hasChanged($terms));
+    }
+
     #[Test]
     public function it_compares_with_the_latest_version(): void
     {
@@ -147,6 +185,14 @@ final class VersionedTextChangeCheckerTest extends TestCase
         $this->expectExceptionMessage(TermsVersionTranslationInterface::class);
 
         $this->checker->hasChanged($terms);
+    }
+
+    /**
+     * Sets the Content past the setter, as Doctrine loads it
+     */
+    private static function loadContent(TermsTranslationInterface $translation, string $content): void
+    {
+        (new \ReflectionProperty(TermsTranslation::class, 'content'))->setValue($translation, $content);
     }
 
     private static function createVersionedTerms(): TermsInterface

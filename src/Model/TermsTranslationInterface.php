@@ -22,5 +22,9 @@ interface TermsTranslationInterface extends SlugAwareInterface, ResourceInterfac
 
     public function getContent(): ?string;
 
+    /**
+     * Stores the Content with LF line breaks, whoever sets it: the admin form, the fixtures or app code. CRLF and CR
+     * become LF
+     */
     public function setContent(?string $content): void;
 }
